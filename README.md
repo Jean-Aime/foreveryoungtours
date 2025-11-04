@@ -86,4 +86,4 @@ foreveryoungtours/
 
 ## 📄 License
 
-© 2024 iForYoungTours. All rights reserved.
+© 2025 iForYoungTours. All rights reserved.
