@@ -1,0 +1,144 @@
+# COPY THIS TO: C:\xampp\apache\conf\extra\httpd-vhosts.conf
+
+# Main domain
+<VirtualHost *:80>
+    ServerName foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Africa subdomain
+<VirtualHost *:80>
+    ServerName africa.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/continents/africa"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/continents/africa">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Asia subdomain
+<VirtualHost *:80>
+    ServerName asia.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/continents/asia"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/continents/asia">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Caribbean subdomain
+<VirtualHost *:80>
+    ServerName caribbean.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/continents/caribbean"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/continents/caribbean">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Europe subdomain
+<VirtualHost *:80>
+    ServerName europe.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/continents/europe"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/continents/europe">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# North America subdomain
+<VirtualHost *:80>
+    ServerName north-america.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/continents/north-america"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/continents/north-america">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# South America subdomain
+<VirtualHost *:80>
+    ServerName south-america.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/continents/south-america"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/continents/south-america">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Kenya country subdomain
+<VirtualHost *:80>
+    ServerName visit-ke.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/countries/kenya"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/countries/kenya">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Rwanda country subdomain
+<VirtualHost *:80>
+    ServerName visit-rw.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/countries/rwanda"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/countries/rwanda">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Tanzania country subdomain
+<VirtualHost *:80>
+    ServerName visit-tz.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/countries/tanzania"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/countries/tanzania">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Uganda country subdomain
+<VirtualHost *:80>
+    ServerName visit-ug.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/countries/uganda"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/countries/uganda">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Egypt country subdomain
+<VirtualHost *:80>
+    ServerName visit-eg.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/countries/egypt"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/countries/egypt">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>
+
+# Morocco country subdomain
+<VirtualHost *:80>
+    ServerName visit-ma.foreveryoungtours.local
+    DocumentRoot "C:/xampp1/htdocs/foreveryoungtours/countries/morocco"
+    <Directory "C:/xampp1/htdocs/foreveryoungtours/countries/morocco">
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+</VirtualHost>

@@ -1,0 +1,17 @@
+URGENT FIX FOR BOOKING ERROR
+=============================
+
+YOU MUST RUN THIS SQL QUERY IN PHPMYADMIN NOW:
+
+1. Open: http://localhost/phpmyadmin
+2. Click on database: forevveryoungtours
+3. Click "SQL" tab at the top
+4. Copy and paste this query:
+
+ALTER TABLE `bookings` MODIFY `user_id` INT(11) NULL DEFAULT NULL;
+
+5. Click "Go" button
+6. Done! Try booking again.
+
+WHY THIS IS NEEDED:
+The bookings table currently requires user_id to have a value, but guest users (not logged in) don't have a user_id. This change allows NULL values for guest bookings.

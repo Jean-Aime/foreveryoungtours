@@ -1,0 +1,81 @@
+═══════════════════════════════════════════════════════════════
+  SUBDOMAIN TROUBLESHOOTING FOR XAMPP1
+═══════════════════════════════════════════════════════════════
+
+ISSUE: africa.foreveryoungtours.local shows XAMPP dashboard
+
+SOLUTION: Follow these steps EXACTLY
+═══════════════════════════════════════════════════════════════
+
+STEP 1: VERIFY HOSTS FILE
+───────────────────────────────────────────────────────────────
+1. Open: C:\Windows\System32\drivers\etc\hosts (as Administrator)
+2. Verify these lines exist:
+
+127.0.0.1 africa.foreveryoungtours.local
+127.0.0.1 asia.foreveryoungtours.local
+127.0.0.1 caribbean.foreveryoungtours.local
+127.0.0.1 europe.foreveryoungtours.local
+127.0.0.1 north-america.foreveryoungtours.local
+127.0.0.1 south-america.foreveryoungtours.local
+
+
+STEP 2: EDIT APACHE VHOSTS (CRITICAL - USE XAMPP1 PATH!)
+───────────────────────────────────────────────────────────────
+1. Open: C:\xampp1\apache\conf\extra\httpd-vhosts.conf
+2. REPLACE ALL CONTENT with the configuration from httpd-vhosts-config.txt
+3. Save the file
+
+
+STEP 3: ENABLE VHOSTS IN HTTPD.CONF
+───────────────────────────────────────────────────────────────
+1. Open: C:\xampp1\apache\conf\httpd.conf
+2. Search for: httpd-vhosts.conf
+3. Find this line:
+   #Include conf/extra/httpd-vhosts.conf
+4. Remove the # to make it:
+   Include conf/extra/httpd-vhosts.conf
+5. Save
+
+
+STEP 4: RESTART APACHE
+───────────────────────────────────────────────────────────────
+1. Open XAMPP Control Panel
+2. Click "Stop" on Apache
+3. Wait 3 seconds
+4. Click "Start" on Apache
+5. Check for errors in the logs
+
+
+STEP 5: TEST
+───────────────────────────────────────────────────────────────
+Open browser: http://africa.foreveryoungtours.local
+
+Expected: Africa continent page
+If still showing XAMPP dashboard: Continue to Step 6
+
+
+STEP 6: CHECK APACHE ERROR LOG
+───────────────────────────────────────────────────────────────
+1. Open: C:\xampp1\apache\logs\error.log
+2. Look for errors related to VirtualHost
+3. Common issues:
+   - DocumentRoot path doesn't exist
+   - Syntax error in httpd-vhosts.conf
+   - httpd-vhosts.conf not included
+
+
+STEP 7: VERIFY DIRECTORY EXISTS
+───────────────────────────────────────────────────────────────
+Check that this folder exists:
+C:\xampp1\htdocs\foreveryoungtours\continents\africa\
+
+And contains: index.php
+
+
+QUICK FIX: If still not working
+───────────────────────────────────────────────────────────────
+1. Clear browser cache (Ctrl+Shift+Delete)
+2. Try incognito/private window
+3. Try: http://africa.foreveryoungtours.local/index.php
+4. Restart your computer (DNS cache)

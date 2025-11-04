@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Calendar - iForYoungTours | Events, Departures & Promotions</title>
+    <meta name="description" content="View upcoming departures, special events, and seasonal promotions. Plan your African adventure with our comprehensive travel calendar.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-red: #dc2626;
+            --accent-gold: #f59e0b;
+            --neutral-gray: #374151;
+            --success-green: #059669;
+            --warning-amber: #d97706;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #ffffff;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e5e7eb;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .calendar-day {
+            background: white;
+            min-height: 120px;
+            padding: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calendar-day:hover {
+            background: #f3f4f6;
+        }
+        
+        .calendar-day.other-month {
+            background: #f9fafb;
+            color: #9ca3af;
+        }
+        
+        .calendar-day.has-event {
+            background: #dbeafe;
+        }
+        
+        .calendar-day.has-event:hover {
+            background: #bfdbfe;
+        }
+        
+        .event-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin: 2px;
+        }
+        
+        .event-dot.departure {
+            background: #059669;
+        }
+        
+        .event-dot.promotion {
+            background: #d97706;
+        }
+        
+        .event-dot.event {
+            background: #dc2626;
+        }
+        
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-red));
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.3);
+        }
+        
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        
+        .event-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="text-2xl font-bold text-gradient">iForYoungTours</div>
+                </div>
+                
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-700 hover:text-blue-600 font-medium">Home</a>
+                    <a href="packages.html" class="text-gray-700 hover:text-blue-600 font-medium">Packages</a>
+                    <a href="destinations.html" class="text-gray-700 hover:text-blue-600 font-medium">Destinations</a>
+                    <a href="experiences.html" class="text-gray-700 hover:text-blue-600 font-medium">Experiences</a>
+                    <a href="resources.html" class="text-gray-700 hover:text-blue-600 font-medium">Resources</a>
+                    <a href="calendar.html" class="text-gray-900 hover:text-blue-600 font-medium">Calendar</a>
+                    <a href="partners.html" class="text-gray-700 hover:text-blue-600 font-medium">Partners</a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <a href="dashboard.html" class="text-gray-700 hover:text-blue-600 font-medium">Login</a>
+                    <a href="dashboard.html" class="btn-primary text-white px-6 py-2 rounded-lg font-medium">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-12 bg-gradient-to-r from-blue-50 to-red-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                    Travel <span class="text-gradient">Calendar</span>
+                </h1>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Plan your perfect African adventure with our comprehensive calendar. View departures, special events, and seasonal promotions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Calendar Controls -->
+    <section class="py-8 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                <div class="flex items-center space-x-4">
+                    <button onclick="previousMonth()" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                    </button>
+                    <h2 id="current-month" class="text-2xl font-bold text-gray-900">December 2024</h2>
+                    <button onclick="nextMonth()" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Departures</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Promotions</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <span class="text-sm text-gray-600">Events</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Calendar -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <!-- Calendar Header -->
+                <div class="calendar-grid bg-gray-50">
+                    <div class="p-4 text-center font-semibold text-gray-700">Sun</div>
+                    <div class="p-4 text-center font-semibold text-gray-700">Mon</div>
+                    <div class="p-4 text-center font-semibold text-gray-700">Tue</div>
+                    <div class="p-4 text-center font-semibold text-gray-700">Wed</div>
+                    <div class="p-4 text-center font-semibold text-gray-700">Thu</div>
+                    <div class="p-4 text-center font-semibold text-gray-700">Fri</div>
+                    <div class="p-4 text-center font-semibold text-gray-700">Sat</div>
+                </div>
+                
+                <!-- Calendar Days -->
+                <div id="calendar-days" class="calendar-grid">
+                    <!-- Days will be dynamically generated -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upcoming Events -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Upcoming Events & Departures</h2>
+                <p class="text-xl text-gray-600">Don't miss these exciting opportunities</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="upcoming-events">
+                <!-- Events will be dynamically loaded -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Seasonal Highlights -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Seasonal Highlights</h2>
+                <p class="text-xl text-gray-600">The best times to experience Africa's wonders</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Summer (Dec-Feb)</h3>
+                    <p class="text-gray-600 mb-4">Perfect for beach destinations and Southern Africa safaris. Warm weather and excellent wildlife viewing.</p>
+                    <div class="text-blue-600 font-semibold">Peak Season</div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Autumn (Mar-May)</h3>
+                    <p class="text-gray-600 mb-4">Ideal for East African safaris with the Great Migration. Mild temperatures and fewer crowds.</p>
+                    <div class="text-green-600 font-semibold">Great Migration</div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Winter (Jun-Aug)</h3>
+                    <p class="text-gray-600 mb-4">Best time for North Africa and dry season safaris. Cool weather perfect for desert adventures.</p>
+                    <div class="text-yellow-600 font-semibold">Dry Season</div>
+                </div>
+                
+                <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Spring (Sep-Nov)</h3>
+                    <p class="text-gray-600 mb-4">Shoulder season with good prices and pleasant weather. Perfect for cultural experiences.</p>
+                    <div class="text-purple-600 font-semibold">Shoulder Season</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="py-20 bg-gradient-to-r from-blue-600 to-red-600">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-4xl font-bold text-white mb-4">Stay Updated</h2>
+            <p class="text-xl text-blue-100 mb-8">Get notified about new departures, special events, and exclusive promotions.</p>
+            
+            <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
+                <input type="email" placeholder="Enter your email address" class="flex-1 px-6 py-4 rounded-lg border-0 focus:ring-2 focus:ring-white focus:outline-none">
+                <button type="submit" class="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all">
+                    Subscribe
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="text-2xl font-bold text-gradient mb-4">iForYoungTours</div>
+                    <p class="text-gray-400 mb-6">Your trusted partner for unforgettable African adventures. Discover the continent's wonders with expert guidance and seamless booking.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="packages.html" class="text-gray-400 hover:text-white transition-colors">Travel Packages</a></li>
+                        <li><a href="destinations.html" class="text-gray-400 hover:text-white transition-colors">Destinations</a></li>
+                        <li><a href="experiences.html" class="text-gray-400 hover:text-white transition-colors">Experience Hubs</a></li>
+                        <li><a href="resources.html" class="text-gray-400 hover:text-white transition-colors">Travel Resources</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="contact.html" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Travel Insurance</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Contact Info</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>📧 info@iforeveryoungtours.com</li>
+                        <li>📞 +1 (555) 123-4567</li>
+                        <li>📍 New York, NY</li>
+                        <li>🌍 24/7 Support Available</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+                <p>&copy; 2024 iForYoungTours. All rights reserved. | Designed with ❤️ for African adventures</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="main.js"></script>
+    <script>
+        // Calendar state
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        
+        // Sample events data
+        const events = {
+            '2024-12-15': [
+                { type: 'departure', title: 'Kenya Safari Adventure', description: '7-day safari in Maasai Mara' },
+                { type: 'promotion', title: '15% Off Early Bird', description: 'Book by Dec 20 for discount' }
+            ],
+            '2024-12-18': [
+                { type: 'event', title: 'Cultural Festival', description: 'Annual music and dance festival in Zanzibar' }
+            ],
+            '2024-12-22': [
+                { type: 'departure', title: 'Morocco Desert Expedition', description: '10-day Sahara adventure' }
+            ],
+            '2024-12-25': [
+                { type: 'event', title: 'Christmas Special', description: 'Holiday celebration at luxury lodge' }
+            ],
+            '2024-12-28': [
+                { type: 'departure', title: 'South Africa Wildlife Tour', description: '12-day comprehensive safari' },
+                { type: 'promotion', title: 'New Year Special', description: '20% off bookings for January' }
+            ],
+            '2025-01-05': [
+                { type: 'departure', title: 'Uganda Gorilla Trekking', description: '5-day primate adventure' }
+            ],
+            '2025-01-15': [
+                { type: 'departure', title: 'Egypt Ancient Wonders', description: '8-day historical tour' },
+                { type: 'promotion', title: 'Winter Escape Deal', description: 'Special pricing for January departures' }
+            ],
+            '2025-01-22': [
+                { type: 'event', title: 'Wildlife Photography Workshop', description: 'Professional photography training in Botswana' }
+            ],
+            '2025-02-01': [
+                { type: 'departure', title: 'Tanzania Great Migration', description: 'Witness the river crossing' }
+            ]
+        };
+        
+        // Initialize calendar
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCalendar();
+            loadUpcomingEvents();
+            animateElements();
+        });
+        
+        // Generate calendar
+        function generateCalendar() {
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            
+            // Update month header
+            document.getElementById('current-month').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+            
+            // Get first day of month and number of days
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+            
+            const calendarDays = document.getElementById('calendar-days');
+            calendarDays.innerHTML = '';
+            
+            // Add previous month's trailing days
+            for (let i = firstDay - 1; i >= 0; i--) {
+                const day = daysInPrevMonth - i;
+                const dayElement = createDayElement(day, true, currentMonth - 1, currentYear);
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // Add current month's days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = createDayElement(day, false, currentMonth, currentYear);
+                calendarDays.appendChild(dayElement);
+            }
+            
+            // Add next month's leading days
+            const totalCells = calendarDays.children.length;
+            const remainingCells = 42 - totalCells; // 6 rows × 7 days
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = createDayElement(day, true, currentMonth + 1, currentYear);
+                calendarDays.appendChild(dayElement);
+            }
+        }
+        
+        // Create day element
+        function createDayElement(day, isOtherMonth, month, year) {
+            const dayElement = document.createElement('div');
+            dayElement.className = `calendar-day ${isOtherMonth ? 'other-month' : ''}`;
+            
+            const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const dayEvents = events[dateKey] || [];
+            
+            if (dayEvents.length > 0) {
+                dayElement.classList.add('has-event');
+            }
+            
+            dayElement.innerHTML = `
+                <div class="font-semibold text-sm mb-1">${day}</div>
+                <div class="space-y-1">
+                    ${dayEvents.slice(0, 3).map(event => `
+                        <div class="event-dot ${event.type}"></div>
+                        <div class="text-xs text-gray-600 truncate">${event.title}</div>
+                    `).join('')}
+                    ${dayEvents.length > 3 ? `<div class="text-xs text-gray-500">+${dayEvents.length - 3} more</div>` : ''}
+                </div>
+            `;
+            
+            dayElement.addEventListener('click', () => showDayEvents(dateKey, dayEvents));
+            
+            return dayElement;
+        }
+        
+        // Show day events
+        function showDayEvents(date, events) {
+            if (events.length === 0) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+                    <div class="p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900">Events for ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h3>
+                            <button onclick="closeDayModal()" class="text-gray-400 hover:text-gray-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            ${events.map(event => `
+                                <div class="p-4 border border-gray-200 rounded-lg">
+                                    <div class="flex items-center mb-2">
+                                        <div class="w-3 h-3 rounded-full mr-3 ${getEventColor(event.type)}"></div>
+                                        <h4 class="font-semibold text-gray-900">${event.title}</h4>
+                                        <span class="ml-auto px-2 py-1 rounded-full text-xs ${getEventBadgeColor(event.type)}">${event.type.toUpperCase()}</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm">${event.description}</p>
+                                    ${event.type === 'departure' ? `
+                                        <div class="mt-3 flex space-x-2">
+                                            <button onclick="window.location.href='packages.html'" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">
+                                                View Package
+                                            </button>
+                                            <button onclick="showComingSoon()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                                Book Now
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Animate modal in
+            anime({
+                targets: modal.querySelector('.bg-white'),
+                scale: [0.8, 1],
+                opacity: [0, 1],
+                duration: 300,
+                easing: 'easeOutCubic'
+            });
+        }
+        
+        // Get event color
+        function getEventColor(type) {
+            switch(type) {
+                case 'departure': return 'bg-green-500';
+                case 'promotion': return 'bg-yellow-500';
+                case 'event': return 'bg-red-500';
+                default: return 'bg-gray-500';
+            }
+        }
+        
+        // Get event badge color
+        function getEventBadgeColor(type) {
+            switch(type) {
+                case 'departure': return 'bg-green-100 text-green-800';
+                case 'promotion': return 'bg-yellow-100 text-yellow-800';
+                case 'event': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+        
+        // Load upcoming events
+        function loadUpcomingEvents() {
+            const upcomingEvents = document.getElementById('upcoming-events');
+            
+            const allEvents = [];
+            Object.keys(events).forEach(date => {
+                events[date].forEach(event => {
+                    allEvents.push({ date, ...event });
+                });
+            });
+            
+            // Sort by date and take next 6 events
+            const sortedEvents = allEvents
+                .filter(event => new Date(event.date) >= new Date())
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .slice(0, 6);
+            
+            upcomingEvents.innerHTML = sortedEvents.map(event => `
+                <div class="event-card bg-white rounded-2xl p-6 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="w-4 h-4 rounded-full mr-3 ${getEventColor(event.type)}"></div>
+                        <span class="px-2 py-1 rounded-full text-xs ${getEventBadgeColor(event.type)}">${event.type.toUpperCase()}</span>
+                    </div>
+                    
+                    <div class="text-sm text-gray-500 mb-2">${new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                    
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">${event.title}</h3>
+                    <p class="text-gray-600 mb-4">${event.description}</p>
+                    
+                    ${event.type === 'departure' ? `
+                        <div class="flex space-x-2">
+                            <button onclick="window.location.href='packages.html'" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium flex-1">
+                                View Package
+                            </button>
+                            <button onclick="showComingSoon()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium">
+                                Remind Me
+                            </button>
+                        </div>
+                    ` : `
+                        <button onclick="showComingSoon()" class="btn-primary text-white px-4 py-2 rounded-lg text-sm font-medium">
+                            Learn More
+                        </button>
+                    `}
+                </div>
+            `).join('');
+            
+            // Animate event cards
+            anime({
+                targets: '.event-card',
+                opacity: [0, 1],
+                translateY: [30, 0],
+                duration: 600,
+                delay: anime.stagger(100),
+                easing: 'easeOutCubic'
+            });
+        }
+        
+        // Previous month
+        function previousMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            generateCalendar();
+        }
+        
+        // Next month
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            generateCalendar();
+        }
+        
+        // Close day modal
+        function closeDayModal() {
+            const modal = document.querySelector('.fixed.inset-0');
+            if (modal) {
+                anime({
+                    targets: modal.querySelector('.bg-white'),
+                    scale: [1, 0.8],
+                    opacity: [1, 0],
+                    duration: 200,
+                    easing: 'easeInCubic',
+                    complete: () => modal.remove()
+                });
+            }
+        }
+        
+        // Show coming soon
+        function showComingSoon() {
+            if (window.iForYoungTours) {
+                window.iForYoungTours.showNotification('Feature coming soon! Stay tuned for updates.', 'info');
+            }
+        }
+        
+        // Animate elements
+        function animateElements() {
+            // Animate fade-in elements
+            const fadeElements = document.querySelectorAll('.fade-in-up');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({
+                            targets: entry.target,
+                            opacity: [0, 1],
+                            translateY: [30, 0],
+                            duration: 800,
+                            easing: 'easeOutCubic'
+                        });
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(el => observer.observe(el));
+        }
+        
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            const modal = document.querySelector('.fixed.inset-0');
+            if (modal && e.target === modal) {
+                closeDayModal();
+            }
+        });
+        
+        // Handle escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDayModal();
+            }
+        });
+    </script>
+</body>
+</html>

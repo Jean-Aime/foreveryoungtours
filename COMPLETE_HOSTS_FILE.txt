@@ -1,0 +1,40 @@
+# Copyright (c) 1993-2009 Microsoft Corp.
+#
+# This is a sample HOSTS file used by Microsoft TCP/IP for Windows.
+#
+# This file contains the mappings of IP addresses to host names. Each
+# entry should be kept on an individual line. The IP address should
+# be placed in the first column followed by the corresponding host name.
+# The IP address and the host name should be separated by at least one
+# space.
+#
+# Additionally, comments (such as these) may be inserted on individual
+# lines or following the machine name denoted by a '#' symbol.
+#
+# For example:
+#
+#      102.54.94.97     rhino.acme.com          # source server
+#       38.25.63.10     x.acme.com              # x client host
+
+# localhost name resolution is handled within DNS itself.
+#	127.0.0.1       localhost
+#	::1             localhost
+
+# Forever Young Tours - Local Development 
+127.0.0.1 foreveryoungtours.local 
+127.0.0.1 africa.foreveryoungtours.local
+127.0.0.1 asia.foreveryoungtours.local
+127.0.0.1 caribbean.foreveryoungtours.local
+127.0.0.1 europe.foreveryoungtours.local
+127.0.0.1 north-america.foreveryoungtours.local
+127.0.0.1 south-america.foreveryoungtours.local
+127.0.0.1 visit-ke.foreveryoungtours.local
+127.0.0.1 visit-rw.foreveryoungtours.local
+127.0.0.1 visit-tz.foreveryoungtours.local
+127.0.0.1 visit-ug.foreveryoungtours.local
+127.0.0.1 visit-eg.foreveryoungtours.local
+127.0.0.1 visit-ma.foreveryoungtours.local
+127.0.0.1 visit-za.foreveryoungtours.local
+127.0.0.1 visit-bw.foreveryoungtours.local
+127.0.0.1 visit-na.foreveryoungtours.local
+127.0.0.1 visit-zw.foreveryoungtours.local

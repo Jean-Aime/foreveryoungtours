@@ -1,0 +1,38 @@
+========================================
+QUICK SETUP FOR XAMPP - 3 STEPS
+========================================
+
+STEP 1: Run setup-hosts.bat as Administrator
+   - Right-click "setup-hosts.bat"
+   - Click "Run as Administrator"
+   - This adds domains to your hosts file
+
+STEP 2: Restart Apache
+   - Open XAMPP Control Panel
+   - Stop Apache
+   - Start Apache
+
+STEP 3: Test Your Subdomains
+   - Main site: http://localhost:8000/foreveryoungtours
+   - Rwanda: http://visit-rwa.localhost:8000
+   - Kenya: http://visit-ken.localhost:8000
+   - Tanzania: http://visit-tza.localhost:8000
+   - South Africa: http://visit-zaf.localhost:8000
+
+========================================
+COUNTRY CODES
+========================================
+Rwanda = RWA
+Uganda = UGA  
+Kenya = KEN
+Tanzania = TZA
+South Africa = ZAF
+Egypt = EGY
+Morocco = MAR
+Ghana = GHA
+Nigeria = NGA
+Ethiopia = ETH
+
+========================================
+DONE! Your subdomains are ready!
+========================================

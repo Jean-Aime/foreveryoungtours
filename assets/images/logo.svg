@@ -1,0 +1,58 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#DAA520;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F1C40F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#B8860B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="innerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#DAA520;stop-opacity:0.7" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Outer circle -->
+  <circle cx="50" cy="50" r="48" fill="url(#goldGradient)" stroke="#B8860B" stroke-width="2"/>
+  
+  <!-- Inner decorative circles -->
+  <circle cx="50" cy="50" r="40" fill="none" stroke="url(#innerGradient)" stroke-width="1.5" opacity="0.8"/>
+  <circle cx="50" cy="50" r="32" fill="none" stroke="url(#innerGradient)" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Globe/World -->
+  <circle cx="50" cy="35" r="12" fill="none" stroke="#B8860B" stroke-width="2"/>
+  <path d="M42 35 Q50 25 58 35" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+  <path d="M50 23 Q42 35 50 47 Q58 35 50 23" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+  
+  <!-- Mountains -->
+  <path d="M25 65 L30 55 L35 65 M40 65 L45 50 L50 65 M55 65 L60 55 L65 65 M70 65 L75 58 L80 65" 
+        stroke="#B8860B" stroke-width="2" fill="none"/>
+  
+  <!-- Sun -->
+  <circle cx="70" cy="25" r="4" fill="#F1C40F"/>
+  <path d="M70 18 L70 22 M77 25 L73 25 M75 20 L72 23 M75 30 L72 27 M65 30 L68 27 M65 20 L68 23 M63 25 L67 25 M70 32 L70 28" 
+        stroke="#F1C40F" stroke-width="1"/>
+  
+  <!-- Compass at bottom -->
+  <circle cx="50" cy="75" r="8" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+  <path d="M50 69 L52 75 L50 81 L48 75 Z" fill="#DAA520"/>
+  <text x="50" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#B8860B" font-weight="bold">N</text>
+  
+  <!-- Decorative stars -->
+  <path d="M20 20 L21 22 L23 22 L21.5 23.5 L22 26 L20 24.5 L18 26 L18.5 23.5 L17 22 L19 22 Z" fill="#F1C40F" opacity="0.8"/>
+  <path d="M80 75 L81 77 L83 77 L81.5 78.5 L82 81 L80 79.5 L78 81 L78.5 78.5 L77 77 L79 77 Z" fill="#F1C40F" opacity="0.8"/>
+  <path d="M15 75 L16 77 L18 77 L16.5 78.5 L17 81 L15 79.5 L13 81 L13.5 78.5 L12 77 L14 77 Z" fill="#F1C40F" opacity="0.6"/>
+  
+  <!-- Text around the circle -->
+  <path id="topCircle" d="M 15 50 A 35 35 0 0 1 85 50" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#B8860B">
+    <textPath href="#topCircle" startOffset="25%">FOREVER YOUNG</textPath>
+  </text>
+  
+  <path id="bottomCircle" d="M 85 50 A 35 35 0 0 1 15 50" fill="none"/>
+  <text font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="#B8860B">
+    <textPath href="#bottomCircle" startOffset="35%">TOURS</textPath>
+  </text>
+  
+  <!-- Est. 2023 -->
+  <text x="50" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="6" fill="#B8860B" font-weight="bold">EST. 2023</text>
+</svg>

@@ -1,0 +1,25 @@
+MANUAL HOSTS FILE SETUP
+========================
+
+1. Open Notepad as Administrator
+   - Right-click Notepad
+   - Click "Run as Administrator"
+
+2. Open hosts file:
+   File → Open → C:\Windows\System32\drivers\etc\hosts
+
+3. Add these lines at the bottom:
+
+127.0.0.1 visit-rwa.localhost
+127.0.0.1 visit-ken.localhost
+127.0.0.1 visit-tza.localhost
+127.0.0.1 visit-uga.localhost
+127.0.0.1 visit-zaf.localhost
+
+4. Save the file
+
+5. Restart Apache in XAMPP
+
+6. Test: http://visit-ken.localhost:8000/test-subdomain.php
+
+If you see "Country Code Detected: KEN" then it's working!
