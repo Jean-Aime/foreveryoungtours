@@ -490,7 +490,6 @@ function updateResults(type) {
             </div>`;
     }
 }
-}
 
 let currentBooking = {};
 
