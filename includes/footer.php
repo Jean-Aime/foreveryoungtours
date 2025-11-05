@@ -99,7 +99,84 @@
         </div>
     </footer>
 
+    <!-- Floating WhatsApp Button with Dropup -->
+    <div class="fixed bottom-6 right-6 z-50">
+        <!-- Dropdown Card -->
+        <div id="whatsappDropup" class="hidden mb-4 bg-white rounded-2xl shadow-2xl w-80 animate-slide-up">
+            <div class="bg-green-500 text-white px-6 py-4 rounded-t-2xl">
+                <h3 class="font-bold text-lg">WhatsApp Support</h3>
+                <p class="text-sm text-white/90">We're here to help!</p>
+            </div>
+            <div class="p-6">
+                <p class="text-gray-700 mb-4 text-sm">Get instant answers about tours, pricing, and availability.</p>
+                <div class="space-y-2 mb-4 text-sm">
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                        <span>24/7 Support</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                        <span>Expert Advisors</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-gray-600">
+                        <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                        <span>Quick Response</span>
+                    </div>
+                </div>
+                <a href="https://wa.me/17374439646?text=Hi!%20I%20need%20help" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-xl font-bold transition text-sm">
+                    <i class="fab fa-whatsapp mr-2"></i>Start Chat
+                </a>
+                <p class="text-center text-gray-500 text-xs mt-3">+1 (737) 443-9646</p>
+            </div>
+        </div>
+        
+        <!-- WhatsApp Button -->
+        <button onclick="toggleWhatsAppDropup()" class="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-600 transition transform hover:scale-110">
+            <i class="fab fa-whatsapp text-3xl"></i>
+        </button>
+    </div>
+
+    <style>
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slide-up {
+        animation: slideUp 0.3s ease-out;
+    }
+    </style>
+
+    <script>
+    function toggleWhatsAppDropup() {
+        const dropup = document.getElementById('whatsappDropup');
+        dropup.classList.toggle('hidden');
+    }
+    document.addEventListener('click', function(e) {
+        const dropup = document.getElementById('whatsappDropup');
+        const button = e.target.closest('button[onclick="toggleWhatsAppDropup()"]');
+        if (!button && !dropup.contains(e.target)) {
+            dropup.classList.add('hidden');
+        }
+    });
+    </script>
+
     <!-- Scripts -->
     <script src="<?php echo isset($js_path) ? $js_path : 'assets/js/main.js'; ?>"></script>
+    <script>
+    // Prevent duplicate WhatsApp dropup script
+    if (typeof toggleWhatsAppDropup === 'undefined') {
+        function toggleWhatsAppDropup() {
+            const dropup = document.getElementById('whatsappDropup');
+            if (dropup) dropup.classList.toggle('hidden');
+        }
+        document.addEventListener('click', function(e) {
+            const dropup = document.getElementById('whatsappDropup');
+            const button = e.target.closest('button[onclick="toggleWhatsAppDropup()"]');
+            if (dropup && !button && !dropup.contains(e.target)) {
+                dropup.classList.add('hidden');
+            }
+        });
+    }
+    </script>
 </body>
 </html>
