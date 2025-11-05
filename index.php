@@ -159,55 +159,54 @@ include 'includes/header.php';
                     <div class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/10 to-green-500/10 rounded-full mb-6 border border-yellow-500/20">
                         <svg class="w-4 h-4 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
-                        </svg>
-                        <span class="text-sm font-semibold text-slate-700">Africa's Leading Travel Platform</span>
-                    </div>
-                    
+                    </svg>
+                        <span class="text-sm font-semibold text-slate-700">World's Leading Travel Platform</span>
+                </div>
+                
                     <h1 class="text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
-                        Discover Africa's
+                        Discover World's
                         <span class="block mt-2 bg-gradient-to-r from-yellow-600 via-green-600 to-yellow-600 bg-clip-text text-transparent">Hidden Treasures</span>
                     </h1>
-                    
+                
                     <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl">
-                        Embark on extraordinary journeys across the African continent. From thrilling safaris to immersive cultural experiences, we craft unforgettable adventures tailored to your dreams.
-                    </p>
+                        Embark on extraordinary journeys across the continent. From thrilling safaris to immersive cultural experiences, we craft unforgettable adventures tailored to your dreams.
+                </p>
                     
                     <div class="flex flex-wrap gap-4 mb-8">
                         <a href="<?php echo $base_path; ?>pages/packages.php" class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                             Explore Tours
                             <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
+                        </svg>
                         </a>
                         <a href="<?php echo $base_path; ?>pages/destinations.php" class="inline-flex items-center px-8 py-4 bg-white text-slate-700 font-bold rounded-xl border-2 border-slate-200 hover:border-yellow-500 hover:text-yellow-600 transition-all shadow-sm hover:shadow-md">
                             View Destinations
                         </a>
-                    </div>
-                    
+                </div>
+
                     <!-- Trust Indicators -->
                     <div class="flex flex-wrap items-center gap-6 text-sm text-slate-600">
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
+                        </svg>
                             <span class="font-semibold">4.9/5 Rating</span>
-                        </div>
+                    </div>
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
                             <span class="font-semibold">Verified Tours</span>
-                        </div>
+                </div>
                         <div class="flex items-center">
                             <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
                                 <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"></path>
-                            </svg>
-                            <span class="font-semibold">24/7 Support</span>
-                        </div>
+                        </svg>
                     </div>
                 </div>
-                
+            </div>
+
                 <!-- Right Featured Tour Card -->
                 <div class="text-center lg:text-left">
                     <?php if (!empty($featured_tours)): ?>
@@ -238,20 +237,20 @@ include 'includes/header.php';
                                 <div>
                                     <p class="text-sm text-slate-500">Starting from</p>
                                     <p class="text-3xl font-bold text-yellow-600">$<?php echo number_format($hero_tour['price']); ?></p>
-                                </div>
+                        </div>
                                 <a href="<?php echo $base_path; ?>pages/tour-details.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
                                     View Details
                                 </a>
-                            </div>
                         </div>
                     </div>
+                </div>
                     <?php else: ?>
                     <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
                         <div class="h-64 bg-gradient-to-br from-slate-100 to-slate-200"></div>
                         <div class="p-6">
                             <h3 class="text-2xl font-bold text-slate-900 mb-2">Amazing Tours Coming Soon</h3>
                             <p class="text-slate-600 mb-4">Stay tuned for incredible adventures</p>
-                        </div>
+                    </div>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -259,12 +258,12 @@ include 'includes/header.php';
         </div>
     </section>
 
-    <!-- Features Section - Modern Design -->
+    <!-- Tourism Platform Features -->
     <section class="py-20 bg-gradient-to-b from-white to-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Explore Our Services</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Everything you need for an unforgettable African adventure</p>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Complete Tourism Platform</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Advanced tools and features for modern travel management</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -304,28 +303,28 @@ include 'includes/header.php';
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                             </svg>
-                        </div>
                     </div>
                 </div>
+            </div>
 
                 <!-- Partner Network -->
                 <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/partners.php'">
                     <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div class="relative p-8">
                         <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                            </svg>
-                        </div>
+                        </svg>
+                    </div>
                         <h3 class="text-2xl font-bold text-gray-900 mb-3">Partner Network</h3>
                         <p class="text-gray-600 mb-6 leading-relaxed">Join our network of travel advisors and local partners</p>
                         <div class="flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform">
                             <span>Become partner</span>
                             <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </div>
+                        </svg>
                     </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -536,46 +535,64 @@ include 'includes/header.php';
     </section>
 
 
-    <!-- Tour Calendar Section -->
-    <section class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Tour Departure Calendar</h2>
-                <p class="text-xl text-gray-600">Select a date to book your African adventure</p>
+    <!-- Compact Tour Calendar Section -->
+    <section class="py-16 bg-gradient-to-br from-gray-50 to-white">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-3">Upcoming Departures</h2>
+                <p class="text-lg text-gray-600">Quick access to available tour dates</p>
             </div>
             
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-                <div class="flex items-center space-x-4">
-                    <button onclick="previousMonth()" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                        </svg>
-                    </button>
-                    <h2 id="current-month" class="text-2xl font-bold text-gray-900"></h2>
-                    <button onclick="nextMonth()" class="p-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </button>
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                <!-- Compact Calendar Header -->
+                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <button onclick="previousMonth()" class="p-2 rounded-lg bg-white hover:bg-gray-50 transition-colors shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                            <h3 id="current-month" class="text-lg font-semibold text-gray-900"></h3>
+                            <button onclick="nextMonth()" class="p-2 rounded-lg bg-white hover:bg-gray-50 transition-colors shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="flex items-center space-x-2 text-sm text-gray-600">
+                            <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                            <span>Available Tours</span>
+                        </div>
+                    </div>
                 </div>
                 
-
-            </div>
-            
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="calendar-grid bg-gray-50">
-                    <div class="p-4 text-center font-semibold text-gray-700">Sun</div>
-                    <div class="p-4 text-center font-semibold text-gray-700">Mon</div>
-                    <div class="p-4 text-center font-semibold text-gray-700">Tue</div>
-                    <div class="p-4 text-center font-semibold text-gray-700">Wed</div>
-                    <div class="p-4 text-center font-semibold text-gray-700">Thu</div>
-                    <div class="p-4 text-center font-semibold text-gray-700">Fri</div>
-                    <div class="p-4 text-center font-semibold text-gray-700">Sat</div>
+                <!-- Compact Calendar Grid -->
+                <div class="p-4">
+                    <div class="compact-calendar-grid bg-gray-50 rounded-lg overflow-hidden">
+                        <div class="compact-calendar-header">
+                            <div class="compact-day-header">Sun</div>
+                            <div class="compact-day-header">Mon</div>
+                            <div class="compact-day-header">Tue</div>
+                            <div class="compact-day-header">Wed</div>
+                            <div class="compact-day-header">Thu</div>
+                            <div class="compact-day-header">Fri</div>
+                            <div class="compact-day-header">Sat</div>
+                        </div>
+                        <div id="compact-calendar-days" class="compact-calendar-body"></div>
+                    </div>
                 </div>
-                <div id="calendar-days" class="calendar-grid"></div>
+                
+                <!-- Selected Date Tours -->
+                <div id="selectedDateTours" class="px-6 pb-6">
+                    <div class="text-center text-gray-500 py-8">
+                        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        <p>Click on a highlighted date to view available tours</p>
+                    </div>
+                </div>
             </div>
-            
-            <div id="upcomingTours" class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </div>
     </section>
 
@@ -598,41 +615,66 @@ include 'includes/header.php';
         
         let html = '';
         for (let i = firstDay - 1; i >= 0; i--) {
-            html += `<div class="calendar-day other-month">${daysInPrevMonth - i}</div>`;
+            html += `<div class="compact-calendar-day other-month">${daysInPrevMonth - i}</div>`;
         }
         
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const hasTours = tourDates.includes(dateStr);
-            html += `<div class="calendar-day ${hasTours ? 'has-tours' : ''}" onclick="selectDate('${dateStr}')">${day}${hasTours ? '<div style="width:8px;height:8px;background:#22c55e;border-radius:50%;margin:4px auto 0"></div>' : ''}</div>`;
+            html += `<div class="compact-calendar-day ${hasTours ? 'has-tours' : ''}" onclick="selectCompactDate('${dateStr}')">${day}${hasTours ? '<div class="tour-indicator"></div>' : ''}</div>`;
         }
         
-        document.getElementById('calendar-days').innerHTML = html;
+        document.getElementById('compact-calendar-days').innerHTML = html;
     }
     
     function previousMonth() { currentDate.setMonth(currentDate.getMonth() - 1); renderCalendar(); }
     function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
     
-    function selectDate(date) {
-        document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+    function selectCompactDate(date) {
+        document.querySelectorAll('.compact-calendar-day').forEach(d => d.classList.remove('selected'));
         event.target.classList.add('selected');
         fetch(`admin/get_scheduled_tours.php?date=${date}`)
             .then(r => r.json())
             .then(data => {
-                const container = document.getElementById('upcomingTours');
+                const container = document.getElementById('selectedDateTours');
                 if (data.tours && data.tours.length > 0) {
-                    container.innerHTML = data.tours.map(tour => `
-                        <div class="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all cursor-pointer" onclick="openCalendarInquiry('${date}', ${tour.tour_id}, '${tour.tour_name}')">
-                            <h4 class="text-xl font-bold text-gray-900 mb-2">${tour.tour_name}</h4>
-                            <p class="text-gray-600 mb-4">${tour.destination}</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-sm text-gray-500">${tour.duration_days} days • ${tour.available_slots - tour.booked_slots} slots left</span>
-                                <span class="text-2xl font-bold text-yellow-600">$${tour.price}</span>
+                    container.innerHTML = `
+                        <div class="border-t border-gray-100 pt-4">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Tours on ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h4>
+                            <div class="space-y-3">
+                                ${data.tours.map(tour => `
+                                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-all cursor-pointer" onclick="openCalendarInquiry('${date}', ${tour.tour_id}, '${tour.tour_name}')">
+                                        <div class="flex justify-between items-start">
+                                            <div class="flex-1">
+                                                <h5 class="font-semibold text-gray-900 mb-1">${tour.tour_name}</h5>
+                                                <p class="text-sm text-gray-600 mb-2">${tour.destination}</p>
+                                                <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                                    <span>${tour.duration_days} days</span>
+                                                    <span>${tour.available_slots - tour.booked_slots} slots left</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-right">
+                                                <div class="text-lg font-bold text-yellow-600">$${tour.price}</div>
+                                                <button class="text-xs bg-blue-500 text-white px-3 py-1 rounded-full hover:bg-blue-600 transition-colors">Book Now</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
-                    `).join('');
+                    `;
                 } else {
-                    container.innerHTML = '<p class="text-gray-500 col-span-full text-center">No tours scheduled for this date</p>';
+                    container.innerHTML = `
+                        <div class="border-t border-gray-100 pt-4">
+                            <h4 class="text-lg font-semibold text-gray-900 mb-4">Tours on ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</h4>
+                            <div class="text-center text-gray-500 py-6">
+                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p>No tours scheduled for this date</p>
+                            </div>
+                        </div>
+                    `;
                 }
             });
     }
