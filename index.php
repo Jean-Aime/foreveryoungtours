@@ -87,7 +87,7 @@ include 'includes/header.php';
         <div class="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8" style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important;">
             <div class="w-full max-w-5xl mx-auto text-center hero-content" style="text-align: center !important; margin: 0 auto !important; display: block !important; width: 100% !important;">
                 <!-- Headline -->
-                <h1 class="hero-headline text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight" style="text-align: center !important; width: 100% !important; margin: 0 auto 1.5rem auto !important;">
+                <h1 class="hero-headline text-8xl md:text-8xl lg:text-5xl font-bold text-white mb-6 leading-tight" style="text-align: center !important; width: 100% !important; margin: 0 auto 1.5rem auto !important;">
                     Explore the World with <span class="text-yellow-400">Forever Young Tours</span>
                 </h1>
                 
@@ -115,216 +115,174 @@ include 'includes/header.php';
                     </a>
                 </div>
             </div>
-        </div>
-        
+        </div> 
     </section>
 
-    <!-- Tagline Section -->
-    <section class="tagline-section py-12 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-t border-gray-200">
+    <!-- Partner Logos Section -->
+    <section class="partner-logos-section py-6 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center">
-                <div class="tagline-container flex flex-wrap justify-center items-center gap-6 md:gap-10">
-                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
-                        Luxury Group Travel
-                    </span>
-                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
-                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
-                        Adventure
-                    </span>
-                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
-                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
-                        Cultural Exchange
-                    </span>
-                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
-                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
-                        Agro-Tourism
-                    </span>
-                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
-                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
-                        Conferences & Expos
-                    </span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Discover Africa's Hidden Treasures Section -->
-    <section class="relative py-24 bg-gradient-to-br from-yellow-50 via-white to-green-50 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-yellow-50/80 via-white to-green-50/80"></div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-16 items-center">
-                <!-- Left Content -->
-                <div class="text-center lg:text-left">
-                    <div class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/10 to-green-500/10 rounded-full mb-6 border border-yellow-500/20">
-                        <svg class="w-4 h-4 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
-                    </svg>
-                        <span class="text-sm font-semibold text-slate-700">World's Leading Travel Platform</span>
-                </div>
-                
-                    <h1 class="text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
-                        Discover World's
-                        <span class="block mt-2 bg-gradient-to-r from-yellow-600 via-green-600 to-yellow-600 bg-clip-text text-transparent">Hidden Treasures</span>
-                    </h1>
-                
-                    <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl">
-                        Embark on extraordinary journeys across the continent. From thrilling safaris to immersive cultural experiences, we craft unforgettable adventures tailored to your dreams.
-                </p>
-                    
-                    <div class="flex flex-wrap gap-4 mb-8">
-                        <a href="<?php echo $base_path; ?>pages/packages.php" class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            Explore Tours
-                            <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
-                        </a>
-                        <a href="<?php echo $base_path; ?>pages/destinations.php" class="inline-flex items-center px-8 py-4 bg-white text-slate-700 font-bold rounded-xl border-2 border-slate-200 hover:border-yellow-500 hover:text-yellow-600 transition-all shadow-sm hover:shadow-md">
-                            View Destinations
-                        </a>
-                </div>
-
-                    <!-- Trust Indicators -->
-                    <div class="flex flex-wrap items-center gap-6 text-sm text-slate-600">
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                        </svg>
-                            <span class="font-semibold">4.9/5 Rating</span>
-                    </div>
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                            </svg>
-                            <span class="font-semibold">Verified Tours</span>
-                </div>
-                        <div class="flex items-center">
-                            <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
-                                <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"></path>
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-                <!-- Right Featured Tour Card -->
-                <div class="text-center lg:text-left">
-                    <?php if (!empty($featured_tours)): ?>
-                    <?php 
-                    $hero_tour = $featured_tours[0];
-                    $hero_image = $hero_tour['cover_image'] ?: $hero_tour['image_url'] ?: 'assets/images/default-tour.jpg';
-                    if (strpos($hero_image, 'uploads/') === 0) {
-                        $hero_image = $hero_image;
-                    }
-                    ?>
-                    <div class="group relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
-                        <div class="absolute top-4 right-4 z-10">
-                            <span class="px-4 py-2 bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">FEATURED</span>
-                        </div>
-                        <div class="relative h-64 overflow-hidden">
-                            <img src="<?php echo htmlspecialchars($hero_image); ?>" alt="<?php echo htmlspecialchars($hero_tour['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='assets/images/default-tour.jpg'; this.onerror=null;">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                        </div>
-                        <div class="p-6">
-                            <h3 class="text-2xl font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($hero_tour['name']); ?></h3>
-                            <p class="text-slate-600 mb-4 flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                <?php echo htmlspecialchars($hero_tour['duration'] ?: $hero_tour['duration_days'] . ' days'); ?>
-                            </p>
-                            <div class="flex items-center justify-between pt-4 border-t border-slate-100">
-                                <div>
-                                    <p class="text-sm text-slate-500">Starting from</p>
-                                    <p class="text-3xl font-bold text-yellow-600">$<?php echo number_format($hero_tour['price']); ?></p>
-                        </div>
-                                <a href="<?php echo $base_path; ?>pages/tour-details.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
-                                    View Details
-                                </a>
-                        </div>
-                    </div>
-                </div>
-                    <?php else: ?>
-                    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
-                        <div class="h-64 bg-gradient-to-br from-slate-100 to-slate-200"></div>
-                        <div class="p-6">
-                            <h3 class="text-2xl font-bold text-slate-900 mb-2">Amazing Tours Coming Soon</h3>
-                            <p class="text-slate-600 mb-4">Stay tuned for incredible adventures</p>
-                    </div>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tourism Platform Features -->
-    <section class="py-20 bg-gradient-to-b from-white to-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Complete Tourism Platform</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">Advanced tools and features for modern travel management</p>
-            </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Travel Packages -->
-                <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/packages.php'">
-                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative p-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            
+            <!-- Continuous Sliding Partner Logos -->
+            <div class="partner-logos-sliding-container overflow-hidden">
+                <div class="partner-logos-sliding-track" id="partnerLogosSlider">
+                    <!-- KCB Group Logo -->
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/KCB Group Plc Logo.jpg" alt="KCB Group Plc" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <!-- Visit Rwanda Logo -->
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/Visit Rwanda vector logo.jpg" alt="Visit Rwanda" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <!-- Equity ATM Logo -->
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/Equity ATM Logo.jpg" alt="Equity ATM" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <!-- Western Union Logo -->
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/western Union logo.jpg" alt="Western Union" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <!-- Duplicate set for seamless loop -->
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/KCB Group Plc Logo.jpg" alt="KCB Group Plc" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/Visit Rwanda vector logo.jpg" alt="Visit Rwanda" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/Equity ATM Logo.jpg" alt="Equity ATM" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                    
+                    <div class="partner-logo-item">
+                        <div class="partner-logo-circle">
+                            <img src="assets/images/western Union logo.jpg" alt="Western Union" class="w-full h-full object-contain">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+        <!-- Statistics - Nextcloud Style -->
+    <section class="py-12 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="stats-grid p-12">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div class="fade-in-up stats-card-enhanced">
+                        <div class="stats-icon-wrapper mb-4">
+                            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_users * 15, 1500); ?>"><?php echo number_format(max($total_users * 15, 1500)); ?>+</div>
+                        <p class="text-gray-900 font-medium">Happy Travelers</p>
+                    </div>
+                    <div class="fade-in-up stats-card-enhanced">
+                        <div class="stats-icon-wrapper mb-4">
+                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Travel Packages</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Curated safari and cultural experiences across 47 African countries</p>
-                        <div class="flex items-center text-yellow-600 font-semibold group-hover:translate-x-2 transition-transform">
-                            <span>Browse packages</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </div>
+                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_countries, 47); ?>"><?php echo max($total_countries, 47); ?></div>
+                        <p class="text-gray-900 font-medium">African Countries</p>
                     </div>
-                </div>
-
-                <!-- Experiences -->
-                <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/experiences.php'">
-                    <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative p-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    <div class="fade-in-up stats-card-enhanced">
+                        <div class="stats-icon-wrapper mb-4">
+                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Experiences</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Safari, cultural, adventure and luxury travel experiences</p>
-                        <div class="flex items-center text-purple-600 font-semibold group-hover:translate-x-2 transition-transform">
-                            <span>View experiences</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_tours, 200); ?>"><?php echo number_format(max($total_tours, 200)); ?>+</div>
+                        <p class="text-gray-900 font-medium">Travel Packages</p>
+                    </div>
+                    <div class="fade-in-up stats-card-enhanced">
+                        <div class="stats-icon-wrapper mb-4">
+                            <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
                             </svg>
+                        </div>
+                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_bookings, 50); ?>"><?php echo number_format(max($total_bookings, 50)); ?>+</div>
+                        <p class="text-gray-900 font-medium">Total Bookings</p>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
 
-                <!-- Partner Network -->
-                <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/partners.php'">
-                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative p-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-blue-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+    <!-- See it in action Section -->
+    <section class="py-20 bg-gradient-to-br from-blue-50 to-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left: Text Content -->
+                <div>
+                    <h2 class="text-4xl font-bold text-slate-900 mb-6">See it in action</h2>
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                        ForYoungTours is designed to offer best in class African travel experiences, and is developed at an impressive pace with new functionality becoming available every few months. We selected some videos to give you an idea of what we're up to.
+                    </p>
+                    <a href="<?php echo $base_path; ?>pages/about.php" class="inline-flex items-center px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition-all">
+                        Learn more
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
-                    </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Partner Network</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Join our network of travel advisors and local partners</p>
-                        <div class="flex items-center text-indigo-600 font-semibold group-hover:translate-x-2 transition-transform">
-                            <span>Become partner</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                        </svg>
-                    </div>
+                    </a>
                 </div>
+                
+                <!-- Right: Video Cards -->
+                <div class="space-y-6">
+                    <!-- Video Card 1 -->
+                    <div class="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer group" onclick="window.open('https://www.youtube.com/watch?v=example1', '_blank')">
+                        <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800" alt="African Safari" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-6 left-6 right-6 text-white">
+                            <h3 class="text-2xl font-bold mb-2">African Safari Experience</h3>
+                            <p class="text-sm">Discover the magic of African wildlife and landscapes</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Video Card 2 -->
+                    <div class="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer group" onclick="window.open('https://www.youtube.com/watch?v=example2', '_blank')">
+                        <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800" alt="Cultural Tours" class="w-full h-64 object-cover">
+                        <div class="absolute inset-0"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-6 left-6 right-6 text-white">
+                            <h3 class="text-2xl font-bold mb-2">Cultural Immersion</h3>
+                            <p class="text-sm">Experience authentic African cultures and traditions</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -335,7 +293,7 @@ include 'includes/header.php';
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
                 <span class="inline-block px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-4">SIGNATURE EXPERIENCES</span>
-                <h2 class="text-4xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">Our Signature Packages</h2>
+                <h2 class="text-4xl lg:text-4xl font-bold text-slate-900 mb-6 leading-tight">Our Signature Packages</h2>
                 <p class="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">Expertly curated African travel experiences across nine distinctive categories</p>
             </div>
             
@@ -349,7 +307,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=motorcoach'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600" alt="Motorcoach Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/70 to-blue-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Motorcoach Tours</h3>
                                         <p class="text-white/90 text-sm mt-2">Comfortable road journeys</p>
@@ -362,7 +320,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=rail'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=600" alt="Rail Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-green-600/70 to-green-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Rail Tours</h3>
                                         <p class="text-white/90 text-sm mt-2">Scenic train journeys</p>
@@ -375,7 +333,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=cruises'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600" alt="Cruises" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-600/70 to-cyan-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Cruises</h3>
                                         <p class="text-white/90 text-sm mt-2">Ocean adventures</p>
@@ -388,7 +346,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=city'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1578991624414-276ef23a534f?w=600" alt="City Breaks" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/70 to-purple-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">City Breaks</h3>
                                         <p class="text-white/90 text-sm mt-2">Urban exploration</p>
@@ -401,7 +359,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=agro'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600" alt="Agro Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-600/70 to-yellow-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Agro Tours</h3>
                                         <p class="text-white/90 text-sm mt-2">Farm experiences</p>
@@ -414,7 +372,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=adventure'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=600" alt="Adventure Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-orange-600/70 to-orange-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Adventure Tours</h3>
                                         <p class="text-white/90 text-sm mt-2">Thrilling activities</p>
@@ -427,7 +385,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=sports'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600" alt="Sports Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-red-600/70 to-red-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Sports Tours</h3>
                                         <p class="text-white/90 text-sm mt-2">Athletic events</p>
@@ -440,7 +398,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=cultural'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600" alt="Cultural Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/70 to-indigo-800/70"></div>
+                                    <div class="absolute inset-0 "></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Cultural Tours</h3>
                                         <p class="text-white/90 text-sm mt-2">African traditions</p>
@@ -453,7 +411,7 @@ include 'includes/header.php';
                             <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=conference'">
                                 <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                                     <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600" alt="Conference & Expos" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                                    <div class="absolute inset-0 bg-gradient-to-br from-pink-600/70 to-pink-800/70"></div>
+                                    <div class="absolute inset-0"></div>
                                     <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
                                         <h3 class="text-xl font-bold text-white">Conference & Expos</h3>
                                         <p class="text-white/90 text-sm mt-2">Business events</p>
@@ -476,64 +434,6 @@ include 'includes/header.php';
             </div>
         </div>
     </section>
-<!-- See it in action Section -->
-    <section class="py-20 bg-gradient-to-br from-blue-50 to-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-                <!-- Left: Text Content -->
-                <div>
-                    <h2 class="text-5xl font-bold text-slate-900 mb-6">See it in action</h2>
-                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
-                        iForYoungTours is designed to offer best in class African travel experiences, and is developed at an impressive pace with new functionality becoming available every few months. We selected some videos to give you an idea of what we're up to.
-                    </p>
-                    <a href="<?php echo $base_path; ?>pages/about.php" class="inline-flex items-center px-6 py-3 bg-yellow-500 text-white rounded-lg font-semibold hover:bg-yellow-600 transition-all">
-                        Learn more
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-                </div>
-                
-                <!-- Right: Video Cards -->
-                <div class="space-y-6">
-                    <!-- Video Card 1 -->
-                    <div class="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer group" onclick="window.open('https://www.youtube.com/watch?v=example1', '_blank')">
-                        <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800" alt="African Safari" class="w-full h-64 object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-6 left-6 right-6 text-white">
-                            <h3 class="text-2xl font-bold mb-2">African Safari Experience</h3>
-                            <p class="text-sm">Discover the magic of African wildlife and landscapes</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Video Card 2 -->
-                    <div class="relative rounded-2xl overflow-hidden shadow-xl cursor-pointer group" onclick="window.open('https://www.youtube.com/watch?v=example2', '_blank')">
-                        <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=800" alt="Cultural Tours" class="w-full h-64 object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <div class="w-20 h-20 bg-white/30 backdrop-blur-sm rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <svg class="w-10 h-10 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="absolute bottom-6 left-6 right-6 text-white">
-                            <h3 class="text-2xl font-bold mb-2">Cultural Immersion</h3>
-                            <p class="text-sm">Experience authentic African cultures and traditions</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
 
     <!-- Compact Tour Calendar Section -->
     <section class="py-16 bg-gradient-to-br from-gray-50 to-white">
@@ -562,7 +462,7 @@ include 'includes/header.php';
                         </div>
                         <div class="flex items-center space-x-2 text-sm text-gray-600">
                             <div class="w-3 h-3 bg-green-400 rounded-full"></div>
-                            <span>Available Tours</span>
+                                <span>Available Tours</span>
                         </div>
                     </div>
                 </div>
@@ -621,7 +521,7 @@ include 'includes/header.php';
         for (let day = 1; day <= daysInMonth; day++) {
             const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const hasTours = tourDates.includes(dateStr);
-            html += `<div class="compact-calendar-day ${hasTours ? 'has-tours' : ''}" onclick="selectCompactDate('${dateStr}')">${day}${hasTours ? '<div class="tour-indicator"></div>' : ''}</div>`;
+            html += `<div class="enhanced-calendar-day ${hasTours ? 'has-tours' : ''}" onclick="selectCompactDate('${dateStr}')">${day}${hasTours ? '<div class="enhanced-tour-indicator"></div>' : ''}</div>`;
         }
         
         document.getElementById('compact-calendar-days').innerHTML = html;
@@ -631,7 +531,7 @@ include 'includes/header.php';
     function nextMonth() { currentDate.setMonth(currentDate.getMonth() + 1); renderCalendar(); }
     
     function selectCompactDate(date) {
-        document.querySelectorAll('.compact-calendar-day').forEach(d => d.classList.remove('selected'));
+        document.querySelectorAll('.enhanced-calendar-day').forEach(d => d.classList.remove('selected'));
         event.target.classList.add('selected');
         fetch(`admin/get_scheduled_tours.php?date=${date}`)
             .then(r => r.json())
@@ -797,7 +697,7 @@ include 'includes/header.php';
                                     $dest_image = $dest_image;
                                 }
                                 ?>
-                                <img src="<?php echo htmlspecialchars($dest_image); ?>" alt="<?php echo htmlspecialchars($destination['name']); ?>" class="w-full h-80 object-cover" onerror="this.src='assets/images/default-destination.jpg'; this.onerror=null;">
+                                <img src="<?php echo htmlspecialchars($dest_image); ?>" alt="<?php echo htmlspecialchars($destination['name']); ?>" class="w-full h-80 object-cover" onerror="this.src='assets/images/Nairobi kenya.jpg'; this.onerror=null;">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                 <div class="absolute bottom-6 left-6">
                                     <h3 class="text-2xl font-bold mb-2 image-overlay-text"><?php echo htmlspecialchars($destination['name']); ?></h3>
@@ -831,107 +731,168 @@ include 'includes/header.php';
         </div>
     </section>
 
-    <!-- Statistics - Nextcloud Style -->
-    <section class="section-padding bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="stats-grid p-12">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div class="fade-in-up">
-                        <div class="counter text-4xl font-bold text-primary-gold mb-2" data-target="<?php echo max($total_users * 15, 1500); ?>"><?php echo number_format(max($total_users * 15, 1500)); ?>+</div>
-                        <p class="text-slate-600 font-medium">Happy Travelers</p>
-                    </div>
-                    <div class="fade-in-up">
-                        <div class="counter text-4xl font-bold text-primary-gold mb-2" data-target="<?php echo max($total_countries, 47); ?>"><?php echo max($total_countries, 47); ?></div>
-                        <p class="text-slate-600 font-medium">African Countries</p>
-                    </div>
-                    <div class="fade-in-up">
-                        <div class="counter text-4xl font-bold text-primary-gold mb-2" data-target="<?php echo max($total_tours, 200); ?>"><?php echo number_format(max($total_tours, 200)); ?>+</div>
-                        <p class="text-slate-600 font-medium">Travel Packages</p>
-                    </div>
-                    <div class="fade-in-up">
-                        <div class="counter text-4xl font-bold text-primary-gold mb-2" data-target="<?php echo max($total_bookings, 50); ?>"><?php echo number_format(max($total_bookings, 50)); ?>+</div>
-                        <p class="text-slate-600 font-medium">Total Bookings</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Quick Links -->
+<section class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Essential Quick Links</h2>
+            <p class="text-xl text-gray-600">Quick access to the most important travel information</p>
         </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">What Our Travelers Say</h2>
-                <p class="text-xl text-gray-600">Real experiences from our amazing community</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('visas')">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Visa Requirements</h3>
+                <p class="text-gray-600 mb-6">Check visa requirements for all 47 African countries</p>
+                <div class="text-blue-600 font-semibold">Check Requirements →</div>
             </div>
             
-            <div class="splide" id="testimonials-carousel">
-                <div class="splide__track">
-                    <ul class="splide__list">
-                        <li class="splide__slide">
-                            <div class="testimonial-card p-8 rounded-2xl mx-4">
-                                <div class="flex items-center mb-6">
-                                    <img src="https://kimi-web-img.moonshot.cn/img/govolunteerafrica.org/1935ad8b4e285447eb446b26ed39c7572e161b11.png" alt="Sarah M." class="w-16 h-16 rounded-full object-cover mr-4">
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">Sarah M.</h4>
-                                        <p class="text-gray-600">Adventure Traveler</p>
-                                    </div>
-                                </div>
-                                <p class="text-gray-700 text-lg mb-6">"The Kenya safari exceeded all expectations. Our guide was incredibly knowledgeable, and we saw the Big Five within the first two days. The booking process was seamless and the support team was always available."</p>
-                                <div class="flex text-yellow-400">
-                                    ★★★★★
+            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('safety')">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Travel Safety</h3>
+                <p class="text-gray-600 mb-6">Essential safety tips and health precautions</p>
+                <div class="text-green-600 font-semibold">Safety Guide →</div>
+            </div>
+            
+            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('packing')">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Packing Lists</h3>
+                <p class="text-gray-600 mb-6">Complete packing guides for different African destinations</p>
+                <div class="text-yellow-600 font-semibold">View Lists →</div>
+            </div>
+            
+            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('culture')">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Cultural Guide</h3>
+                <p class="text-gray-600 mb-6">Local customs, etiquette, and cultural insights</p>
+                <div class="text-purple-600 font-semibold">Cultural Tips →</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- Testimonials Section - Modern Card Design -->
+    <section class="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Left Side Content -->
+            <div class="grid lg:grid-cols-3 gap-8 items-start">
+                <!-- Left: Section Header -->
+                <div class="lg:col-span-1">
+                    <div class="inline-block px-4 py-2 bg-yellow-500 text-black rounded-full text-sm font-medium mb-4">
+                        Testimonials
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                        What our clients are saying about us?
+                    </h2>
+                    <p class="text-lg text-gray-600 leading-relaxed">
+                        Discover how our travelers experience unforgettable African adventures and support the sustainable tourism initiatives practiced by our operators worldwide.
+                    </p>
+                </div>
+                
+                <!-- Right: Testimonial Cards -->
+                <div class="lg:col-span-2">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Testimonial Card 1 -->
+                        <div class="testimonial-card-modern bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div class="flex items-center mb-6">
+                                    <img src="https://kimi-web-img.moonshot.cn/img/govolunteerafrica.org/1935ad8b4e285447eb446b26ed39c7572e161b11.png" alt="Sarah M." class="w-12 h-12 rounded-full object-cover mr-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Sara Mohamed</h4>
+                                    <p class="text-sm text-gray-500">Jakarta</p>
                                 </div>
                             </div>
-                        </li>
-                        <li class="splide__slide">
-                            <div class="testimonial-card p-8 rounded-2xl mx-4">
-                                <div class="flex items-center mb-6">
-                                    <img src="https://kimi-web-img.moonshot.cn/img/www.cuisinenoir.com/02ec9c166503b6d6f0c577beac1a87758ed659b7.jpg" alt="Michael R." class="w-16 h-16 rounded-full object-cover mr-4">
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">Michael R.</h4>
-                                        <p class="text-gray-600">Cultural Explorer</p>
-                                    </div>
-                                </div>
-                                <p class="text-gray-700 text-lg mb-6">"Morocco was a dream come true. From the Sahara desert camp to the bustling medinas, every moment was perfectly planned. The local insights and cultural experiences made it unforgettable."</p>
-                                <div class="flex text-yellow-400">
-                                    ★★★★★
+                            <div class="flex text-yellow-400 mb-4">
+                                ★★★★★
+                            </div>
+                            <p class="text-gray-700 leading-relaxed">
+                                I've been using Forever Young Tours for several years now, and it's become my go-to platform for planning my African adventures. The interface is user-friendly, and I appreciate the detailed information and real-time availability of tours.
+                            </p>
+                        </div>
+                        
+                        <!-- Testimonial Card 2 -->
+                        <div class="testimonial-card-modern bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                            <div class="flex items-center mb-6">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80&h=80&fit=crop&crop=face" 
+                                    alt="Atend John" 
+                                    class="w-12 h-12 rounded-full object-cover mr-4"
+                                >
+                                <div>
+                                    <h4 class="font-bold text-gray-900">Atend John</h4>
+                                    <p class="text-sm text-gray-500">California</p>
                                 </div>
                             </div>
-                        </li>
-                        <li class="splide__slide">
-                            <div class="testimonial-card p-8 rounded-2xl mx-4">
-                                <div class="flex items-center mb-6">
-                                    <img src="https://kimi-web-img.moonshot.cn/img/www.bigwildadventures.com/325488bf48b16a7ae0819256219df6db64a9ad7b.jpg" alt="Emma L." class="w-16 h-16 rounded-full object-cover mr-4">
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">Emma L.</h4>
-                                        <p class="text-gray-600">Solo Traveler</p>
-                                    </div>
-                                </div>
-                                <p class="text-gray-700 text-lg mb-6">"As a solo female traveler, I felt completely safe and supported throughout my journey. The Zanzibar beach extension was the perfect way to end my African adventure. Highly recommended!"</p>
-                                <div class="flex text-yellow-400">
-                                    ★★★★★
-                                </div>
+                            <div class="flex text-yellow-400 mb-4">
+                                ★★★★★
                             </div>
-                        </li>
-                    </ul>
+                            <p class="text-gray-700 leading-relaxed">
+                                I had a last-minute travel opportunity, and Forever Young Tours came to the rescue. I was able to find high-quality African tours in no time and get a great deal on the package. The confirmation process was straightforward, and I received all the necessary information promptly.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Newsletter - Nextcloud Style -->
-    <section class="section-padding bg-gradient-to-br from-slate-900 to-blue-900">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div class="newsletter-card">
-                <h2 class="text-4xl font-bold image-overlay-text mb-4">Stay connected with African adventures</h2>
-                <p class="text-xl image-overlay-text mb-8">Get exclusive travel deals, destination insights, and expert tips delivered to your inbox.</p>
+    <!-- Newsletter Section - Modern Design -->
+    <section class="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Left: Content -->
+                <div class="newsletter-content">
+                    <div class="inline-block px-4 py-2 bg-yellow-500 text-black rounded-full text-sm font-semibold mb-6">
+                        Join our newsletter
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-6 leading-tight">
+                        Get exclusive travel tips, destination guides, and special offers delivered to your inbox. Join our community of adventurous travelers!
+                    </h2>
+                    
+                    <form class="newsletter-form mt-8">
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <input 
+                                type="email" 
+                                placeholder="Your Email" 
+                                class="newsletter-input-modern flex-1 px-6 py-4 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
+                                required
+                            >
+                            <button 
+                                type="submit" 
+                                class="newsletter-button-modern px-8 py-4 bg-yellow-500 text-black font-semibold rounded-xl hover:bg-yellow-600 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                            >
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                </div>
                 
-                <form class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
-                    <input type="email" placeholder="Enter your email address" class="newsletter-input">
-                    <button type="submit" class="newsletter-button">
-                        Subscribe
-                    </button>
-                </form>
+                <!-- Right: Image -->
+                <div class="newsletter-image">
+                    <div class="relative rounded-2xl overflow-hidden shadow-2xl">
+                        <img 
+                            src="assets/images/beach and sunset.jpg" 
+                            alt="Beautiful tropical resort with pool and palm trees" 
+                            class="w-full h-96 object-cover"
+                        >
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

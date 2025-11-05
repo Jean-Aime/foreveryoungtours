@@ -53,7 +53,7 @@ include './header.php';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
             <h2 class="text-4xl font-bold text-gray-900 mb-4">Explore by Continent</h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">At iForYoungTours, we believe every region offers unforgettable experiences. From the savannas of Africa to the ancient temples of Asia, each continent tells a unique story. Choose your destination and let us craft your perfect luxury group travel experience.</p>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">At ForYoungTours, we believe every region offers unforgettable experiences. From the savannas of Africa to the ancient temples of Asia, each continent tells a unique story. Choose your destination and let us craft your perfect luxury group travel experience.</p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
