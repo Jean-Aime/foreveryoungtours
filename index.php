@@ -60,10 +60,10 @@ $total_countries = $stats['total_countries'] ?: 0;
 include 'includes/header.php';
 ?>
 
-    <!-- Video Hero Section -->
-    <section class="relative h-screen overflow-hidden">
+    <!-- New Hero Section -->
+    <section class="relative h-screen overflow-hidden hero-section">
         <!-- Background Video -->
-        <video id="heroVideo" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover" poster="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920">
+        <video id="heroVideo" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hero-video" poster="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920">
             <source src="https://assets.mixkit.co/videos/preview/mixkit-giraffes-walking-in-the-savanna-3618-large.mp4" type="video/mp4">
             <source src="https://assets.mixkit.co/videos/preview/mixkit-man-climbing-up-a-mountain-1120-large.mp4" type="video/mp4">
             <source src="https://assets.mixkit.co/videos/preview/mixkit-wild-zebras-in-the-savanna-3736-large.mp4" type="video/mp4">
@@ -80,55 +80,82 @@ include 'includes/header.php';
         });
         </script>
         
-        <!-- Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+        <!-- Gold to Black Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-yellow-600/20 via-black/60 to-black/80 hero-overlay"></div>
         
-        <!-- Content - Centered Search Box -->
-        <div class="relative h-full flex items-center justify-center">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center">
-                <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-                    <?php if ($country_filter): ?>
-                    Discover <span class="text-yellow-500"><?php echo $_SESSION['subdomain_country_name']; ?></span>
-                    <?php else: ?>
-                    Explore <span class="text-yellow-500">Africa</span>
-                    <?php endif; ?>
+        <!-- Content -->
+        <div class="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8" style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important;">
+            <div class="w-full max-w-5xl mx-auto text-center hero-content" style="text-align: center !important; margin: 0 auto !important; display: block !important; width: 100% !important;">
+                <!-- Headline -->
+                <h1 class="hero-headline text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight" style="text-align: center !important; width: 100% !important; margin: 0 auto 1.5rem auto !important;">
+                    Explore the World with <span class="text-yellow-400">Forever Young Tours</span>
                 </h1>
                 
-                <p class="text-xl text-gray-200 mb-10">Find your perfect adventure</p>
+                <!-- Subheadline -->
+                <p class="hero-subheadline text-xl md:text-2xl text-gray-200 mb-12 max-w-4xl mx-auto" style="text-align: center !important; width: 100% !important; margin: 0 auto 3rem auto !important;">
+                    Luxury Group Travel Experiences Across Africa, the Caribbean, Europe, and Beyond
+                </p>
                 
-                <!-- Search Box -->
-                <div class="max-w-3xl mx-auto">
-                    <form action="<?php echo $base_path; ?>pages/packages.php" method="GET" class="bg-white rounded-2xl shadow-2xl p-3">
-                        <div class="flex gap-3">
-                            <input type="text" name="search" placeholder="Search tours, destinations, experiences..." required class="flex-1 px-6 py-4 rounded-xl border-0 focus:ring-2 focus:ring-yellow-500 text-gray-900">
-                            <button type="submit" class="px-8 py-4 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400 transition-all flex items-center justify-center">
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                                Search
-                            </button>
-                        </div>
-                    </form>
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center" style="display: flex !important; justify-content: center !important; align-items: center !important; margin: 0 auto !important; width: 100% !important; text-align: center !important;">
+                    <a href="<?php echo $base_path; ?>pages/packages.php" class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold rounded-2xl hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 transform hover:-translate-y-2 hover:scale-105 cta-primary">
+                        <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
+                        Plan Your Journey
+                        <svg class="w-5 h-5 ml-3 group-hover:translate-x-2 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                    <a href="<?php echo $base_path; ?>auth/register.php" class="group inline-flex items-center px-10 py-5 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl border-2 border-white/40 hover:bg-white/20 hover:border-white/60 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 cta-secondary">
+                        <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        Join Our Travel Community
+                    </a>
                 </div>
             </div>
         </div>
         
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
+    </section>
+
+    <!-- Tagline Section -->
+    <section class="tagline-section py-12 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-t border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="tagline-container flex flex-wrap justify-center items-center gap-6 md:gap-10">
+                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
+                        Luxury Group Travel
+                    </span>
+                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
+                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
+                        Adventure
+                    </span>
+                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
+                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
+                        Cultural Exchange
+                    </span>
+                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
+                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
+                        Agro-Tourism
+                    </span>
+                    <div class="tagline-separator w-2 h-2 bg-yellow-500 rounded-full hidden md:block"></div>
+                    <span class="tagline-item text-slate-700 font-bold text-base md:text-lg tracking-wide hover:text-yellow-600 transition-colors">
+                        Conferences & Expos
+                    </span>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Content Hero Section - Professional Design -->
-    <section class="relative py-24 bg-white overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50 opacity-60"></div>
+    <!-- Discover Africa's Hidden Treasures Section -->
+    <section class="relative py-24 bg-gradient-to-br from-yellow-50 via-white to-green-50 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-yellow-50/80 via-white to-green-50/80"></div>
         
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid lg:grid-cols-5 gap-12 items-center">
-                <!-- Left Content - 3 columns -->
-                <div class="lg:col-span-3">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <!-- Left Content -->
+                <div class="text-center lg:text-left">
                     <div class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/10 to-green-500/10 rounded-full mb-6 border border-yellow-500/20">
                         <svg class="w-4 h-4 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
@@ -181,8 +208,8 @@ include 'includes/header.php';
                     </div>
                 </div>
                 
-                <!-- Right Featured Tour Card - 2 columns -->
-                <div class="lg:col-span-2">
+                <!-- Right Featured Tour Card -->
+                <div class="text-center lg:text-left">
                     <?php if (!empty($featured_tours)): ?>
                     <?php 
                     $hero_tour = $featured_tours[0];
@@ -232,7 +259,6 @@ include 'includes/header.php';
         </div>
     </section>
 
-    
     <!-- Features Section - Modern Design -->
     <section class="py-20 bg-gradient-to-b from-white to-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -262,27 +288,6 @@ include 'includes/header.php';
                     </div>
                 </div>
 
-                <!-- Destinations -->
-                <!-- <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/destinations.php'">
-                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative p-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Destinations</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Explore detailed guides for every African destination</p>
-                        <div class="flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">
-                            <span>Discover places</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div> -->
-
                 <!-- Experiences -->
                 <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/experiences.php'">
                     <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -302,46 +307,6 @@ include 'includes/header.php';
                         </div>
                     </div>
                 </div>
-
-                <!-- Travel Calendar -->
-                <!-- <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/calendar.php'">
-                    <div class="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative p-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Travel Calendar</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Plan your trip with departure dates and seasonal information</p>
-                        <div class="flex items-center text-green-600 font-semibold group-hover:translate-x-2 transition-transform">
-                            <span>Check calendar</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div> -->
-
-                <!-- Travel Resources -->
-                <!-- <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/resources.php'">
-                    <div class="absolute inset-0 bg-gradient-to-br from-red-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="relative p-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Travel Resources</h3>
-                        <p class="text-gray-600 mb-6 leading-relaxed">Visa guides, safety tips, and essential travel information</p>
-                        <div class="flex items-center text-red-600 font-semibold group-hover:translate-x-2 transition-transform">
-                            <span>Get resources</span>
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                            </svg>
-                        </div>
-                    </div>
-                </div> -->
 
                 <!-- Partner Network -->
                 <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?php echo $base_path; ?>pages/partners.php'">
@@ -375,119 +340,131 @@ include 'includes/header.php';
                 <p class="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">Expertly curated African travel experiences across nine distinctive categories</p>
             </div>
             
-            <!-- All 9 Signature Categories in 3x3 Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Motorcoach Tours -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=motorcoach'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600" alt="Motorcoach Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-blue-600/70 to-blue-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Motorcoach Tours</h3>
-                            <p class="text-white/90 text-sm mt-2">Comfortable road journeys</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Rail Tours -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=rail'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=600" alt="Rail Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-green-600/70 to-green-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Rail Tours</h3>
-                            <p class="text-white/90 text-sm mt-2">Scenic train journeys</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Cruises -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=cruises'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600" alt="Cruises" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-cyan-600/70 to-cyan-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Cruises</h3>
-                            <p class="text-white/90 text-sm mt-2">Ocean adventures</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- City Breaks -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=city'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1578991624414-276ef23a534f?w=600" alt="City Breaks" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-purple-600/70 to-purple-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">City Breaks</h3>
-                            <p class="text-white/90 text-sm mt-2">Urban exploration</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Agro Tours -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=agro'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600" alt="Agro Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-yellow-600/70 to-yellow-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Agro Tours</h3>
-                            <p class="text-white/90 text-sm mt-2">Farm experiences</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Adventure Tours -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=adventure'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=600" alt="Adventure Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-orange-600/70 to-orange-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Adventure Tours</h3>
-                            <p class="text-white/90 text-sm mt-2">Thrilling activities</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Sports Tours -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=sports'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600" alt="Sports Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-red-600/70 to-red-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Sports Tours</h3>
-                            <p class="text-white/90 text-sm mt-2">Athletic events</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Cultural Tours -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=cultural'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600" alt="Cultural Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/70 to-indigo-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Cultural Tours</h3>
-                            <p class="text-white/90 text-sm mt-2">African traditions</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Conference & Expos -->
-                <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=conference'">
-                    <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                        <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600" alt="Conference & Expos" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
-                        <div class="absolute inset-0 bg-gradient-to-br from-pink-600/70 to-pink-800/70"></div>
-                        <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
-                            <h3 class="text-xl font-bold text-white">Conference & Expos</h3>
-                            <p class="text-white/90 text-sm mt-2">Business events</p>
-                        </div>
-                    </div>
-                </div>
-                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                    </svg>
+            <!-- All 9 Signature Categories Continuous Sliding Animation -->
+            <div class="relative">
+                <!-- Continuous Sliding Container -->
+                <div class="signature-sliding-container overflow-hidden">
+                    <div class="signature-sliding-track" id="signatureSlider">
+                        <!-- First Set of Categories -->
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=motorcoach'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600" alt="Motorcoach Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-blue-600/70 to-blue-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Motorcoach Tours</h3>
+                                        <p class="text-white/90 text-sm mt-2">Comfortable road journeys</p>
+                                    </div>
                                 </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=rail'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=600" alt="Rail Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-green-600/70 to-green-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Rail Tours</h3>
+                                        <p class="text-white/90 text-sm mt-2">Scenic train journeys</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=cruises'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=600" alt="Cruises" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-cyan-600/70 to-cyan-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Cruises</h3>
+                                        <p class="text-white/90 text-sm mt-2">Ocean adventures</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=city'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1578991624414-276ef23a534f?w=600" alt="City Breaks" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-purple-600/70 to-purple-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">City Breaks</h3>
+                                        <p class="text-white/90 text-sm mt-2">Urban exploration</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=agro'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=600" alt="Agro Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-yellow-600/70 to-yellow-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Agro Tours</h3>
+                                        <p class="text-white/90 text-sm mt-2">Farm experiences</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=adventure'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=600" alt="Adventure Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-orange-600/70 to-orange-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Adventure Tours</h3>
+                                        <p class="text-white/90 text-sm mt-2">Thrilling activities</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=sports'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600" alt="Sports Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-red-600/70 to-red-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Sports Tours</h3>
+                                        <p class="text-white/90 text-sm mt-2">Athletic events</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=cultural'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1523805009345-7448845a9e53?w=600" alt="Cultural Tours" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/70 to-indigo-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Cultural Tours</h3>
+                                        <p class="text-white/90 text-sm mt-2">African traditions</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="signature-category-item">
+                            <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=conference'">
+                                <div class="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
+                                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600" alt="Conference & Expos" class="w-full h-48 object-cover transition-transform duration-700 group-hover:scale-110">
+                                    <div class="absolute inset-0 bg-gradient-to-br from-pink-600/70 to-pink-800/70"></div>
+                                    <div class="absolute inset-0 flex flex-col justify-center items-center text-center p-4">
+                                        <h3 class="text-xl font-bold text-white">Conference & Expos</h3>
+                                        <p class="text-white/90 text-sm mt-2">Business events</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
             </div>
             
             <div class="text-center mt-12">
@@ -689,6 +666,70 @@ include 'includes/header.php';
             fallback.style.display = 'block';
         });
     }
+    
+    // Signature Categories JavaScript-Powered Sliding Animation
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Starting JavaScript-powered sliding animation...');
+        
+        const slidingTrack = document.getElementById('signatureSlider');
+        const container = document.querySelector('.signature-sliding-container');
+        
+        if (slidingTrack) {
+            console.log('Sliding track found, initializing movement...');
+            slidingTrack.style.animation = 'none';
+            const originalItems = Array.from(slidingTrack.children);
+            originalItems.forEach(item => {
+                const clone = item.cloneNode(true);
+                slidingTrack.appendChild(clone);
+            });
+            
+            let position = 0;
+            const speed = 0.9; 
+            const itemWidth = 320 + 32; 
+            const totalItems = originalItems.length;
+            const resetPoint = itemWidth * totalItems; 
+            
+            function moveCategories() {
+                position += speed;
+                
+                // Reset position seamlessly when original items are off screen
+                if (position >= resetPoint) {
+                    position = 0;
+                }
+                
+                slidingTrack.style.transform = `translateX(-${position}px)`;
+                requestAnimationFrame(moveCategories);
+            }
+            
+            // Start the animation
+            moveCategories();
+            console.log('JavaScript sliding animation started!');
+            
+            // Pause on hover
+            container.addEventListener('mouseenter', function() {
+                slidingTrack.style.animationPlayState = 'paused';
+                console.log('Animation paused on hover');
+            });
+            
+            container.addEventListener('mouseleave', function() {
+                slidingTrack.style.animationPlayState = 'running';
+                console.log('Animation resumed');
+            });
+            
+        } else {
+            console.error('Sliding track element not found!');
+        }
+        
+        // Add click tracking
+        const categoryItems = document.querySelectorAll('.signature-category-item');
+        console.log(`Found ${categoryItems.length} category items`);
+        
+        categoryItems.forEach((item, index) => {
+            item.addEventListener('click', function() {
+                console.log(`Category ${index + 1} clicked`);
+            });
+        });
+    });
     </script>
     
     <?php include 'pages/inquiry-modal.php'; ?>

@@ -11,7 +11,7 @@ $continents = $stmt->fetchAll();
 $stmt = $pdo->query("SELECT t.*, c.name as country_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id WHERE t.status = 'active' AND t.featured = 1 ORDER BY t.popularity_score DESC, t.average_rating DESC LIMIT 6");
 $global_tours = $stmt->fetchAll();
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->

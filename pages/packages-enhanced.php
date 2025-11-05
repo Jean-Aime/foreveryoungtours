@@ -91,7 +91,7 @@ $stmt = $conn->prepare("SELECT c.*, r.name as region_name FROM countries c JOIN 
 $stmt->execute();
 $countries = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->

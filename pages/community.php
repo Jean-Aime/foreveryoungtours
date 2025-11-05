@@ -3,7 +3,7 @@ $page_title = "Community - ForeverYoung Tours";
 $page_description = "Join our travel community and connect with fellow African adventure enthusiasts. Access exclusive travel club membership benefits and share your experiences.";
 $css_path = "../assets/css/modern-styles.css";
 $base_path = "/foreveryoungtours/";
-include '../includes/header.php'; 
+include './header.php'; 
 ?>
 
 <main class="pt-16">

@@ -3,7 +3,7 @@ $page_title = "Solutions - ForeverYoung Tours";
 $page_description = "Comprehensive travel solutions including custom tours, travel insurance, emergency support, VIP services, and personalized planning for your African adventure.";
 $css_path = "../assets/css/modern-styles.css";
 // $base_path will be auto-detected in header.php based on server port
-include '../includes/header.php'; 
+include './header.php'; 
 ?>
 
 <main class="pt-16">

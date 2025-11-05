@@ -3,7 +3,7 @@ $page_title = "Sports & Adventure Tours - iForYoungTours";
 $page_description = "Combine thrilling sports activities with adventure tourism including hiking, rafting, and extreme sports.";
 $base_path = "../";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <main class="pt-20">

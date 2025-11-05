@@ -3,7 +3,7 @@ $page_title = "Contact Us - iForYoungTours | Get in Touch";
 $page_description = "Contact iForYoungTours for inquiries about African travel packages, bookings, and travel advice. We're here to help plan your perfect African adventure.";
 $css_path = "../assets/css/modern-styles.css";
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->

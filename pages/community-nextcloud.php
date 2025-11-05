@@ -4,7 +4,7 @@ $page_description = "Join our exclusive travel community and connect with fellow
 // $base_path will be auto-detected in header.php based on server port
 $css_path = "../assets/css/modern-styles.css";
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->

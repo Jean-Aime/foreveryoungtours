@@ -1,5 +1,6 @@
 /* Modern Styles for ForeverYoung Tours */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
 
 /* CSS Variables - Gold, White, Green Theme */
 :root {
@@ -1937,5 +1938,394 @@ html {
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
+    }
+}
+
+/* Signature Categories Continuous Sliding Animation */
+.signature-sliding-container {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    height: 280px;
+}
+
+.signature-sliding-track {
+    display: flex;
+    gap: 2rem;
+    white-space: nowrap;
+    /* Animation handled by JavaScript */
+}
+
+.signature-category-item {
+    flex: 0 0 320px;
+    width: 320px;
+    min-width: 320px;
+}
+
+/* Simple left movement animation */
+@keyframes moveLeft {
+    0% {
+        transform: translateX(100vw);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Pause animation on hover */
+.signature-sliding-container:hover .signature-sliding-track {
+    animation-play-state: paused;
+}
+
+/* Smooth hover effects for category items */
+.signature-category-item .group {
+    transition: all 0.3s ease;
+}
+
+.signature-category-item .group:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.signature-category-item .group:hover .relative {
+    transform: scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .signature-category-item {
+        flex: 0 0 250px;
+        width: 250px;
+        min-width: 250px;
+    }
+    
+    .signature-sliding-container {
+        height: 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .signature-category-item {
+        flex: 0 0 220px;
+        width: 220px;
+        min-width: 220px;
+    }
+    
+    .signature-sliding-container {
+        height: 240px;
+    }
+    
+    .signature-sliding-track {
+        gap: 1rem;
+    }
+}
+
+/* New Hero Section Styles */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Force Hero Content Centering */
+.hero-section .relative.h-full {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.hero-section .hero-content {
+    margin: 0 auto !important;
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+}
+
+.hero-section .hero-content * {
+    text-align: center !important;
+}
+
+.hero-section .flex {
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+}
+
+.hero-video {
+    transform: scale(1.05);
+    animation: heroVideoMove 20s ease-in-out infinite;
+}
+
+.hero-overlay {
+    backdrop-filter: blur(1px);
+}
+
+.hero-content {
+    animation: heroContentFadeIn 1.5s ease-out;
+    text-align: center !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.hero-headline {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    text-shadow: 2px 4px 12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 215, 0, 0.2);
+    animation: heroHeadlineSlideUp 1s ease-out 0.3s both;
+    letter-spacing: -0.02em;
+    text-align: center !important;
+    width: 100%;
+}
+
+.hero-subheadline {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    text-shadow: 1px 2px 8px rgba(0, 0, 0, 0.2);
+    animation: heroSubheadlineSlideUp 1s ease-out 0.6s both;
+    text-align: center !important;
+    width: 100%;
+}
+
+.hero-body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    animation: heroBodySlideUp 1s ease-out 0.9s both;
+}
+
+/* Enhanced CTA Button Styles */
+.hero-content .flex {
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100%;
+}
+
+.cta-primary {
+    position: relative;
+    overflow: hidden;
+    animation: ctaSlideUp 1s ease-out 1.2s both;
+}
+
+.cta-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.cta-primary:hover::before {
+    left: 100%;
+}
+
+.cta-secondary {
+    position: relative;
+    overflow: hidden;
+    animation: ctaSlideUp 1s ease-out 1.4s both;
+}
+
+.cta-secondary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.cta-secondary:hover::before {
+    left: 100%;
+}
+
+/* Hero Animations */
+@keyframes heroVideoMove {
+    0%, 100% {
+        transform: scale(1.05) translateX(0);
+    }
+    25% {
+        transform: scale(1.08) translateX(-10px);
+    }
+    50% {
+        transform: scale(1.06) translateX(0);
+    }
+    75% {
+        transform: scale(1.08) translateX(10px);
+    }
+}
+
+@keyframes heroContentFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes heroHeadlineSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroSubheadlineSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes heroBodySlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ctaSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Tagline Section Styles */
+.tagline-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.tagline-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(243, 244, 246, 0.8) 0%, 
+        rgba(249, 250, 251, 0.95) 25%, 
+        rgba(249, 250, 251, 0.95) 75%, 
+        rgba(243, 244, 246, 0.8) 100%);
+    z-index: 1;
+}
+
+.tagline-container {
+    position: relative;
+    z-index: 2;
+    animation: taglineFadeIn 1.5s ease-out;
+}
+
+.tagline-item {
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.tagline-item:hover {
+    color: #d97706;
+    transform: translateY(-2px);
+    text-shadow: 0 4px 8px rgba(217, 119, 6, 0.3);
+}
+
+.tagline-separator {
+    animation: separatorPulse 2s ease-in-out infinite;
+}
+
+/* Tagline Animations */
+@keyframes taglineFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes separatorPulse {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive Hero Styles */
+@media (max-width: 768px) {
+    .hero-headline {
+        font-size: 2.5rem !important;
+        line-height: 1.2;
+    }
+    
+    .hero-subheadline {
+        font-size: 1.125rem !important;
+    }
+    
+    .hero-body p {
+        font-size: 1rem;
+    }
+    
+    .tagline-container {
+        gap: 0.75rem !important;
+    }
+    
+    .tagline-item {
+        font-size: 0.875rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-headline {
+        font-size: 2rem !important;
+    }
+    
+    .hero-subheadline {
+        font-size: 1rem !important;
+    }
+    
+    .hero-body p {
+        font-size: 0.875rem;
+    }
+    
+    .tagline-container {
+        flex-direction: column;
+        gap: 0.5rem !important;
+    }
+    
+    .tagline-item {
+        font-size: 0.75rem !important;
+    }
+    
+    .tagline-separator {
+        display: none !important;
     }
 }

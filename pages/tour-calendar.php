@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 $page_title = "Tour Calendar - iForYoungTours";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <style>

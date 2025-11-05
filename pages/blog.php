@@ -87,7 +87,7 @@ $stmt = $conn->prepare("SELECT bp.*, bc.name as category_name, bc.slug as catego
 $stmt->execute();
 $featured_post = $stmt->fetch(PDO::FETCH_ASSOC);
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->
