@@ -92,6 +92,114 @@ include 'includes/header.php';
     </div>
 </section>
 
+<!-- Content Hero Section - Professional Design -->
+<section class="relative py-24 bg-white overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-blue-50 opacity-60"></div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid lg:grid-cols-5 gap-12 items-center">
+            <!-- Left Content - 3 columns -->
+            <div class="lg:col-span-3">
+                <div class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500/10 to-green-500/10 rounded-full mb-6 border border-yellow-500/20">
+                    <svg class="w-4 h-4 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8 9a1 1 0 112 0v4a1 1 0 11-2 0V9zm1-4a1 1 0 100 2 1 1 0 000-2z"/>
+                    </svg>
+                    <span class="text-sm font-semibold text-slate-700">Africa's Leading Travel Platform</span>
+                </div>
+                
+                <h1 class="text-5xl lg:text-6xl font-extrabold text-slate-900 mb-6 leading-tight">
+                    Discover Africa's
+                    <span class="block mt-2 bg-gradient-to-r from-yellow-600 via-green-600 to-yellow-600 bg-clip-text text-transparent">Hidden Treasures</span>
+                </h1>
+                
+                <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-2xl">
+                    Embark on extraordinary journeys across the African continent. From thrilling safaris to immersive cultural experiences, we craft unforgettable adventures tailored to your dreams.
+                </p>
+                
+                <div class="flex flex-wrap gap-4 mb-8">
+                    <a href="#countries" class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white font-bold rounded-xl hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        Explore Tours
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </a>
+                    <a href="#tours" class="inline-flex items-center px-8 py-4 bg-white text-slate-700 font-bold rounded-xl border-2 border-slate-200 hover:border-yellow-500 hover:text-yellow-600 transition-all shadow-sm hover:shadow-md">
+                        View Destinations
+                    </a>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="flex flex-wrap items-center gap-6 text-sm text-slate-600">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-yellow-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+                        </svg>
+                        <span class="font-semibold">4.9/5 Rating</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-semibold">Verified Tours</span>
+                    </div>
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"></path>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"></path>
+                        </svg>
+                        <span class="font-semibold">24/7 Support</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Featured Tour Card - 2 columns -->
+            <div class="lg:col-span-2">
+                <?php if (!empty($featured_tours)): ?>
+                <?php 
+                $hero_tour = $featured_tours[0];
+                $hero_image = $hero_tour['cover_image'] ?: $hero_tour['image_url'] ?: '../../assets/images/default-tour.jpg';
+                ?>
+                <div class="group relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
+                    <div class="absolute top-4 right-4 z-10">
+                        <span class="px-4 py-2 bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">FEATURED</span>
+                    </div>
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="<?php echo htmlspecialchars($hero_image); ?>" alt="<?php echo htmlspecialchars($hero_tour['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($hero_tour['name']); ?></h3>
+                        <p class="text-slate-600 mb-4 flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <?php echo htmlspecialchars($hero_tour['duration']); ?>
+                        </p>
+                        <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                            <div>
+                                <p class="text-sm text-slate-500">Starting from</p>
+                                <p class="text-3xl font-bold text-yellow-600">$<?php echo number_format($hero_tour['price']); ?></p>
+                            </div>
+                            <a href="../../pages/tour-detail.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+                    <div class="h-64 bg-gradient-to-br from-slate-100 to-slate-200"></div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-slate-900 mb-2">Amazing Tours Coming Soon</h3>
+                        <p class="text-slate-600 mb-4">Stay tuned for incredible adventures</p>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Countries Grid -->
 <section id="countries" class="py-20 bg-gradient-to-b from-white to-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
