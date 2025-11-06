@@ -1,5 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore Africa - iForYoungTours</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
 <?php
-$page_title = "Explore Africa - iForYoungTours";
 require_once __DIR__ . '/../../config/database.php';
 
 // Get continent data from current directory
@@ -32,7 +41,6 @@ $featured_tours = $stmt->fetchAll();
 // Set paths for subdomain
 $base_path = '../../';
 $css_path = '../assets/css/modern-styles.css';
-include 'includes/header.php';
 ?>
 
 <!-- Hero Section -->
@@ -62,26 +70,6 @@ include 'includes/header.php';
             <a href="#tours" class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white text-lg font-bold rounded-xl hover:bg-white/20 transition-all">
                 View Tours
             </a>
-        </div>
-        
-        <!-- Stats -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div class="text-3xl font-bold text-yellow-400"><?php echo count($countries); ?></div>
-                <div class="text-sm text-gray-300">Countries</div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div class="text-3xl font-bold text-yellow-400"><?php echo count($featured_tours); ?>+</div>
-                <div class="text-sm text-gray-300">Tours</div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div class="text-3xl font-bold text-yellow-400">24/7</div>
-                <div class="text-sm text-gray-300">Support</div>
-            </div>
-            <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                <div class="text-3xl font-bold text-yellow-400">4.9★</div>
-                <div class="text-sm text-gray-300">Rating</div>
-            </div>
         </div>
     </div>
     
@@ -180,7 +168,7 @@ include 'includes/header.php';
                                 <p class="text-sm text-slate-500">Starting from</p>
                                 <p class="text-3xl font-bold text-yellow-600">$<?php echo number_format($hero_tour['price']); ?></p>
                             </div>
-                            <a href="../../pages/tour-detail.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
+                            <a href="/pages/tour-detail.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
                                 View Details
                             </a>
                         </div>
@@ -362,4 +350,5 @@ include 'includes/header.php';
     </div>
 </section>
 
-<?php include 'includes/footer.php'; ?>
+</body>
+</html>

@@ -257,16 +257,72 @@ include 'includes/header.php';
         </div>
     </section>
 
-    <!-- Our Signature Packages - Professional Design -->
+    <!-- Featured Tours Section -->
     <section class="py-24 relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-blue-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="text-center mb-16">
-                <span class="inline-block px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-4">SIGNATURE EXPERIENCES</span>
-                <h2 class="text-4xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">Our Signature Packages</h2>
-                <p class="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">Expertly curated African travel experiences across nine distinctive categories</p>
+                <span class="inline-block px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-4">FEATURED TOURS</span>
+                <h2 class="text-4xl lg:text-6xl font-bold text-slate-900 mb-6 leading-tight">Africa's Leading Travel Platform</h2>
+                <p class="text-xl text-slate-600 leading-relaxed max-w-3xl mx-auto">Discover Africa's Hidden Treasures</p>
+                <p class="text-lg text-slate-600 mt-4">Embark on extraordinary journeys across the African continent. From thrilling safaris to immersive cultural experiences, we craft unforgettable adventures tailored to your dreams.</p>
+                <div class="flex justify-center gap-4 mt-8">
+                    <a href="<?php echo $base_path; ?>pages/packages.php" class="bg-yellow-500 text-black px-8 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition-colors">Explore Tours</a>
+                    <a href="<?php echo $base_path; ?>pages/destinations.php" class="bg-white text-slate-900 px-8 py-3 rounded-lg font-semibold hover:bg-slate-50 transition-colors border">View Destinations</a>
+                </div>
+                <div class="flex justify-center items-center gap-8 mt-8 text-sm text-slate-600">
+                    <div class="flex items-center"><span class="text-yellow-500 text-lg mr-2">★</span> 4.9/5 Rating</div>
+                    <div class="flex items-center"><span class="text-green-500 text-lg mr-2">✓</span> Verified Tours</div>
+                    <div class="flex items-center"><span class="text-blue-500 text-lg mr-2">📞</span> 24/7 Support</div>
+                </div>
             </div>
             
-            <!-- All 9 Signature Categories in 3x3 Grid -->
+            <!-- Featured Tours Grid -->
+            <?php if (!empty($featured_tours)): ?>
+            <div class="mb-12">
+                <h3 class="text-2xl font-bold text-center mb-8">FEATURED</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <?php foreach ($featured_tours as $tour): ?>
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group">
+                        <?php 
+                        $tour_image = $tour['cover_image'] ?: $tour['image_url'] ?: 'assets/images/default-tour.jpg';
+                        if (strpos($tour_image, 'uploads/') === 0) {
+                            $tour_image = $tour_image;
+                        }
+                        ?>
+                        <div class="relative overflow-hidden">
+                            <img src="<?php echo htmlspecialchars($tour_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='assets/images/default-tour.jpg'; this.onerror=null;">
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-semibold"><?php echo $tour['duration_days']; ?> days</span>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h4 class="text-xl font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h4>
+                            <p class="text-slate-600 mb-4"><?php echo htmlspecialchars(substr($tour['description'], 0, 100)) . '...'; ?></p>
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-sm text-slate-500"><?php echo htmlspecialchars($tour['country_name']); ?></span>
+                                <div class="flex items-center text-yellow-500">
+                                    <span class="text-sm">★ 4.9</span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <span class="text-sm text-slate-500">Starting from</span>
+                                    <div class="text-2xl font-bold text-slate-900">$<?php echo number_format($tour['price']); ?></div>
+                                </div>
+                                <a href="<?php echo $base_path; ?>pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-800 transition-colors">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+            
+            <!-- Our Signature Categories -->
+            <div class="text-center mb-12">
+                <h3 class="text-2xl font-bold mb-8">Our Signature Categories</h3>
+            </div>
+            
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Motorcoach Tours -->
                 <div class="group cursor-pointer" onclick="window.location.href='pages/packages.php?category=motorcoach'">

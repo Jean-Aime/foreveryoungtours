@@ -60,6 +60,10 @@
                     <i class="fas fa-map-marked-alt w-5 h-5 mr-3 text-center"></i>
                     <span>Tours</span>
                 </a>
+                <a href="featured-tours.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'featured-tours' ? 'active' : ''; ?>">
+                    <i class="fas fa-star w-5 h-5 mr-3 text-center"></i>
+                    <span>Featured Tours</span>
+                </a>
                 <a href="manage-continents.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'manage-continents' ? 'active' : ''; ?>">
                     <i class="fas fa-globe w-5 h-5 mr-3 text-center"></i>
                     <span>Continents</span>

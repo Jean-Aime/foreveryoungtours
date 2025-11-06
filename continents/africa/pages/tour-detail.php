@@ -14,17 +14,17 @@ $stmt = $pdo->prepare("
 $stmt->execute([$tour_id]);
 $tour = $stmt->fetch();
 
-// Get related tours from same country only
+// Get related tours
 $related_stmt = $pdo->prepare("
     SELECT t.*, c.name as country_name 
     FROM tours t 
     LEFT JOIN countries c ON t.country_id = c.id 
     WHERE t.status = 'active' AND t.id != ? 
-    AND t.country_id = ? 
+    AND (t.country_id = ? OR t.category = ?) 
     ORDER BY t.featured DESC, RAND() 
     LIMIT 3
 ");
-$related_stmt->execute([$tour_id, $tour['country_id']]);
+$related_stmt->execute([$tour_id, $tour['country_id'], $tour['category']]);
 $related_tours = $related_stmt->fetchAll();
 
 if (!$tour) {
@@ -121,7 +121,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                 </p>
                 
                 <div class="flex flex-wrap gap-4">
-                    <button class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                    <button class="bg-yellow-500 hover:bg-yellow-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
                         Book from $<?php echo number_format($tour['price']); ?>
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -197,29 +197,29 @@ $css_path = '../../../assets/css/modern-styles.css';
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="space-y-4">
                             <div class="flex items-center">
-                                <i class="fas fa-clock text-golden-600 mr-3"></i>
+                                <i class="fas fa-clock text-yellow-600 mr-3"></i>
                                 <span><strong>Duration:</strong> <?php echo htmlspecialchars($tour['duration'] ?: $tour['duration_days'] . ' days'); ?></span>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-users text-golden-600 mr-3"></i>
+                                <i class="fas fa-users text-yellow-600 mr-3"></i>
                                 <span><strong>Group Size:</strong> <?php echo $tour['min_participants']; ?>-<?php echo $tour['max_participants']; ?> people</span>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-tag text-golden-600 mr-3"></i>
+                                <i class="fas fa-tag text-yellow-600 mr-3"></i>
                                 <span><strong>Category:</strong> <?php echo ucfirst($tour['category']); ?></span>
                             </div>
                         </div>
                         <div class="space-y-4">
                             <div class="flex items-center">
-                                <i class="fas fa-map-marker-alt text-golden-600 mr-3"></i>
+                                <i class="fas fa-map-marker-alt text-yellow-600 mr-3"></i>
                                 <span><strong>Destination:</strong> <?php echo htmlspecialchars($tour['destination'] . ', ' . $tour['country_name']); ?></span>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-star text-golden-600 mr-3"></i>
+                                <i class="fas fa-star text-yellow-600 mr-3"></i>
                                 <span><strong>Difficulty:</strong> <?php echo ucfirst($tour['difficulty_level'] ?? 'Moderate'); ?></span>
                             </div>
                             <div class="flex items-center">
-                                <i class="fas fa-calendar text-golden-600 mr-3"></i>
+                                <i class="fas fa-calendar text-yellow-600 mr-3"></i>
                                 <span><strong>Best Time:</strong> <?php echo htmlspecialchars($tour['best_time_to_visit'] ?? 'Year-round'); ?></span>
                             </div>
                         </div>
@@ -238,7 +238,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                         <ul class="grid grid-cols-1 md:grid-cols-2 gap-2">
                             <?php foreach ($highlights as $highlight): ?>
                             <li class="flex items-start">
-                                <i class="fas fa-star text-golden-500 mt-1 mr-3"></i>
+                                <i class="fas fa-star text-yellow-500 mt-1 mr-3"></i>
                                 <span class="text-slate-600"><?php echo htmlspecialchars($highlight); ?></span>
                             </li>
                             <?php endforeach; ?>
@@ -258,7 +258,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                     ?>
                     <div class="space-y-6">
                         <?php foreach ($itinerary as $day): ?>
-                        <div class="border-l-4 border-golden-500 pl-6">
+                        <div class="border-l-4 border-yellow-500 pl-6">
                             <h3 class="text-lg font-bold text-slate-900">Day <?php echo $day['day']; ?>: <?php echo htmlspecialchars($day['title']); ?></h3>
                             <p class="text-slate-600 mt-2"><?php echo htmlspecialchars($day['activities']); ?></p>
                         </div>
@@ -322,7 +322,7 @@ $css_path = '../../../assets/css/modern-styles.css';
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-xl p-8 shadow-sm border sticky top-24">
                     <div class="text-center mb-6">
-                        <div class="text-3xl font-bold text-golden-600 mb-2">$<?php echo number_format($tour['price']); ?></div>
+                        <div class="text-3xl font-bold text-yellow-600 mb-2">$<?php echo number_format($tour['price']); ?></div>
                         <p class="text-slate-600">per person</p>
                     </div>
 
@@ -351,7 +351,7 @@ $css_path = '../../../assets/css/modern-styles.css';
 
                     <div class="text-center">
                         <p class="text-sm text-slate-500 mb-2">Need help? Contact our experts</p>
-                        <a href="tel:+1234567890" class="text-golden-600 font-semibold">+1 (234) 567-890</a>
+                        <a href="tel:+1234567890" class="text-yellow-600 font-semibold">+1 (234) 567-890</a>
                     </div>
                 </div>
             </div>
@@ -380,7 +380,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                         <h3 class="font-bold text-sm mb-2"><?php echo htmlspecialchars($related['name']); ?></h3>
                         <p class="text-xs text-slate-600 mb-2"><?php echo htmlspecialchars($related['country_name']); ?></p>
                         <div class="flex justify-between items-center">
-                            <span class="text-golden-600 font-bold text-sm">$<?php echo number_format($related['price']); ?></span>
+                            <span class="text-yellow-600 font-bold text-sm">$<?php echo number_format($related['price']); ?></span>
                             <a href="tour-detail.php?id=<?php echo $related['id']; ?>" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors">
                                 View Details
                             </a>
@@ -393,8 +393,6 @@ $css_path = '../../../assets/css/modern-styles.css';
     </section>
     <?php endif; ?>
 </div>
-
-<?php include '../../../includes/footer.php'; ?>
 
 </body>
 </html>
