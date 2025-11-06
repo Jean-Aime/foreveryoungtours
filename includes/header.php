@@ -159,7 +159,7 @@ if (!isset($base_path)) {
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="dropdown-title-large">Travel Store</div>
+                                            <div class="dropdown-title-large">Store</div>
                                             <div class="dropdown-desc-large">Essential travel gear & items</div>
                                         </div>
                                     </a>

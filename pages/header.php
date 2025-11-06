@@ -7,15 +7,15 @@ if (!isset($base_path)) {
 
     // If port is 8000 (PHP built-in server), use root path
     if ($server_port == 8000) {
-        $base_path = '../';
+        $base_path = './';
     }
     // If script name contains 'foreveryoungtours', we're in XAMPP
     elseif (strpos($script_name, 'foreveryoungtours') !== false) {
-        $base_path = '../foreveryoungtours/';
+        $base_path = './foreveryoungtours/';
     }
     // Default to root
     else {
-        $base_path = '../';
+        $base_path = './';
     }
 }
 ?>
@@ -144,12 +144,23 @@ if (!isset($base_path)) {
                                     <a href="./personalized-planning.php" class="dropdown-item-large">
                                         <div class="dropdown-icon-large bg-pink-500">
                                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 11-4 0 2 2 0 014 0m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                                             </svg>
                                         </div>
                                         <div>
                                             <div class="dropdown-title-large">Personalized Planning</div>
                                             <div class="dropdown-desc-large">Custom itinerary design</div>
+                                        </div>
+                                    </a>
+                                    <a href="./store.php" class="dropdown-item-large">
+                                        <div class="dropdown-icon-large bg-orange-500">
+                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="dropdown-title-large">Store</div>
+                                            <div class="dropdown-desc-large">Essential travel gear & items</div>
                                         </div>
                                     </a>
                                 </div>
@@ -316,7 +327,7 @@ if (!isset($base_path)) {
                         </a>
                     <?php else: ?>
                         <!-- Login Button -->
-                        <a href="./auth/login.php" target="_blank" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all flex items-center space-x-2">
+                        <a href="../auth/login.php" target="_blank" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all flex items-center space-x-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
@@ -340,13 +351,13 @@ if (!isset($base_path)) {
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="lg:hidden bg-white border-t border-slate-200 hidden">
                 <div class="px-4 py-6 space-y-2">
-                    <a href="./index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
+                    <a href="../index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
                     <a href="./solutions.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Solution</a>
                     <a href="./community.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Community</a>
                     <a href="./resources.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Resources</a>
                     <a href="./contact.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
                     <div class="pt-4 mt-4 border-t border-slate-200">
-                        <a href="./auth/login.php" target="_blank" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors mb-2">Login</a>
+                        <a href="../auth/login.php" target="_blank" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors mb-2">Login</a>
                         <a href="./packages.php" class="block btn-primary px-6 py-3 rounded-lg font-semibold text-center">
                             Book Now
                         </a>
