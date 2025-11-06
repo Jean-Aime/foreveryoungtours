@@ -47,6 +47,8 @@ function initializeCarousels() {
             autoplay: true,
             interval: 4000,
             pauseOnHover: true,
+            arrows: false,
+            pagination: true,
             breakpoints: {
                 768: {
                     perPage: 2,

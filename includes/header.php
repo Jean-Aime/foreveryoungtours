@@ -144,12 +144,23 @@ if (!isset($base_path)) {
                                     <a href="./pages/personalized-planning.php" class="dropdown-item-large">
                                         <div class="dropdown-icon-large bg-pink-500">
                                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 11-4 0 2 2 0 014 0m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                                             </svg>
                                         </div>
                                         <div>
                                             <div class="dropdown-title-large">Personalized Planning</div>
                                             <div class="dropdown-desc-large">Custom itinerary design</div>
+                                        </div>
+                                    </a>
+                                    <a href="./pages/store.php" class="dropdown-item-large">
+                                        <div class="dropdown-icon-large bg-orange-500">
+                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="dropdown-title-large">Travel Store</div>
+                                            <div class="dropdown-desc-large">Essential travel gear & items</div>
                                         </div>
                                     </a>
                                 </div>

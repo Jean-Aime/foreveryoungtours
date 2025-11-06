@@ -119,7 +119,7 @@ include 'includes/header.php';
     </section>
 
     <!-- Partner Logos Section -->
-    <section class="partner-logos-section py-6 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-t border-gray-200">
+    <section class="partner-logos-section py-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             
@@ -183,55 +183,8 @@ include 'includes/header.php';
         </div>
     </section>
 
-
-        <!-- Statistics - Nextcloud Style -->
-    <section class="py-12 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="stats-grid p-12">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div class="fade-in-up stats-card-enhanced">
-                        <div class="stats-icon-wrapper mb-4">
-                            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_users * 15, 1500); ?>"><?php echo number_format(max($total_users * 15, 1500)); ?>+</div>
-                        <p class="text-gray-900 font-medium">Happy Travelers</p>
-                    </div>
-                    <div class="fade-in-up stats-card-enhanced">
-                        <div class="stats-icon-wrapper mb-4">
-                            <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_countries, 47); ?>"><?php echo max($total_countries, 47); ?></div>
-                        <p class="text-gray-900 font-medium">African Countries</p>
-                    </div>
-                    <div class="fade-in-up stats-card-enhanced">
-                        <div class="stats-icon-wrapper mb-4">
-                            <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_tours, 200); ?>"><?php echo number_format(max($total_tours, 200)); ?>+</div>
-                        <p class="text-gray-900 font-medium">Travel Packages</p>
-                    </div>
-                    <div class="fade-in-up stats-card-enhanced">
-                        <div class="stats-icon-wrapper mb-4">
-                            <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
-                            </svg>
-                        </div>
-                        <div class="counter text-4xl font-bold text-gray-900 mb-2" data-target="<?php echo max($total_bookings, 50); ?>"><?php echo number_format(max($total_bookings, 50)); ?>+</div>
-                        <p class="text-gray-900 font-medium">Total Bookings</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- See it in action Section -->
-    <section class="py-20 bg-gradient-to-br from-blue-50 to-slate-50">
+    <section class="py-12 bg-gradient-to-br from-blue-50 to-slate-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <!-- Left: Text Content -->
@@ -742,8 +695,14 @@ include 'includes/header.php';
                                 if (strpos($dest_image, 'uploads/') === 0) {
                                     $dest_image = $dest_image;
                                 }
+                                if (strtolower($destination['name']) === 'nigeria') {
+                                    $dest_image = 'assets/images/nigeria.jpg';
+                                }
+                                if (strtolower($destination['name']) === 'rwanda') {
+                                    $dest_image = 'assets/images/rwanda.jpg';
+                                }
                                 ?>
-                                <img src="<?php echo htmlspecialchars($dest_image); ?>" alt="<?php echo htmlspecialchars($destination['name']); ?>" class="w-full h-80 object-cover" onerror="this.src='assets/images/Nairobi kenya.jpg'; this.onerror=null;">
+                                <img src="<?php echo htmlspecialchars($dest_image); ?>" alt="<?php echo htmlspecialchars($destination['name']); ?>" class="w-full h-80 object-cover" onerror="this.src='assets/images/south africa.jpg'; this.onerror=null;">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                 <div class="absolute bottom-6 left-6">
                                     <h3 class="text-2xl font-bold mb-2 image-overlay-text"><?php echo htmlspecialchars($destination['name']); ?></h3>
@@ -777,61 +736,213 @@ include 'includes/header.php';
         </div>
     </section>
 
-    <!-- Quick Links -->
-<section class="py-20 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Essential Quick Links</h2>
-            <p class="text-xl text-gray-600">Quick access to the most important travel information</p>
+    <!-- Travel By Activities -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Travel By Activities</h2>
+                <p class="text-xl text-gray-600">Navigate the Globe with Confidence</p>
+            </div>
+            
+            <!-- Activity Icons Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 justify-items-center">
+                <!-- Explore Ruins -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="assets/images/Destination.jpg" 
+                             alt="Explore Ruins" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">Explore Ruins</h3>
+                </div>
+
+                <!-- Beach Snorkel -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="assets/images/snorkeling.jpg" 
+                             alt="Beach Snorkel" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">Beach Snorkel</h3>
+                </div>
+
+                <!-- City Cycling -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="assets/images/cycling.jpg" 
+                             alt="City Cycling" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">City Cycling</h3>
+                </div>
+
+                <!-- Mountain Trek -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="assets/images/TREKKING.jpg" 
+                             alt="Mountain Trek" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">Mountain Trek</h3>
+                </div>
+
+                <!-- Food Tour -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=200&h=200&fit=crop&crop=center" 
+                             alt="Food Tour" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">Food Tour</h3>
+                </div>
+
+                <!-- River Cruise -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&h=200&fit=crop&crop=center" 
+                             alt="River Cruise" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">River Cruise</h3>
+                </div>
+
+                <!-- Spa Retreat -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="assets/images/spa retreat.jpg" 
+                             alt="Spa Retreat" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">Spa Retreat</h3>
+                </div>
+
+                <!-- Road Trip -->
+                <div class="activity-item text-center">
+                    <div class="activity-circle">
+                        <img src="assets/images/Road Trip.jpg" 
+                             alt="Road Trip" 
+                             class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="activity-label">Road Trip</h3>
+                </div>
+            </div>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('visas')">
-                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Visa Requirements</h3>
-                <p class="text-gray-600 mb-6">Check visa requirements for all 47 African countries</p>
-                <div class="text-blue-600 font-semibold">Check Requirements →</div>
+    </section>
+
+    <!-- Essential Quick Links - Image Cards -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Essential Quick Links</h2>
+                <p class="text-xl text-gray-600">Quick access to the most important travel information</p>
             </div>
             
-            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('safety')">
-                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
+            <!-- Grid Layout matching screenshot -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Large Card 1: Destinations -->
+                <div class="quick-link-card-large group cursor-pointer" onclick="window.location.href='pages/destinations.php'">
+                    <div class="relative h-80 rounded-2xl overflow-hidden">
+                        <img src="assets/images/landscape.jpg" 
+                             alt="African Safari" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 left-8 text-white">
+                            <h3 class="text-2xl font-bold mb-2">Explore Destinations</h3>
+                            <p class="text-white/90 mb-4">Discover amazing places across Africa</p>
+                            <div class="inline-flex items-center px-6 py-3 bg-yellow-500 text-black rounded-lg font-semibold hover:bg-yellow-600 transition-colors">
+                                View More →
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Travel Safety</h3>
-                <p class="text-gray-600 mb-6">Essential safety tips and health precautions</p>
-                <div class="text-green-600 font-semibold">Safety Guide →</div>
+
+                <!-- Large Card 2: Adventure Tours -->
+                <div class="quick-link-card-large group cursor-pointer" onclick="window.location.href='pages/packages.php?category=adventure'">
+                    <div class="relative h-80 rounded-2xl overflow-hidden">
+                        <img src="assets/images/adventure.jpg" 
+                             alt="Paris Adventure" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-8 right-8 text-white text-right">
+                            <h3 class="text-2xl font-bold mb-2">Adventure</h3>
+                            <p class="text-white/90 mb-2">starts today</p>
+                            <div class="inline-flex items-center px-6 py-3 bg-yellow-500 text-black rounded-lg font-semibold hover:bg-yellow-600 transition-colors">
+                                View More →
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('packing')">
-                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
+
+            <!-- Bottom Row - Three Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Card 3: Explore the World -->
+                <div class="quick-link-card-small group cursor-pointer" onclick="window.location.href='pages/about.php'">
+                    <div class="relative h-64 rounded-2xl overflow-hidden">
+                        <img src="assets/images/cruise.jpg" 
+                             alt="Tropical Beach" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <h4 class="text-lg font-bold mb-1 italic">Explore</h4>
+                            <h4 class="text-lg font-bold mb-2 italic">the World</h4>
+                            <p class="text-sm text-white/90 mb-3">Waking up in a far-away place</p>
+                            <div class="flex items-center space-x-2 mb-3">
+                                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                <div class="w-3 h-3 bg-purple-400 rounded-full"></div>
+                            </div>
+                            <div class="inline-flex items-center px-4 py-2 bg-yellow-500 text-black rounded-lg text-sm font-semibold hover:bg-yellow-600 transition-colors">
+                                View More →
+                            </div>
+                            <div class="mt-2 text-xs text-white/80">📞 1-800-222-8888</div>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Packing Lists</h3>
-                <p class="text-gray-600 mb-6">Complete packing guides for different African destinations</p>
-                <div class="text-yellow-600 font-semibold">View Lists →</div>
-            </div>
-            
-            <div class="resource-card rounded-2xl p-8 text-center cursor-pointer" onclick="showResourceCategory('culture')">
-                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                    </svg>
+
+                <!-- Card 4: Dream Vacation -->
+                <div class="quick-link-card-small group cursor-pointer" onclick="window.location.href='pages/packages.php'">
+                    <div class="relative h-64 rounded-2xl overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=600&h=400&fit=crop" 
+                             alt="African Lodge" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <p class="text-sm text-white/90 mb-1">Dream Vacation</p>
+                            <h4 class="text-lg font-bold mb-2">Start your</h4>
+                            <h4 class="text-lg font-bold mb-3">Journey Now</h4>
+                            <div class="inline-flex items-center px-4 py-2 bg-yellow-500 text-black rounded-lg text-sm font-semibold hover:bg-yellow-600 transition-colors">
+                                View More →
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Cultural Guide</h3>
-                <p class="text-gray-600 mb-6">Local customs, etiquette, and cultural insights</p>
-                <div class="text-purple-600 font-semibold">Cultural Tips →</div>
+
+                <!-- Card 5: Special Offers -->
+                <div class="quick-link-card-small group cursor-pointer" onclick="window.location.href='pages/packages.php?filter=deals'">
+                    <div class="relative h-64 rounded-2xl overflow-hidden">
+                        <img src="assets/images/passport.jpg" 
+                             alt="Luxury Resort" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute top-6 left-6">
+                            <div class="inline-block px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                                30% DISCOUNT
+                            </div>
+                        </div>
+                        <div class="absolute bottom-6 left-6 text-white">
+                            <p class="text-sm text-white/90 mb-1">Sale Off</p>
+                            <h4 class="text-lg font-bold mb-1">Book and</h4>
+                            <h4 class="text-lg font-bold mb-3">Get best Deals now</h4>
+                            <div class="inline-flex items-center px-4 py-2 bg-yellow-500 text-black rounded-lg text-sm font-semibold hover:bg-yellow-600 transition-colors">
+                                View More →
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
     <!-- Testimonials Section - Modern Card Design -->
     <section class="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">

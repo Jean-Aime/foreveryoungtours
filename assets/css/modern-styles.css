@@ -541,6 +541,7 @@ body {
     overflow: hidden;
 }
 
+/* Removed hover blur overlay effect
 .card-hover::before {
     content: '';
     position: absolute;
@@ -556,6 +557,7 @@ body {
 .card-hover:hover::before {
     opacity: 1;
 }
+*/
 
 /* Loading animations */
 @keyframes shimmer {
@@ -886,22 +888,15 @@ textarea:focus {
     padding: 0 12px;
 }
 
-.splide__arrow {
-    background: rgba(255, 255, 255, 0.9);
-    border: none;
-    border-radius: 50%;
-    width: 48px;
-    height: 48px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* Ensure no blur effects on destination cards */
+#destinations-carousel .card-hover::before,
+#destinations-carousel .card-hover::after {
+    display: none !important;
 }
 
-.splide__arrow:hover {
-    background: white;
-    transform: scale(1.1);
-}
-
-.splide__arrow svg {
-    fill: var(--slate-700);
+#destinations-carousel .card-hover:hover::before,
+#destinations-carousel .card-hover:hover::after {
+    display: none !important;
 }
 
 .splide__pagination__page {
@@ -2336,6 +2331,122 @@ html {
     
     .partner-logo-name {
         font-size: 10px;
+    }
+}
+
+/* Quick Links Image Cards Styles */
+.quick-link-card-large,
+.quick-link-card-small {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-link-card-large:hover,
+.quick-link-card-small:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.25);
+}
+
+.quick-link-card-large .group:hover img,
+.quick-link-card-small .group:hover img {
+    transform: scale(1.05);
+}
+
+/* Responsive adjustments for quick links */
+@media (max-width: 768px) {
+    .quick-link-card-large .relative {
+        height: 250px !important;
+    }
+    
+    .quick-link-card-small .relative {
+        height: 220px !important;
+    }
+    
+    .quick-link-card-large .absolute.bottom-8 {
+        bottom: 1rem !important;
+        left: 1rem !important;
+        right: 1rem !important;
+    }
+    
+    .quick-link-card-small .absolute.bottom-6 {
+        bottom: 1rem !important;
+        left: 1rem !important;
+    }
+    
+    .quick-link-card-large h3 {
+        font-size: 1.5rem !important;
+    }
+    
+    .quick-link-card-small h4 {
+        font-size: 1rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .quick-link-card-large .relative {
+        height: 200px !important;
+    }
+    
+    .quick-link-card-small .relative {
+        height: 180px !important;
+    }
+}
+
+/* Travel By Activities Styles */
+.activity-item {
+    transition: all 0.3s ease;
+}
+
+.activity-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 12px auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.activity-circle img {
+    transition: transform 0.3s ease;
+}
+
+.activity-item:hover .activity-circle {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.activity-item:hover .activity-circle img {
+    transform: scale(1.1);
+}
+
+.activity-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Responsive adjustments for activities */
+@media (max-width: 768px) {
+    .activity-circle {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .activity-label {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .activity-circle {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .activity-label {
+        font-size: 11px;
     }
 }
 
