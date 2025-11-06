@@ -2241,7 +2241,7 @@ html {
     position: relative;
     width: 100%;
     overflow: hidden;
-    height: 120px;
+    height: 160px;
     white-space: nowrap;
 }
 
@@ -2249,13 +2249,15 @@ html {
     display: flex !important;
     gap: 3rem;
     align-items: center;
-    justify-content: center;
+    will-change: transform;
+    transition: none;
 }
 
 .partner-logo-item {
     flex: 0 0 120px;
     width: 120px;
     min-width: 120px;
+    height: 120px;
     display: flex;
     flex-direction: column;
     align-items: center;

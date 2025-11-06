@@ -672,6 +672,52 @@ include 'includes/header.php';
             });
         });
     });
+
+    // Partner Logos Continuous Sliding Animation
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Starting partner logos sliding animation...');
+        
+        const partnerSlidingTrack = document.getElementById('partnerLogosSlider');
+        const partnerContainer = document.querySelector('.partner-logos-sliding-container');
+        
+        if (partnerSlidingTrack) {
+            console.log('Partner logos sliding track found, initializing movement...');
+            
+            const originalPartnerItems = Array.from(partnerSlidingTrack.children);
+            const halfLength = originalPartnerItems.length / 2;
+            
+            for (let i = 0; i < 2; i++) {
+                originalPartnerItems.slice(0, halfLength).forEach(item => {
+                    const clone = item.cloneNode(true);
+                    partnerSlidingTrack.appendChild(clone);
+                });
+            }
+            
+            let partnerPosition = 0;
+            const partnerSpeed = 1.0;
+            const partnerItemWidth = 120 + 48; 
+            const partnerResetPoint = partnerItemWidth * halfLength; 
+            
+            function movePartnerLogos() {
+                partnerPosition += partnerSpeed;
+                
+                // Reset position seamlessly when original items are off screen
+                if (partnerPosition >= partnerResetPoint) {
+                    partnerPosition = 0;
+                }
+                
+                partnerSlidingTrack.style.transform = `translateX(-${partnerPosition}px)`;
+                requestAnimationFrame(movePartnerLogos);
+            }
+            
+            // Start the animation
+            movePartnerLogos();
+            console.log('Partner logos sliding animation started!');
+            
+        } else {
+            console.error('Partner logos sliding track element not found!');
+        }
+    });
     </script>
     
     <?php include 'pages/inquiry-modal.php'; ?>
