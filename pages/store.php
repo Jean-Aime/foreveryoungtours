@@ -4,7 +4,7 @@ $page_description = "Shop essential travel gear, equipment, and accessories for 
 $css_path = "../assets/css/modern-styles.css";
 $js_path = "../assets/js/main.js";
 
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <!-- Store Header Section -->
@@ -29,26 +29,13 @@ include './header.php';
     </div>
 </section>
 
-<!-- Filter Section -->
-<section class="py-8 bg-gray-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-wrap justify-center gap-4 mb-8">
-            <button class="filter-btn active" data-filter="all">All Items</button>
-            <button class="filter-btn" data-filter="camping">Camping</button>
-            <button class="filter-btn" data-filter="clothing">Clothing</button>
-            <button class="filter-btn" data-filter="accessories">Accessories</button>
-            <button class="filter-btn" data-filter="safety">Safety</button>
-        </div>
-    </div>
-</section>
-
 <!-- Products Grid Section -->
 <section class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="products-grid">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
             <!-- Product 1: Camping Tent -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group product-item" data-category="camping">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="relative">
                     <div class="absolute top-4 left-4 z-10">
                         <button class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -106,7 +93,7 @@ include './header.php';
             </div>
 
             <!-- Product 2: Hiking Shoes -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group product-item" data-category="clothing">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="relative">
                     <div class="absolute top-4 left-4 z-10">
                         <button class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -161,7 +148,7 @@ include './header.php';
             </div>
 
             <!-- Product 3: Travel Bottle -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group product-item" data-category="accessories">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="relative">
                     <div class="absolute top-4 left-4 z-10">
                         <button class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -216,7 +203,7 @@ include './header.php';
             </div>
 
             <!-- Product 4: Travel Backpack -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group product-item" data-category="accessories">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="relative">
                     <div class="absolute top-4 left-4 z-10">
                         <button class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -268,7 +255,7 @@ include './header.php';
             </div>
 
             <!-- Product 5: Travel Pillow -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group product-item" data-category="accessories">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="relative">
                     <div class="absolute top-4 left-4 z-10">
                         <button class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -320,7 +307,7 @@ include './header.php';
             </div>
 
             <!-- Product 6: First Aid Kit -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group product-item" data-category="safety">
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group">
                 <div class="relative">
                     <div class="absolute top-4 left-4 z-10">
                         <button class="w-10 h-10 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors">
@@ -389,71 +376,11 @@ include './header.php';
     </div>
 </section>
 
-<style>
-/* Filter Button Styles */
-.filter-btn {
-    padding: 12px 24px;
-    border: 2px solid #e5e7eb;
-    background: white;
-    color: #6b7280;
-    border-radius: 25px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.filter-btn:hover {
-    border-color: #f59e0b;
-    color: #f59e0b;
-    transform: translateY(-2px);
-}
-
-.filter-btn.active {
-    background: #f59e0b;
-    border-color: #f59e0b;
-    color: white;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-}
-
-/* Product filtering animations */
-.product-item {
-    transition: all 0.5s ease;
-    opacity: 1;
-    transform: scale(1);
-}
-
-.product-item.hidden {
-    opacity: 0;
-    transform: scale(0.8);
-    pointer-events: none;
-}
-</style>
-
 <script>
-// Add to cart functionality and filtering
+// Add to cart functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Filter functionality
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const productItems = document.querySelectorAll('.product-item');
-    
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const filter = this.getAttribute('data-filter');
-            
-            // Update active button
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            
-            // Filter products
-            productItems.forEach(item => {
-                if (filter === 'all' || item.getAttribute('data-category') === filter) {
-                    item.classList.remove('hidden');
-                } else {
-                    item.classList.add('hidden');
-                }
-            });
-        });
-    });
+    const addToCartButtons = document.querySelectorAll('button:contains("Add to cart")');
+    const quantityButtons = document.querySelectorAll('.quantity-btn');
     
     // Handle quantity changes
     document.querySelectorAll('button').forEach(button => {

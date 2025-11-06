@@ -3,7 +3,7 @@ $page_title = "Contact Us - iForYoungTours | Get in Touch";
 $page_description = "Contact iForYoungTours for inquiries about African travel packages, bookings, and travel advice. We're here to help plan your perfect African adventure.";
 $css_path = "../assets/css/modern-styles.css";
 
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
@@ -13,7 +13,7 @@ include './header.php';
         <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
     </div>
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6">
+        <h1 class="text-5xl md:text-5xl font-bold text-white mb-6">
             Get in <span class="text-gradient bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">Touch</span>
         </h1>
         <p class="text-xl md:text-2xl text-gray-200 max-w-3xl mx-auto">

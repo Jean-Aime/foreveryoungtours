@@ -5,7 +5,7 @@
                 <!-- Column 1: Logo & Description -->
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <img src="<?php echo isset($base_path) ? $base_path : '/foreveryoungtours/'; ?>assets/images/logo.png" alt="Forever Young Tours Logo" class="w-12 h-12">
+                        <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="Forever Young Tours Logo" class="w-12 h-12">
                         <div>
                             <h3 class="text-xl font-bold text-gray-900">Forever Young Tours</h3>
                             <p class="text-sm text-gray-600">Travel Bold. Stay Forever Young.</p>

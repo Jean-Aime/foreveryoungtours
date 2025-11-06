@@ -1,7 +1,7 @@
 <?php
 $page_title = "Booking Engine - iForYoungTours";
 $css_path = "../assets/css/modern-styles.css";
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <style>
@@ -68,7 +68,7 @@ include './header.php';
             </div>
             The Best Booking System
         </div>
-        <h1 style="font-size: 3rem; font-weight: 800; color: white; margin-bottom: 1rem;">Discover Amazing Experiences</h1>
+        <h1 style="font-size: 1.95rem; font-weight: 800; color: white; margin-bottom: 1rem;">Discover Amazing Experiences</h1>
         <p style="font-size: 1.125rem; color: rgba(255,255,255,0.9); max-width: 600px; margin: 0 auto;">Find the best flights, hotels, cars, cruises & activities across Africa</p>
     </div>
 </div>

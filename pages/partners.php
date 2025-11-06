@@ -1,22 +1,27 @@
 <?php
-$page_title = "Partners - iForYoungTours | Join Our Network";
-$page_description = "Join the iForYoungTours partner network. Collaborate with us to create amazing African travel experiences and grow your business.";
-// $base_path will be auto-detected in header.php based on server port
+$page_title = "Partners - Forever Young Tours | Building Global Bridges Through Travel";
+$page_description = "Strategic alliances with airlines, resorts, cultural institutions, and ministries of tourism. Partnership page showcases collaborative programs and corporate sponsorship opportunities within FYT's Global Network.";
 $css_path = "../assets/css/modern-styles.css";
-$js_path = "../assets/js/main.js";
-include './header.php';
+
+include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
-<section class="pt-24 pb-12 bg-gradient-to-r from-blue-50 to-red-50">
+<section class="pt-24 pb-16 bg-gradient-to-br from-green-50 to-blue-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-                Partner <span class="text-gradient">Network</span>
+        <div class="text-center">
+            <div class="inline-block px-4 py-2 bg-green-500 text-white rounded-full text-sm font-semibold mb-6">
+                Partners
+            </div>
+            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+                Building Global Bridges Through Travel
             </h1>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
-                Join our growing network of travel professionals, hotels, tour operators, and local experts. Together, we create unforgettable African experiences.
+            <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">
+                FYT partners with airlines, hotels, ministries of tourism, and innovation hubs to deliver transformative travel experiences. Explore partnership opportunities and join our mission to connect Global Africa through luxury, culture, and commerce.
             </p>
+            <button class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg bg-green-600 hover:bg-green-700">
+                → Partner with FYT
+            </button>
         </div>
     </div>
 </section>

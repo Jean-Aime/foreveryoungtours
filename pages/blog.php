@@ -1,93 +1,10 @@
 <?php
-session_start();
-$page_title = "Travel Stories & Experiences - iForYoungTours Blog";
+$page_title = "Travel Stories & Experiences - Forever Young Tours Blog";
 $page_description = "Read amazing travel stories and share your own African adventure experiences. Discover insider tips, cultural insights, and inspiring journeys.";
-// $base_path will be auto-detected in header.php based on server port
 $css_path = "../assets/css/modern-styles.css";
 
-require_once '../config/database.php';
-$db = new Database();
-$conn = $db->getConnection();
 
-// Get filters
-$category = $_GET['category'] ?? '';
-$tag = $_GET['tag'] ?? '';
-$search = $_GET['search'] ?? '';
-$page = max(1, (int)($_GET['page'] ?? 1));
-$per_page = 9;
-$offset = ($page - 1) * $per_page;
-
-// Build WHERE clause
-$where_conditions = ["bp.status = 'published'"];
-$params = [];
-
-if ($category) {
-    $where_conditions[] = "bc.slug = ?";
-    $params[] = $category;
-}
-if ($tag) {
-    $where_conditions[] = "bt.slug = ?";
-    $params[] = $tag;
-}
-if ($search) {
-    $where_conditions[] = "(bp.title LIKE ? OR bp.excerpt LIKE ? OR bp.content LIKE ?)";
-    $search_term = "%$search%";
-    $params[] = $search_term;
-    $params[] = $search_term;
-    $params[] = $search_term;
-}
-
-$where_clause = implode(' AND ', $where_conditions);
-
-// Get blog posts
-$sql = "SELECT bp.*, bc.name as category_name, bc.slug as category_slug, bc.color as category_color,
-               c.name as country_name, t.name as tour_name
-        FROM blog_posts bp 
-        LEFT JOIN blog_categories bc ON bp.category_id = bc.id
-        LEFT JOIN countries c ON bp.country_id = c.id
-        LEFT JOIN tours t ON bp.tour_id = t.id";
-
-if ($tag) {
-    $sql .= " LEFT JOIN blog_post_tags bpt ON bp.id = bpt.post_id
-              LEFT JOIN blog_tags bt ON bpt.tag_id = bt.id";
-}
-
-$sql .= " WHERE $where_clause ORDER BY bp.featured DESC, bp.published_at DESC LIMIT $per_page OFFSET $offset";
-
-$stmt = $conn->prepare($sql);
-$stmt->execute($params);
-$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Get total count for pagination
-$count_sql = "SELECT COUNT(DISTINCT bp.id) FROM blog_posts bp 
-               LEFT JOIN blog_categories bc ON bp.category_id = bc.id";
-if ($tag) {
-    $count_sql .= " LEFT JOIN blog_post_tags bpt ON bp.id = bpt.post_id
-                    LEFT JOIN blog_tags bt ON bpt.tag_id = bt.id";
-}
-$count_sql .= " WHERE $where_clause";
-
-$stmt = $conn->prepare($count_sql);
-$stmt->execute($params);
-$total_posts = $stmt->fetchColumn();
-$total_pages = ceil($total_posts / $per_page);
-
-// Get categories
-$stmt = $conn->prepare("SELECT bc.*, COUNT(bp.id) as post_count FROM blog_categories bc LEFT JOIN blog_posts bp ON bc.id = bp.category_id AND bp.status = 'published' WHERE bc.status = 'active' GROUP BY bc.id ORDER BY bc.name");
-$stmt->execute();
-$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Get popular tags
-$stmt = $conn->prepare("SELECT bt.*, COUNT(bpt.post_id) as post_count FROM blog_tags bt JOIN blog_post_tags bpt ON bt.id = bpt.tag_id JOIN blog_posts bp ON bpt.post_id = bp.id WHERE bp.status = 'published' GROUP BY bt.id ORDER BY post_count DESC LIMIT 20");
-$stmt->execute();
-$tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// Get featured post
-$stmt = $conn->prepare("SELECT bp.*, bc.name as category_name, bc.slug as category_slug, bc.color as category_color FROM blog_posts bp LEFT JOIN blog_categories bc ON bp.category_id = bc.id WHERE bp.status = 'published' AND bp.featured = 1 ORDER BY bp.published_at DESC LIMIT 1");
-$stmt->execute();
-$featured_post = $stmt->fetch(PDO::FETCH_ASSOC);
-
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
@@ -108,34 +25,31 @@ include './header.php';
 </section>
 
 <!-- Featured Story -->
-<?php if ($featured_post): ?>
 <section class="py-12 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-8">
             <h2 class="text-3xl font-bold text-gray-900 mb-4">Featured Story</h2>
         </div>
-        <div class="nextcloud-card overflow-hidden cursor-pointer" onclick="window.location.href='blog-post.php?slug=<?php echo $featured_post['slug']; ?>'">
+        <div class="nextcloud-card overflow-hidden">
             <div class="grid lg:grid-cols-2 gap-8">
                 <div class="relative">
-                    <img src="<?php echo htmlspecialchars($featured_post['featured_image'] ?: '../assets/images/default-blog.jpg'); ?>" alt="<?php echo htmlspecialchars($featured_post['title']); ?>" class="w-full h-80 lg:h-full object-cover rounded-2xl">
-                    <?php if ($featured_post['category_name']): ?>
-                    <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold text-white" style="background-color: <?php echo $featured_post['category_color']; ?>">
-                        <?php echo htmlspecialchars($featured_post['category_name']); ?>
+                    <img src="../assets/images/Africa Travel.jpg" alt="Featured Story" class="w-full h-80 lg:h-full object-cover rounded-2xl">
+                    <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold text-white bg-blue-500">
+                        Adventure
                     </span>
-                    <?php endif; ?>
                 </div>
                 <div class="flex flex-col justify-center">
-                    <h3 class="text-3xl font-bold text-gray-900 mb-4"><?php echo htmlspecialchars($featured_post['title']); ?></h3>
-                    <p class="text-gray-600 mb-6 text-lg"><?php echo htmlspecialchars($featured_post['excerpt']); ?></p>
+                    <h3 class="text-3xl font-bold text-gray-900 mb-4">My Journey Through East Africa</h3>
+                    <p class="text-gray-600 mb-6 text-lg">An incredible 14-day adventure through Kenya, Tanzania, and Uganda. From the Serengeti to Mount Kilimanjaro, this journey changed my perspective on travel.</p>
                     <div class="flex items-center space-x-4 mb-6">
                         <div class="flex items-center space-x-2">
-                            <img src="<?php echo htmlspecialchars($featured_post['author_avatar'] ?: '../assets/images/default-avatar.jpg'); ?>" alt="<?php echo htmlspecialchars($featured_post['author_name']); ?>" class="w-10 h-10 rounded-full">
-                            <span class="font-medium text-gray-900"><?php echo htmlspecialchars($featured_post['author_name']); ?></span>
+                            <div class="w-10 h-10 bg-gray-300 rounded-full"></div>
+                            <span class="font-medium text-gray-900">Sarah Johnson</span>
                         </div>
                         <span class="text-gray-500">•</span>
-                        <span class="text-gray-500"><?php echo date('M j, Y', strtotime($featured_post['published_at'])); ?></span>
+                        <span class="text-gray-500">Nov 1, 2024</span>
                         <span class="text-gray-500">•</span>
-                        <span class="text-gray-500"><?php echo number_format($featured_post['views']); ?> views</span>
+                        <span class="text-gray-500">1,234 views</span>
                     </div>
                     <div class="text-primary-gold font-semibold">Read Full Story →</div>
                 </div>

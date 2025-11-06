@@ -47,7 +47,7 @@ $stmt = $pdo->prepare("SELECT c.*, r.name as region_name FROM countries c JOIN r
 $stmt->execute();
 $countries = $stmt->fetchAll();
 
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
