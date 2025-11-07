@@ -8,10 +8,14 @@ include '../includes/header.php';
 
 <main class="pt-16">
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-blue-50 to-indigo-100 py-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Travel Solutions</h1>
-            <p class="text-xl text-slate-600 max-w-3xl mx-auto">Comprehensive solutions for all your African travel needs</p>
+    <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=2072&q=80" alt="Travel Solutions" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">Travel Solutions</h1>
+            <p class="text-xl text-gray-200 max-w-3xl mx-auto">Comprehensive solutions for all your African travel needs</p>
         </div>
     </section>
 

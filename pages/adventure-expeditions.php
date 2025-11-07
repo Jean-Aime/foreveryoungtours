@@ -3,7 +3,7 @@ $page_title = "Adventure Expeditions - iForYoungTours";
 $page_description = "Ultimate adventure package including mountain climbing, desert expeditions, and wilderness survival.";
 $base_path = "../";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <main class="pt-20">

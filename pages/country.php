@@ -37,7 +37,7 @@ $related_countries = $stmt->fetchAll();
 $page_title = $country['name'] . " - Discover " . $country['region_name'];
 $page_description = $country['description'] ?: "Explore " . $country['name'] . " with our expertly curated tours and experiences.";
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->

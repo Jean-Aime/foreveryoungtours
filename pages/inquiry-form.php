@@ -8,7 +8,7 @@ $tour_id = $_GET['tour_id'] ?? '';
 $tour_name = $_GET['tour_name'] ?? '';
 $tour_price = $_GET['price'] ?? '';
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <section class="py-20 bg-slate-50 min-h-screen">

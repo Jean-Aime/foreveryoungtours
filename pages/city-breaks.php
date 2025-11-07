@@ -3,7 +3,7 @@ $page_title = "City Breaks - iForYoungTours";
 $page_description = "Explore vibrant African cities with guided tours, cultural experiences, and urban adventures.";
 $base_path = "../";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <main class="pt-20">
