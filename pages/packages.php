@@ -534,25 +534,25 @@ include '../includes/header.php';
 <script>
     function filterByRegion(regionSlug) {
         if (regionSlug) {
-            window.location.href = 'packages.php?region=' + regionSlug;
+            window.location.href = '/ForeverYoungTours/pages/packages.php?region=' + regionSlug;
         }
     }
     
     function filterByCountry(countrySlug) {
         if (countrySlug) {
-            window.location.href = 'packages.php?country=' + countrySlug;
+            window.location.href = '/ForeverYoungTours/pages/packages.php?country=' + countrySlug;
         }
     }
     
     function filterByCategory(category) {
         if (category) {
-            window.location.href = 'packages.php?category=' + category;
+            window.location.href = '/ForeverYoungTours/pages/packages.php?category=' + category;
         }
     }
     
     function filterByTourType(tourType) {
         if (tourType) {
-            window.location.href = 'packages.php?category=' + tourType;
+            window.location.href = '/ForeverYoungTours/pages/packages.php?category=' + tourType;
         }
     }
     
@@ -575,13 +575,13 @@ include '../includes/header.php';
     }
     
     function clearAllFilters() {
-        window.location.href = 'packages.php';
+        window.location.href = '/ForeverYoungTours/pages/packages.php';
     }
     
     function performSearch() {
         const searchTerm = document.getElementById('package-search').value;
         if (searchTerm) {
-            window.location.href = 'packages.php?search=' + encodeURIComponent(searchTerm);
+            window.location.href = '/ForeverYoungTours/pages/packages.php?search=' + encodeURIComponent(searchTerm);
         }
     }
     

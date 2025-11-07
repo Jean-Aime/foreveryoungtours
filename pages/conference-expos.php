@@ -3,7 +3,7 @@ $page_title = "Conference & Expos - iForYoungTours";
 $page_description = "Professional conference packages with networking opportunities and business tourism experiences.";
 $base_path = "../";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <main class="pt-20">

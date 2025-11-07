@@ -4,7 +4,7 @@ $page_description = "Manage your bookings, track commissions, and access your tr
 // $base_path will be auto-detected in header.php based on server port
 $css_path = "../assets/css/modern-styles.css";
 $js_path = "../assets/js/main.js";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Main Dashboard -->

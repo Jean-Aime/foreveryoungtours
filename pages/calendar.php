@@ -4,7 +4,7 @@ $page_description = "View upcoming departures, special events, and seasonal prom
 // $base_path will be auto-detected in header.php based on server port
 $css_path = "../assets/css/modern-styles.css";
 $js_path = "../assets/js/main.js";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <!-- Hero Section -->

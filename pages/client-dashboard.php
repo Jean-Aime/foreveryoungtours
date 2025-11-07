@@ -46,7 +46,7 @@ if ($customer_email) {
     $customer_stats = $stats_stmt->fetch(PDO::FETCH_ASSOC);
 }
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <div class="min-h-screen bg-cream pt-20">

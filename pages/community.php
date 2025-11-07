@@ -10,7 +10,7 @@ include '../includes/header.php';
     <!-- Hero Section -->
     <section class="bg-gradient-to-br from-green-50 to-emerald-100 py-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900 mb-6">Travel Community</h1>
+            <h1 class="text-4xl md:text-4xl font-bold text-slate-900 mb-6">Travel Community</h1>
             <p class="text-xl text-slate-600 max-w-3xl mx-auto">Connect with fellow travelers and share your African adventures</p>
         </div>
     </section>

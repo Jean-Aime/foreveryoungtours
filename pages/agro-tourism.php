@@ -3,7 +3,7 @@ $page_title = "Agro Tourism Experience - iForYoungTours";
 $page_description = "Explore sustainable farming practices and rural communities while enjoying farm-to-table experiences.";
 $base_path = "../";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <main class="pt-20">

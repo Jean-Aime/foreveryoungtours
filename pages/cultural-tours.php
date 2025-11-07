@@ -3,7 +3,7 @@ $page_title = "Cultural Heritage Tours - iForYoungTours";
 $page_description = "Immerse yourself in rich African cultures, traditions, and historical sites across multiple countries.";
 $base_path = "../";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <main class="pt-20">

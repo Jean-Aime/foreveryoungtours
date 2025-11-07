@@ -36,7 +36,7 @@ $page_title = htmlspecialchars($tour['name']) . " - iForYoungTours";
 $page_description = htmlspecialchars(substr($tour['description'], 0, 160));
 $css_path = '../assets/css/modern-styles.css';
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <div class="min-h-screen bg-white pt-20">
