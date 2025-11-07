@@ -23,7 +23,7 @@ if ($customer_email) {
     $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <div class="min-h-screen bg-cream pt-20">

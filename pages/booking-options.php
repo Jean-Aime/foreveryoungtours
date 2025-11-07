@@ -1,7 +1,7 @@
 <?php
 $page_title = "Booking Options - iForYoungTours";
 $css_path = "../assets/css/modern-styles.css";
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <section class="py-20 bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
