@@ -59,7 +59,7 @@ $page_title = htmlspecialchars($tour['meta_title'] ?: $tour['name']) . " - iForY
 $page_description = htmlspecialchars($tour['meta_description'] ?: substr($tour['description'], 0, 160));
 $css_path = '../assets/css/modern-styles.css';
 
-include '../includes/header.php';
+include './header.php';
 ?>
 
 <div class="min-h-screen bg-cream pt-20">
