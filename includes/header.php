@@ -322,7 +322,7 @@ if (!isset($base_path)) {
                         </a>
                     <?php else: ?>
                         <!-- Login Button -->
-                        <a href="./auth/login.php" target="_blank" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all flex items-center space-x-2">
+                        <a href="/ForeverYoungTours/auth/login.php" target="_blank" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all flex items-center space-x-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
@@ -331,7 +331,7 @@ if (!isset($base_path)) {
                     <?php endif; ?>
                     
                     <!-- Book Now Button -->
-                    <a href="./pages/packages.php" class="btn-primary px-6 py-2 rounded-lg font-semibold">Book Now
+                    <a href="/ForeverYoungTours/pages/packages.php" class="btn-primary px-6 py-2 rounded-lg font-semibold">Book Now
                     </a>
                     
                     <!-- Mobile Menu Button -->
@@ -346,14 +346,14 @@ if (!isset($base_path)) {
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="lg:hidden bg-white border-t border-slate-200 hidden">
                 <div class="px-4 py-6 space-y-2">
-                    <a href="./index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
-                    <a href="./pages/solutions.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Solution</a>
-                    <a href="./pages/community.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Community</a>
-                    <a href="./pages/resources.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Resources</a>
-                    <a href="./pages/contact.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
+                    <a href="/ForeverYoungTours/index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
+                    <a href="/ForeverYoungTours/pages/solutions.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Solution</a>
+                    <a href="/ForeverYoungTours/pages/community.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Community</a>
+                    <a href="/ForeverYoungTours/pages/resources.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Resources</a>
+                    <a href="/ForeverYoungTours/pages/contact.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
                     <div class="pt-4 mt-4 border-t border-slate-200">
-                        <a href="./auth/login.php" target="_blank" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors mb-2">Login</a>
-                        <a href="./pages/packages.php" class="block btn-primary px-6 py-3 rounded-lg font-semibold text-center">
+                        <a href="/ForeverYoungTours/auth/login.php" target="_blank" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors mb-2">Login</a>
+                        <a href="/ForeverYoungTours/pages/packages.php" class="block btn-primary px-6 py-3 rounded-lg font-semibold text-center">
                             Book Now
                         </a>
                     </div>
