@@ -39,17 +39,20 @@ $email = 'admin@foreveryoungtours.com';
         .nav-item {
             transition: all 0.3s ease;
             color: #64748b;
+            text-decoration: none;
         }
         .nav-item:hover {
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
             color: #DAA520;
             transform: translateX(4px);
+            text-decoration: none;
         }
         .nav-item.active {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             color: #DAA520;
             font-weight: 600;
             border-right: 3px solid #DAA520;
+            text-decoration: none;
         }
         .mobile-menu-btn {
             display: none;
