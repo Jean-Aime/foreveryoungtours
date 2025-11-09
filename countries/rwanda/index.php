@@ -4,7 +4,7 @@ $meta_description = "Premium Rwanda travel. Gorillas, chimps, volcanoes, canopy 
 require_once __DIR__ . '/../../config/database.php';
 
 // Get Rwanda data
-$stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = 'rwanda' AND c.status = 'active'");
+$stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = 'visit-rw' AND c.status = 'active'");
 $stmt->execute();
 $country = $stmt->fetch();
 

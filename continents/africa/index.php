@@ -202,6 +202,7 @@ $css_path = '../assets/css/modern-styles.css';
             <?php
             // Map country slug to subdomain code
             $country_codes = [
+                'visit-rw' => 'rw',
                 'rwanda' => 'rw',
                 'kenya' => 'ke',
                 'tanzania' => 'tz',
@@ -213,8 +214,8 @@ $css_path = '../assets/css/modern-styles.css';
                 'namibia' => 'na',
                 'zimbabwe' => 'zw'
             ];
-            $country_code = $country_codes[$country['slug']] ?? $country['country_code'];
-            $country_url = $country_code ? "http://visit-{$country_code}.foreveryoungtours.local" : "../../countries/{$country['slug']}/";
+            $country_code = $country_codes[$country['slug']] ?? strtolower(substr($country['country_code'], 0, 2));
+            $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
             ?>
             <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2" onclick="window.open('<?php echo $country_url; ?>', '_blank')">
                 <div class="relative h-72 overflow-hidden">
