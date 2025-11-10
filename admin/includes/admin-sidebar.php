@@ -49,6 +49,10 @@
                     <i class="fas fa-ticket-alt w-5 h-5 mr-3 text-center"></i>
                     <span>Engine Orders</span>
                 </a>
+                <a href="store-management.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'store-management' ? 'active' : ''; ?>">
+                    <i class="fas fa-store w-5 h-5 mr-3 text-center"></i>
+                    <span>Store Management</span>
+                </a>
             </div>
         </div>
         

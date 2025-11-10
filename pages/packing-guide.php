@@ -24,19 +24,19 @@ include '../includes/header.php';
                 Our curated packing guides take the guesswork out of preparation. Each destination has its own checklist—crafted by our travel experts and Advisors—covering climate, comfort, and class.
             </p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <button class="btn-primary px-8 py-4 rounded-lg font-semibold">
+                <button onclick="openInquiryModal('', 'Packing Guide Request')" class="btn-primary px-8 py-4 rounded-lg font-semibold hover:shadow-xl transition-all">
                     → Download Your Guide
                 </button>
-                <button class="px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:border-yellow-500 hover:text-yellow-600 transition-all">
+                <a href="#tour-types" class="px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-gray-900 transition-all">
                     View Sample Guide
-                </button>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Tour Type Selection -->
-<section class="py-16 bg-white">
+<section id="tour-types" class="py-16 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-gray-900 mb-4">Choose Your Tour Type</h2>
@@ -53,7 +53,7 @@ include '../includes/header.php';
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Safari Packing</h3>
                 <p class="text-gray-600 mb-6">Essential gear for wildlife adventures, including clothing, equipment, and safety items for African safaris.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold">Download Safari Guide</button>
+                <button onclick="openInquiryModal('safari', 'Safari Packing Guide')" class="w-full btn-primary py-3 rounded-lg font-semibold hover:shadow-lg transition-all">Download Safari Guide</button>
             </div>
 
             <!-- Cruise Guide -->
@@ -65,7 +65,7 @@ include '../includes/header.php';
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Cruise Packing</h3>
                 <p class="text-gray-600 mb-6">Complete checklist for ocean cruises, including formal wear, casual attire, and onboard essentials.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold">Download Cruise Guide</button>
+                <button onclick="openInquiryModal('cruise', 'Cruise Packing Guide')" class="w-full btn-primary py-3 rounded-lg font-semibold hover:shadow-lg transition-all">Download Cruise Guide</button>
             </div>
 
             <!-- Heritage Guide -->
@@ -77,7 +77,7 @@ include '../includes/header.php';
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Heritage Tours</h3>
                 <p class="text-gray-600 mb-6">Cultural immersion essentials, respectful attire, and items for historical site visits.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold">Download Heritage Guide</button>
+                <button onclick="openInquiryModal('heritage', 'Heritage Tours Packing Guide')" class="w-full btn-primary py-3 rounded-lg font-semibold hover:shadow-lg transition-all">Download Heritage Guide</button>
             </div>
 
             <!-- Adventure Guide -->
@@ -89,7 +89,7 @@ include '../includes/header.php';
                 </div>
                 <h3 class="text-xl font-bold text-gray-900 mb-3">Adventure Tours</h3>
                 <p class="text-gray-600 mb-6">High-activity gear, outdoor equipment, and specialized clothing for adventure expeditions.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold">Download Adventure Guide</button>
+                <button onclick="openInquiryModal('adventure', 'Adventure Tours Packing Guide')" class="w-full btn-primary py-3 rounded-lg font-semibold hover:shadow-lg transition-all">Download Adventure Guide</button>
             </div>
         </div>
     </div>
@@ -175,11 +175,14 @@ include '../includes/header.php';
         </div>
         
         <div class="mt-12">
-            <button class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg">
+            <a href="<?php echo $base_path; ?>pages/store.php" class="inline-block btn-primary px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
                 Get Started with Your Packing Guide
-            </button>
+            </a>
         </div>
     </div>
 </section>
 
-<?php include '../includes/footer.php'; ?>
+<?php 
+include 'inquiry-modal.php';
+include '../includes/footer.php'; 
+?>

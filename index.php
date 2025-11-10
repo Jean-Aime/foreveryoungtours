@@ -688,8 +688,31 @@ include 'includes/header.php';
                     <ul class="splide__list">
                         <?php if (!empty($featured_destinations)): ?>
                         <?php foreach ($featured_destinations as $destination): ?>
+                        <?php
+                        // Map country slug to subdomain code
+                        $dest_country_codes = [
+                            'visit-rw' => 'rw',
+                            'rwanda' => 'rw',
+                            'kenya' => 'ke',
+                            'tanzania' => 'tz',
+                            'uganda' => 'ug',
+                            'egypt' => 'eg',
+                            'morocco' => 'ma',
+                            'south-africa' => 'za',
+                            'botswana' => 'bw',
+                            'namibia' => 'na',
+                            'zimbabwe' => 'zw',
+                            'ethiopia' => 'et',
+                            'ghana' => 'gh',
+                            'nigeria' => 'ng',
+                            'senegal' => 'sn',
+                            'tunisia' => 'tn'
+                        ];
+                        $dest_code = $dest_country_codes[$destination['slug']] ?? strtolower(substr($destination['country_code'] ?? $destination['name'], 0, 2));
+                        $dest_url = "http://visit-{$dest_code}.foreveryoungtours.local";
+                        ?>
                         <li class="splide__slide">
-                            <div class="relative rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="window.location.href='pages/country.php?slug=<?php echo $destination['slug']; ?>'">
+                            <div class="relative rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="window.location.href='<?php echo $dest_url; ?>'">
                                 <?php 
                                 $dest_image = $destination['image_url'] ?: 'assets/images/default-destination.jpg';
                                 if (strpos($dest_image, 'uploads/') === 0) {

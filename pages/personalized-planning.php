@@ -7,22 +7,26 @@ include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
-<section class="pt-24 pb-16 bg-gradient-to-br from-pink-50 to-purple-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="relative pt-24 pb-16 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1920&q=80" alt="Personalized Travel Planning" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <div class="inline-block px-4 py-2 bg-pink-500 text-white rounded-full text-sm font-semibold mb-6">
+            <div class="inline-block px-4 py-2 bg-yellow-500 text-white rounded-full text-sm font-semibold mb-6">
                 Personalized Planning
             </div>
-            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            <h1 class="text-3xl lg:text-5xl font-bold text-white mb-6">
                 Your Journey. Your Way.
             </h1>
-            <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">
+            <p class="text-xl text-white/95 mb-8 max-w-4xl mx-auto">
                 Every adventure begins with a conversation. Partner with our FYT Advisors to tailor your trip—select your interests, pace, and comfort level.
             </p>
-            <div class="text-lg text-gray-700 mb-8">
+            <div class="text-lg text-white/90 mb-8 max-w-3xl mx-auto">
                 Our digital platform synchronizes planning with live updates through <strong>EspoCRM and ODIECloud</strong>, keeping every detail within reach.
             </div>
-            <button class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg bg-pink-600 hover:bg-pink-700">
+            <button onclick="openInquiryModal('', 'Personalized Planning Request')" class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg bg-yellow-500 hover:bg-yellow-600 hover:shadow-xl transition-all">
                 → Start Your Personalized Plan
             </button>
         </div>
@@ -39,51 +43,83 @@ include '../includes/header.php';
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <!-- Agro-Tourism -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 border border-gray-100">
-                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V11A1,1 0 0,0 12,12A1,1 0 0,0 13,11V5A1,1 0 0,0 12,4M12,15C13.11,15 14.11,15.45 14.83,16.17L16.24,14.76C15.22,13.74 13.86,13.15 12.4,13.05L12,13C10.54,13.05 9.18,13.74 8.16,14.76L9.58,16.17C10.29,15.45 11.29,15 12.4,15H12Z"/>
-                    </svg>
+            <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=800&q=80" alt="Agro-Tourism" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M12,4A1,1 0 0,0 11,5V11A1,1 0 0,0 12,12A1,1 0 0,0 13,11V5A1,1 0 0,0 12,4M12,15C13.11,15 14.11,15.45 14.83,16.17L16.24,14.76C15.22,13.74 13.86,13.15 12.4,13.05L12,13C10.54,13.05 9.18,13.74 8.16,14.76L9.58,16.17C10.29,15.45 11.29,15 12.4,15H12Z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Agro-Tourism</h3>
-                <p class="text-gray-600 mb-6">Experience authentic farm life, sustainable agriculture practices, and farm-to-table dining experiences.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold bg-green-500 hover:bg-green-600">Explore Agro Tours</button>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Agro-Tourism</h3>
+                    <p class="text-gray-600 mb-6">Experience authentic farm life, sustainable agriculture practices, and farm-to-table dining experiences.</p>
+                    <button onclick="openInquiryModal('agro-tourism', 'Agro-Tourism Planning')" class="w-full btn-primary py-3 rounded-lg font-semibold bg-green-500 hover:bg-green-600 hover:shadow-lg transition-all">Explore Agro Tours</button>
+                </div>
             </div>
 
             <!-- Cultural Immersion -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 border border-gray-100">
-                <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
+            <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1533094602577-198d3beab8ea?w=800&q=80" alt="Cultural Immersion" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Cultural Immersion</h3>
-                <p class="text-gray-600 mb-6">Deep dive into local traditions, arts, crafts, and community experiences with authentic cultural exchanges.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold bg-orange-500 hover:bg-orange-600">Explore Cultural Tours</button>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Cultural Immersion</h3>
+                    <p class="text-gray-600 mb-6">Deep dive into local traditions, arts, crafts, and community experiences with authentic cultural exchanges.</p>
+                    <button onclick="openInquiryModal('cultural', 'Cultural Immersion Planning')" class="w-full btn-primary py-3 rounded-lg font-semibold bg-orange-500 hover:bg-orange-600 hover:shadow-lg transition-all">Explore Cultural Tours</button>
+                </div>
             </div>
 
             <!-- Sports Tourism -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 border border-gray-100">
-                <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z"/>
-                    </svg>
+            <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&q=80" alt="Sports Tourism" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4Z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Sports Tourism</h3>
-                <p class="text-gray-600 mb-6">Adventure sports, golf tournaments, marathon events, and active recreational experiences worldwide.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold bg-blue-500 hover:bg-blue-600">Explore Sports Tours</button>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Sports Tourism</h3>
+                    <p class="text-gray-600 mb-6">Adventure sports, golf tournaments, marathon events, and active recreational experiences worldwide.</p>
+                    <button onclick="openInquiryModal('sports', 'Sports Tourism Planning')" class="w-full btn-primary py-3 rounded-lg font-semibold bg-blue-500 hover:bg-blue-600 hover:shadow-lg transition-all">Explore Sports Tours</button>
+                </div>
             </div>
 
             <!-- Wellness -->
-            <div class="bg-white rounded-2xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 border border-gray-100">
-                <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mb-6">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12,18.5C15.5,18.5 18.5,15.5 18.5,12C18.5,8.5 15.5,5.5 12,5.5C8.5,5.5 5.5,8.5 5.5,12C5.5,15.5 8.5,18.5 12,18.5M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
-                    </svg>
+            <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100">
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&q=80" alt="Wellness Tourism" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                    <div class="absolute bottom-4 left-4">
+                        <div class="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12,18.5C15.5,18.5 18.5,15.5 18.5,12C18.5,8.5 15.5,5.5 12,5.5C8.5,5.5 5.5,8.5 5.5,12C5.5,15.5 8.5,18.5 12,18.5M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2Z"/>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">Wellness</h3>
-                <p class="text-gray-600 mb-6">Spa retreats, meditation experiences, yoga journeys, and holistic wellness programs for mind and body.</p>
-                <button class="w-full btn-primary py-3 rounded-lg font-semibold bg-purple-500 hover:bg-purple-600">Explore Wellness Tours</button>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Wellness</h3>
+                    <p class="text-gray-600 mb-6">Spa retreats, meditation experiences, yoga journeys, and holistic wellness programs for mind and body.</p>
+                    <button onclick="openInquiryModal('wellness', 'Wellness Tourism Planning')" class="w-full btn-primary py-3 rounded-lg font-semibold bg-purple-500 hover:bg-purple-600 hover:shadow-lg transition-all">Explore Wellness Tours</button>
+                </div>
             </div>
         </div>
     </div>
@@ -220,20 +256,23 @@ include '../includes/header.php';
 </section>
 
 <!-- CTA Section -->
-<section class="py-16 bg-gradient-to-r from-pink-600 to-purple-600">
+<section class="py-16 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-3xl font-bold text-white mb-4">Ready to Plan Your Perfect Journey?</h2>
         <p class="text-xl text-white/90 mb-8">Connect with a FYT Advisor today and start creating your personalized travel experience.</p>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <button class="px-8 py-4 bg-white text-pink-600 rounded-lg font-semibold hover:bg-gray-100 transition-all">
+            <button onclick="openInquiryModal('', 'Schedule Consultation')" class="px-8 py-4 bg-white text-yellow-600 rounded-lg font-semibold hover:bg-gray-100 transition-all hover:shadow-xl">
                 Schedule Consultation
             </button>
-            <button class="px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-pink-600 transition-all">
+            <a href="<?php echo $base_path; ?>pages/packages.php" class="px-8 py-4 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-yellow-600 transition-all">
                 View Sample Itineraries
-            </button>
+            </a>
         </div>
     </div>
 </section>
 
-<?php include '../includes/footer.php'; ?>
+<?php 
+include 'inquiry-modal.php';
+include '../includes/footer.php'; 
+?>
