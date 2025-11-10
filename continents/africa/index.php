@@ -2,12 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Africa - iForYoungTours</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Explore Africa - Luxury Group Travel & Safari Adventures | Forever Young Tours</title>
+    <meta name="description" content="Discover Africa's best destinations. Premium safaris, cultural experiences, and luxury tours across Kenya, Tanzania, Rwanda, Uganda, and more. Expert-curated adventures.">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Explore Africa - Luxury Group Travel & Safari Adventures">
+    <meta property="og:description" content="Discover Africa's best destinations with premium safaris and cultural experiences.">
+    <meta property="og:image" content="https://iforeveryoungtours.com/assets/images/africa-og.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Explore Africa - Luxury Group Travel & Safari Adventures">
+    <meta property="twitter:description" content="Discover Africa's best destinations with premium safaris and cultural experiences.">
+    
+    <!-- Mobile Optimization -->
+    <meta name="theme-color" content="#F59E0B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'brand-amber': '#F59E0B',
+                        'brand-orange': '#EA580C',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="font-sans">
 <?php
 require_once __DIR__ . '/../../config/database.php';
 
@@ -43,38 +77,83 @@ $base_path = '../../';
 $css_path = '../assets/css/modern-styles.css';
 ?>
 
-<!-- Hero Section -->
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 z-0">
-        <img src="<?php echo htmlspecialchars($continent['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=2072&q=80'); ?>" alt="<?php echo htmlspecialchars($continent['name']); ?>" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
+<!-- Hero Section - Professional Parallax -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
+    <!-- Parallax Background -->
+    <div class="absolute inset-0 z-0" data-parallax>
+        <img src="<?php echo htmlspecialchars($continent['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=2072&q=80'); ?>" alt="<?php echo htmlspecialchars($continent['name']); ?>" class="w-full h-full object-cover scale-110">
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-amber-900/70"></div>
+        
+        <!-- Animated Overlay Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);"></div>
+        </div>
     </div>
     
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="inline-block px-4 py-2 bg-yellow-500/20 backdrop-blur-sm border border-yellow-500/30 rounded-full mb-6">
-            <span class="text-yellow-400 font-semibold">Explore the Continent</span>
+        <!-- Region Badge -->
+        <div class="inline-flex items-center px-6 py-3 bg-amber-500/20 backdrop-blur-md border border-amber-400/30 rounded-full mb-8 animate-fade-in-down shadow-xl shadow-amber-500/10">
+            <svg class="w-5 h-5 text-amber-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="text-amber-300 font-bold text-sm uppercase tracking-wider">Explore the Continent</span>
         </div>
-        <h1 class="text-6xl md:text-8xl font-extrabold text-white mb-6 leading-tight">
-            <?php echo htmlspecialchars($continent['name']); ?>
+        
+        <!-- Main Heading -->
+        <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-6 leading-tight animate-fade-in">
+            <span class="block mb-2">Discover</span>
+            <span class="block bg-gradient-to-r from-amber-400 via-orange-400 to-amber-400 bg-clip-text text-transparent">
+                <?php echo htmlspecialchars($continent['name']); ?>
+            </span>
         </h1>
-        <p class="text-xl md:text-2xl text-gray-200 mb-8 max-w-4xl mx-auto leading-relaxed">
-            <?php echo htmlspecialchars($continent['description']); ?>
+        
+        <!-- Description -->
+        <p class="text-lg sm:text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-4xl mx-auto animate-fade-in-up font-light">
+            <?php echo htmlspecialchars($continent['description'] ?: 'Experience the magic of diverse cultures, wildlife, and breathtaking landscapes.'); ?>
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <a href="#countries" class="group inline-flex items-center px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-lg font-bold rounded-xl hover:shadow-2xl transition-all transform hover:-translate-y-1">
-                Explore Countries
-                <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
-                </svg>
+        
+        <!-- CTA Buttons -->
+        <div class="flex flex-wrap gap-4 justify-center mb-8 animate-fade-in-up">
+            <a href="#countries" class="group relative bg-gradient-to-r from-amber-500 to-orange-500 text-white px-10 py-4 rounded-full font-bold overflow-hidden shadow-2xl shadow-amber-500/50 hover:shadow-amber-500/70 transition-all duration-300 hover:scale-105">
+                <span class="relative z-10 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    Explore Countries
+                </span>
+                <div class="absolute inset-0 bg-gradient-to-r from-orange-600 to-amber-600 opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </a>
-            <a href="#tours" class="inline-flex items-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white text-lg font-bold rounded-xl hover:bg-white/20 transition-all">
-                View Tours
+            <a href="#tours" class="group relative bg-white/10 backdrop-blur-md text-white px-10 py-4 rounded-full font-bold border-2 border-white/30 hover:bg-white/20 transition-all duration-300 hover:scale-105 shadow-xl">
+                <span class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z"></path>
+                    </svg>
+                    View Tours
+                </span>
+            </a>
+        </div>
+        
+        <!-- Contact Info -->
+        <div class="flex flex-wrap justify-center gap-6 text-sm text-white/80 animate-fade-in-up">
+            <a href="tel:+17374439646" class="flex items-center gap-2 hover:text-amber-400 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                </svg>
+                +1 737 443 9646
+            </a>
+            <a href="mailto:info@iforeveryoungtours.com" class="flex items-center gap-2 hover:text-amber-400 transition-colors">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                info@iforeveryoungtours.com
             </a>
         </div>
     </div>
     
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce z-10">
+        <svg class="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
         </svg>
     </div>
@@ -188,16 +267,16 @@ $css_path = '../assets/css/modern-styles.css';
     </div>
 </section>
 
-<!-- Countries Grid -->
-<section id="countries" class="py-20 bg-gradient-to-b from-white to-slate-50">
+<!-- Countries Grid - Enhanced -->
+<section id="countries" class="py-20 bg-gradient-to-b from-white to-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <span class="inline-block px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-4">DESTINATIONS</span>
-            <h2 class="text-5xl font-bold text-gray-900 mb-4">Explore by Country</h2>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto">From the pyramids of Egypt to the wildlife of Kenya, discover the diverse beauty of <?php echo htmlspecialchars($continent['name']); ?></p>
+            <span class="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold mb-4 uppercase tracking-wide">Destinations</span>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Explore by Country</h2>
+            <p class="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">From the pyramids of Egypt to the wildlife of Kenya, discover the diverse beauty of <?php echo htmlspecialchars($continent['name']); ?></p>
         </div>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <?php foreach ($countries as $country): ?>
             <?php
             // Map country slug to subdomain code
@@ -217,19 +296,19 @@ $css_path = '../assets/css/modern-styles.css';
             $country_code = $country_codes[$country['slug']] ?? strtolower(substr($country['country_code'], 0, 2));
             $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
             ?>
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2" onclick="window.open('<?php echo $country_url; ?>', '_blank')">
-                <div class="relative h-72 overflow-hidden">
-                    <img src="<?php echo htmlspecialchars($country['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'); ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2" onclick="window.open('<?php echo $country_url; ?>', '_blank')">
+                <div class="relative h-64 sm:h-72 overflow-hidden">
+                    <img src="<?php echo htmlspecialchars($country['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'); ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                     <div class="absolute top-4 right-4">
-                        <span class="px-3 py-1 bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">EXPLORE</span>
+                        <span class="px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full shadow-lg">EXPLORE</span>
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 p-6">
-                        <h3 class="text-2xl font-bold text-white mb-2 group-hover:text-yellow-400 transition-colors"><?php echo htmlspecialchars($country['name']); ?></h3>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white mb-2 group-hover:text-amber-400 transition-colors"><?php echo htmlspecialchars($country['name']); ?></h3>
                         <p class="text-sm text-gray-200 mb-3 line-clamp-2"><?php echo htmlspecialchars(substr($country['description'] ?: 'Discover the beauty and culture', 0, 80)); ?>...</p>
                         <div class="flex items-center justify-between">
                             <span class="text-xs text-gray-300"><i class="fas fa-map-marker-alt mr-1"></i><?php echo htmlspecialchars($country['currency'] ?: 'Local Currency'); ?></span>
-                            <svg class="w-5 h-5 text-yellow-400 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-amber-400 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                             </svg>
                         </div>
@@ -336,20 +415,223 @@ $css_path = '../assets/css/modern-styles.css';
 </section>
 
 <!-- CTA Section -->
-<section class="py-20 bg-gradient-to-r from-yellow-500 to-orange-500">
+<section class="py-20 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="text-4xl font-bold text-white mb-6">Ready to Explore Africa?</h2>
+        <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Explore Africa?</h2>
         <p class="text-xl text-white/90 mb-8">Join thousands of travelers discovering the magic of Africa</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="../../pages/packages.php" class="bg-white text-yellow-600 px-8 py-4 text-lg font-semibold rounded-xl hover:shadow-2xl transition-all">
+            <a href="http://foreveryoungtours.local/pages/packages.php" class="bg-white text-amber-600 px-10 py-4 text-lg font-bold rounded-full hover:shadow-2xl transition-all hover:scale-105">
                 Browse All Tours
             </a>
-            <a href="../../pages/register.php" class="bg-white/10 backdrop-blur-sm text-white border-2 border-white px-8 py-4 text-lg font-semibold rounded-xl hover:bg-white/20 transition-all">
-                Join FYT Club
+            <a href="https://wa.me/17374439646?text=Hi!%20I%20want%20to%20explore%20Africa" class="bg-white/10 backdrop-blur-sm text-white border-2 border-white px-10 py-4 text-lg font-bold rounded-full hover:bg-white/20 transition-all hover:scale-105">
+                <i class="fab fa-whatsapp mr-2"></i>WhatsApp Us
             </a>
         </div>
     </div>
 </section>
+
+<!-- Floating WhatsApp Button -->
+<div class="fixed bottom-6 right-6 z-50">
+    <!-- Dropdown Card -->
+    <div id="whatsappDropup" class="hidden mb-4 bg-white rounded-2xl shadow-2xl w-80 animate-slide-up">
+        <div class="bg-green-500 text-white px-6 py-4 rounded-t-2xl">
+            <h3 class="font-bold text-lg">WhatsApp Support</h3>
+            <p class="text-sm text-white/90">We're here to help!</p>
+        </div>
+        <div class="p-6">
+            <p class="text-gray-700 mb-4 text-sm">Get instant answers about Africa tours, pricing, and availability.</p>
+            <div class="space-y-2 mb-4 text-sm">
+                <div class="flex items-center gap-2 text-gray-600">
+                    <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                    <span>24/7 Support</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                    <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                    <span>Expert Advisors</span>
+                </div>
+                <div class="flex items-center gap-2 text-gray-600">
+                    <i class="fas fa-check-circle text-green-500 text-xs"></i>
+                    <span>Quick Response</span>
+                </div>
+            </div>
+            <a href="https://wa.me/17374439646?text=Hi!%20I%20need%20help%20with%20Africa%20travel" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-xl font-bold transition text-sm">
+                <i class="fab fa-whatsapp mr-2"></i>Start Chat
+            </a>
+            <p class="text-center text-gray-500 text-xs mt-3">+1 (737) 443-9646</p>
+        </div>
+    </div>
+    
+    <!-- WhatsApp Button -->
+    <button onclick="toggleWhatsAppDropup()" class="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-600 transition transform hover:scale-110">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </button>
+</div>
+
+<style>
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+</style>
+
+<script>
+function toggleWhatsAppDropup() {
+    const dropup = document.getElementById('whatsappDropup');
+    dropup.classList.toggle('hidden');
+}
+// Close when clicking outside
+document.addEventListener('click', function(e) {
+    const dropup = document.getElementById('whatsappDropup');
+    const button = e.target.closest('button[onclick="toggleWhatsAppDropup()"]');
+    if (!button && !dropup.contains(e.target)) {
+        dropup.classList.add('hidden');
+    }
+});
+</script>
+
+<?php include __DIR__ . '/../../includes/footer.php'; ?>
+
+<style>
+/* Professional Tourism Theme Animations */
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fade-in 1s ease-out forwards;
+}
+
+.animate-fade-in-down {
+    animation: fade-in-down 1s ease-out forwards;
+}
+
+.animate-fade-in-up {
+    animation: fade-in-up 1s ease-out forwards;
+    animation-delay: 0.3s;
+    opacity: 0;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #f59e0b, #ea580c);
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #d97706, #c2410c);
+}
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Touch-Friendly Improvements */
+@media (hover: none) and (pointer: coarse) {
+    .hover\:scale-105:hover {
+        transform: scale(1.02);
+    }
+    
+    button, a {
+        -webkit-tap-highlight-color: rgba(245, 158, 11, 0.3);
+    }
+}
+
+/* Prevent horizontal scroll */
+body {
+    overflow-x: hidden;
+}
+
+/* Ensure images don't overflow */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Fix for iOS Safari viewport height */
+@supports (-webkit-touch-callout: none) {
+    .min-h-screen {
+        min-height: -webkit-fill-available;
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bg-gradient-to-br {
+        border: 2px solid currentColor;
+    }
+}
+</style>
+
+<script>
+// Parallax Scrolling Effect
+document.addEventListener('DOMContentLoaded', function() {
+    const parallaxElements = document.querySelectorAll('[data-parallax]');
+    
+    window.addEventListener('scroll', function() {
+        const scrolled = window.pageYOffset;
+        
+        parallaxElements.forEach(function(element) {
+            const speed = 0.5;
+            const yPos = -(scrolled * speed);
+            element.style.transform = 'translateY(' + yPos + 'px)';
+        });
+    });
+    
+    // Intersection Observer for fade-in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -100px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-fade-in');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.observe-fade').forEach(function(el) {
+        observer.observe(el);
+    });
+});
+</script>
 
 </body>
 </html>
