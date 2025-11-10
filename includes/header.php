@@ -388,16 +388,22 @@ if (!isset($base_path)) {
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="lg:hidden bg-white border-t border-slate-200 shadow-lg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; max-height: 80vh; overflow-y: auto;">
                 <div class="px-4 py-6 space-y-2">
-                    <a href="<?php echo $base_path; ?>index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
-                    <a href="<?php echo $base_path; ?>pages/solutions.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Solution</a>
-                    <a href="<?php echo $base_path; ?>pages/community.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Community</a>
-                    <a href="<?php echo $base_path; ?>pages/resources.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Resources</a>
-                    <a href="<?php echo $base_path; ?>pages/contact.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
-                    <div class="pt-4 mt-4 border-t border-slate-200">
-                        <a href="<?php echo $base_path; ?>auth/login.php" target="_blank" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors mb-2">Login</a>
-                        <a href="<?php echo $base_path; ?>pages/packages.php" class="block btn-primary px-6 py-3 rounded-lg font-semibold text-center">
-                            Book Now
-                        </a>
+                    <!-- Main Navigation -->
+                    <a href="/ForeverYoungTours/index.php" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
+                    
+                    <!-- Solution -->
+                    <div class="space-y-1">
+                        <a href="/ForeverYoungTours/pages/solutions.php" class="block px-4 py-2 text-slate-900 font-semibold bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">Solution</a>
+                        <div class="pl-4 space-y-1">
+                            <a href="/ForeverYoungTours/pages/destinations.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Destinations</a>
+                            <a href="/ForeverYoungTours/pages/booking-engine.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Booking Engine</a>
+                            <a href="/ForeverYoungTours/pages/packing-guide.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Packing Guide</a>
+                            <a href="/ForeverYoungTours/pages/travel-tips.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Travel Tips</a>
+                            <a href="/ForeverYoungTours/pages/emergency.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Emergency</a>
+                            <a href="/ForeverYoungTours/pages/vip-support.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">VIP Support</a>
+                            <a href="/ForeverYoungTours/pages/personalized-planning.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Personalized Planning</a>
+                            <a href="/ForeverYoungTours/pages/store.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Store</a>
+                        </div>
                     </div>
                     
                     <!-- Community -->
