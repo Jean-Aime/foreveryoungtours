@@ -7,23 +7,27 @@ include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
-<section class="pt-24 pb-16 bg-gradient-to-br from-yellow-50 to-orange-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<section class="relative pt-24 pb-16 overflow-hidden">
+    <div class="absolute inset-0 z-0">
+        <img src="https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1920&q=80" alt="Travel Tips" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-            <div class="inline-block px-4 py-2 bg-yellow-500 text-black rounded-full text-sm font-semibold mb-6">
+            <div class="inline-block px-4 py-2 bg-yellow-500 text-white rounded-full text-sm font-semibold mb-6">
                 Travel Tips
             </div>
-            <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            <h1 class="text-3xl lg:text-5xl font-bold text-white mb-6">
                 Insider Knowledge. Global Advantage.
             </h1>
-            <p class="text-xl text-gray-600 mb-8 max-w-4xl mx-auto">
+            <p class="text-xl text-white/95 mb-8 max-w-4xl mx-auto">
                 Leverage our network's experience to travel with confidence. From flight timing and insurance coverage to local currency insights and cultural etiquette, our tips keep you ahead of every challenge.
             </p>
-            <div class="text-lg text-gray-700 mb-8">
+            <div class="text-lg text-white/90 mb-8">
                 <strong>Refreshed quarterly by our MCA & Advisor Network</strong> — these insights evolve as fast as the world does.
             </div>
-            <button class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg">
-                → Explore FYT Travel Tips
+            <button onclick="openInquiryModal('', 'Travel Tips Consultation')" class="btn-primary px-8 py-4 rounded-lg font-semibold text-lg bg-yellow-500 hover:bg-yellow-600 hover:shadow-xl transition-all">
+                → Get Personalized Travel Tips
             </button>
         </div>
     </div>
@@ -100,43 +104,43 @@ include '../includes/header.php';
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Tip 1 -->
             <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div class="h-48 bg-gradient-to-br from-blue-400 to-blue-600"></div>
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80" alt="Travel Documents" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
                 <div class="p-6">
                     <div class="text-sm text-yellow-600 font-semibold mb-2">PRE-DEPARTURE</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Essential Documents Checklist</h3>
                     <p class="text-gray-600 mb-4">Never forget important documents again with our comprehensive pre-travel checklist covering passports, visas, insurance, and more.</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Updated Nov 2024</span>
-                        <button class="text-yellow-600 font-semibold hover:text-yellow-700">Read More →</button>
-                    </div>
+                    
                 </div>
             </article>
 
             <!-- Tip 2 -->
             <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div class="h-48 bg-gradient-to-br from-green-400 to-green-600"></div>
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1580519542036-c47de6196ba5?w=800&q=80" alt="Currency Exchange" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
                 <div class="p-6">
                     <div class="text-sm text-yellow-600 font-semibold mb-2">MONEY MATTERS</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Smart Currency Exchange Tips</h3>
                     <p class="text-gray-600 mb-4">Maximize your travel budget with insider knowledge on when and where to exchange money for the best rates.</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Updated Oct 2024</span>
-                        <button class="text-yellow-600 font-semibold hover:text-yellow-700">Read More →</button>
-                    </div>
+                   
                 </div>
             </article>
 
             <!-- Tip 3 -->
             <article class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div class="h-48 bg-gradient-to-br from-purple-400 to-purple-600"></div>
+                <div class="relative h-48 overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80" alt="Sustainable Travel" class="w-full h-full object-cover hover:scale-110 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                </div>
                 <div class="p-6">
                     <div class="text-sm text-yellow-600 font-semibold mb-2">SUSTAINABLE TRAVEL</div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Eco-Friendly Travel Practices</h3>
                     <p class="text-gray-600 mb-4">Travel responsibly with practical tips for reducing your environmental footprint while exploring the world.</p>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Updated Sep 2024</span>
-                        <button class="text-yellow-600 font-semibold hover:text-yellow-700">Read More →</button>
-                    </div>
+                  
                 </div>
             </article>
         </div>
@@ -200,4 +204,7 @@ include '../includes/header.php';
     </div>
 </section>
 
-<?php include '../includes/footer.php'; ?>
+<?php 
+include 'inquiry-modal.php';
+include '../includes/footer.php'; 
+?>

@@ -1,0 +1,682 @@
+/* ============================================
+   BROWSER COMPATIBILITY & CROSS-DEVICE SUPPORT
+   ForeverYoung Tours - Universal Compatibility
+   ============================================ */
+
+/* ============================================
+   1. CSS RESET & NORMALIZATION
+   ============================================ */
+
+/* Box Sizing Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+/* Remove default margins and paddings */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+/* ============================================
+   2. BROWSER-SPECIFIC PREFIXES
+   ============================================ */
+
+/* Smooth Scrolling with Fallbacks */
+html {
+    scroll-behavior: smooth;
+    -webkit-scroll-behavior: smooth;
+    -moz-scroll-behavior: smooth;
+    -ms-scroll-behavior: smooth;
+}
+
+/* Disable smooth scrolling for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+}
+
+/* Body Base Styles */
+body {
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+}
+
+/* ============================================
+   3. FLEXBOX COMPATIBILITY
+   ============================================ */
+
+.flex-container {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+}
+
+.flex-center {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    -ms-flex-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+}
+
+.flex-wrap {
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+.flex-column {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -moz-box-orient: vertical;
+    -moz-box-direction: normal;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+}
+
+/* ============================================
+   4. GRID COMPATIBILITY
+   ============================================ */
+
+.grid-container {
+    display: -ms-grid;
+    display: grid;
+}
+
+/* Fallback for older browsers */
+@supports not (display: grid) {
+    .grid-container {
+        display: -webkit-box;
+        display: -moz-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    }
+    
+    .grid-item {
+        -webkit-box-flex: 1;
+        -moz-box-flex: 1;
+        -webkit-flex: 1 1 auto;
+        -ms-flex: 1 1 auto;
+        flex: 1 1 auto;
+    }
+}
+
+/* ============================================
+   5. TRANSFORM & TRANSITION COMPATIBILITY
+   ============================================ */
+
+.transform-transition {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/* Hardware Acceleration */
+.hardware-accelerated {
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    backface-visibility: hidden;
+    
+    -webkit-perspective: 1000;
+    -moz-perspective: 1000;
+    perspective: 1000;
+}
+
+/* ============================================
+   6. BORDER RADIUS COMPATIBILITY
+   ============================================ */
+
+.rounded {
+    -webkit-border-radius: 0.5rem;
+    -moz-border-radius: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.rounded-lg {
+    -webkit-border-radius: 1rem;
+    -moz-border-radius: 1rem;
+    border-radius: 1rem;
+}
+
+.rounded-full {
+    -webkit-border-radius: 9999px;
+    -moz-border-radius: 9999px;
+    border-radius: 9999px;
+}
+
+/* ============================================
+   7. BOX SHADOW COMPATIBILITY
+   ============================================ */
+
+.shadow {
+    -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    -moz-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.shadow-lg {
+    -webkit-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    -moz-box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   8. GRADIENT COMPATIBILITY
+   ============================================ */
+
+.gradient-gold-green {
+    background: #DAA520; /* Fallback */
+    background: -webkit-linear-gradient(135deg, #DAA520, #228B22);
+    background: -moz-linear-gradient(135deg, #DAA520, #228B22);
+    background: -o-linear-gradient(135deg, #DAA520, #228B22);
+    background: linear-gradient(135deg, #DAA520, #228B22);
+}
+
+/* ============================================
+   9. BACKDROP FILTER COMPATIBILITY
+   ============================================ */
+
+.backdrop-blur {
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+@supports not (backdrop-filter: blur(20px)) {
+    .backdrop-blur {
+        background: rgba(255, 255, 255, 0.95);
+    }
+}
+
+/* ============================================
+   10. OBJECT-FIT COMPATIBILITY
+   ============================================ */
+
+.object-cover {
+    -o-object-fit: cover;
+    object-fit: cover;
+}
+
+/* Fallback for IE */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    .object-cover {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+/* ============================================
+   11. STICKY POSITIONING COMPATIBILITY
+   ============================================ */
+
+.sticky {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+/* Fallback for older browsers */
+@supports not (position: sticky) {
+    .sticky {
+        position: relative;
+    }
+}
+
+/* ============================================
+   12. TOUCH DEVICE OPTIMIZATIONS
+   ============================================ */
+
+/* Touch-Friendly Click Targets */
+.touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0.75rem;
+}
+
+/* Remove tap highlight on mobile */
+a, button, input, textarea, select {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+}
+
+/* Prevent text selection on buttons */
+button {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Smooth scrolling on touch devices */
+.scroll-container {
+    -webkit-overflow-scrolling: touch;
+    overflow-scrolling: touch;
+}
+
+/* ============================================
+   13. RESPONSIVE IMAGES
+   ============================================ */
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    -ms-interpolation-mode: bicubic;
+}
+
+/* Prevent image dragging */
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
+
+/* ============================================
+   14. VIDEO COMPATIBILITY
+   ============================================ */
+
+video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Ensure video controls work on all devices */
+video::-webkit-media-controls {
+    display: flex !important;
+}
+
+video::-webkit-media-controls-panel {
+    display: flex !important;
+}
+
+/* ============================================
+   15. FORM ELEMENT COMPATIBILITY
+   ============================================ */
+
+/* Remove default appearance */
+input, textarea, select, button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+}
+
+/* iOS Safari specific fixes */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="search"],
+textarea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0.5rem;
+}
+
+/* Remove inner shadow on iOS */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+textarea {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+/* Prevent zoom on focus in iOS */
+@media screen and (max-width: 767px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    input[type="search"],
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+}
+
+/* ============================================
+   16. BUTTON COMPATIBILITY
+   ============================================ */
+
+button, .btn {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}
+
+/* Remove button focus outline in Firefox */
+button::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/* ============================================
+   17. PRINT STYLES
+   ============================================ */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: black !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    a, a:visited {
+        text-decoration: underline;
+    }
+    
+    a[href]::after {
+        content: " (" attr(href) ")";
+    }
+    
+    img {
+        max-width: 100% !important;
+        page-break-inside: avoid;
+    }
+    
+    h2, h3 {
+        page-break-after: avoid;
+    }
+}
+
+/* ============================================
+   18. ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+
+/* Focus Visible for Keyboard Navigation */
+:focus-visible {
+    outline: 2px solid #DAA520;
+    outline-offset: 2px;
+}
+
+/* Remove focus outline for mouse users */
+:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* Screen Reader Only Content */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ============================================
+   19. INTERNET EXPLORER SPECIFIC FIXES
+   ============================================ */
+
+/* IE 10-11 */
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    /* Flexbox fixes */
+    .flex-container {
+        display: -ms-flexbox;
+    }
+    
+    /* Grid fallback */
+    .grid-container {
+        display: -ms-grid;
+    }
+    
+    /* Min-height fix */
+    .min-h-screen {
+        min-height: 100vh;
+    }
+}
+
+/* ============================================
+   20. SAFARI SPECIFIC FIXES
+   ============================================ */
+
+/* Fix for Safari's sticky positioning */
+@supports (-webkit-appearance: none) {
+    .sticky {
+        position: -webkit-sticky;
+        position: sticky;
+    }
+}
+
+/* ============================================
+   21. FIREFOX SPECIFIC FIXES
+   ============================================ */
+
+/* Scrollbar styling for Firefox */
+@-moz-document url-prefix() {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #DAA520 #f1f1f1;
+    }
+}
+
+/* ============================================
+   22. MOBILE DEVICE SPECIFIC OPTIMIZATIONS
+   ============================================ */
+
+/* Prevent text size adjustment on orientation change */
+html {
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+}
+
+/* Optimize for mobile performance */
+@media (max-width: 768px) {
+    * {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+    }
+}
+
+/* ============================================
+   23. HIGH DPI / RETINA DISPLAY SUPPORT
+   ============================================ */
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    /* High DPI specific styles */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+/* ============================================
+   24. DARK MODE SUPPORT
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    /* Dark mode styles can be added here if needed */
+    /* Currently maintaining light theme for consistency */
+}
+
+/* ============================================
+   25. REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ============================================
+   26. LANDSCAPE ORIENTATION OPTIMIZATIONS
+   ============================================ */
+
+@media (orientation: landscape) and (max-height: 500px) {
+    /* Optimize for landscape mobile devices */
+    .hero-section {
+        min-height: auto;
+        padding: 2rem 0;
+    }
+}
+
+/* ============================================
+   27. CUSTOM SCROLLBAR STYLING
+   ============================================ */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #DAA520;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #B8860B;
+}
+
+/* ============================================
+   28. SELECTION STYLING
+   ============================================ */
+
+::selection {
+    background: #DAA520;
+    color: #000;
+}
+
+::-moz-selection {
+    background: #DAA520;
+    color: #000;
+}
+
+/* ============================================
+   29. PLACEHOLDER STYLING
+   ============================================ */
+
+::-webkit-input-placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+::-moz-placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+:-ms-input-placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+::placeholder {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+/* ============================================
+   30. PERFORMANCE OPTIMIZATIONS
+   ============================================ */
+
+/* Will-change for animations */
+.will-animate {
+    will-change: transform, opacity;
+}
+
+/* Contain layout for better performance */
+.contain-layout {
+    contain: layout;
+}
+
+/* GPU acceleration for smooth animations */
+.gpu-accelerate {
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    backface-visibility: hidden;
+}

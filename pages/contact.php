@@ -39,8 +39,8 @@ include '../includes/header.php';
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 mb-1">Office Address</h3>
-                            <p class="text-gray-600">123 Safari Street, Westlands</p>
-                            <p class="text-gray-600">Nairobi, Kenya</p>
+                            <p class="text-gray-600">KN 78 St</p>
+                            <p class="text-gray-600">Kigali, Rwanda</p>
                         </div>
                     </div>
                     
@@ -164,10 +164,10 @@ include '../includes/header.php';
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold text-gray-900 mb-4">Visit Our Office</h2>
-            <p class="text-xl text-gray-600">Find us in the heart of Nairobi</p>
+            <p class="text-xl text-gray-600">Find us in the heart of Kigali</p>
         </div>
         <div class="rounded-2xl overflow-hidden shadow-lg h-96">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8177449849!2d36.8219!3d-1.2864!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMTcnMTEuMCJTIDM2wrA0OScxOC44IkU!5e0!3m2!1sen!2ske!4v1234567890" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3987.5084!2d30.0619!3d-1.9536!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x19dca425b2f47eb1%3A0x3f0e3c3e3e3e3e3e!2sKN%2078%20St%2C%20Kigali%2C%20Rwanda!5e0!3m2!1sen!2srw!4v1234567890" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </div>
 </section>

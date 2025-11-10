@@ -4,8 +4,8 @@
 Each country has its own subdomain in the format: `visit-{country_code}.iforeveryoungtours.com`
 
 Examples:
-- Rwanda: **visit-rwa.iforeveryoungtours.com**
-- Uganda: **visit-uga.iforeveryoungtours.com**
+- Rwanda: **visit-rw.iforeveryoungtours.com**
+- Uganda: **visit-ug.iforeveryoungtours.com**
 - Kenya: **visit-ken.iforeveryoungtours.com**
 - Tanzania: **visit-tza.iforeveryoungtours.com**
 - South Africa: **visit-zaf.iforeveryoungtours.com**
@@ -18,10 +18,10 @@ Location: `C:\Windows\System32\drivers\etc\hosts`
 Add these lines:
 ```
 127.0.0.1 iforeveryoungtours.local
-127.0.0.1 visit-rwa.iforeveryoungtours.local
-127.0.0.1 visit-uga.iforeveryoungtours.local
-127.0.0.1 visit-ken.iforeveryoungtours.local
-127.0.0.1 visit-tza.iforeveryoungtours.local
+127.0.0.1 visit-rw.iforeveryoungtours.local
+127.0.0.1 visit-ug.iforeveryoungtours.local
+127.0.0.1 visit-ke.iforeveryoungtours.local
+127.0.0.1 visit-tz.iforeveryoungtours.local
 127.0.0.1 visit-zaf.iforeveryoungtours.local
 ```
 
@@ -47,8 +47,8 @@ Restart XAMPP Apache service
 
 ### 4. Test Subdomains
 - Main site: http://iforeveryoungtours.local
-- Rwanda: http://visit-rwa.iforeveryoungtours.local
-- Kenya: http://visit-ken.iforeveryoungtours.local
+- Rwanda: http://visit-rw.iforeveryoungtours.local
+- Kenya: http://visit-ke.iforeveryoungtours.local
 
 ## Production Setup (cPanel/Live Server)
 
@@ -71,10 +71,10 @@ Install wildcard SSL certificate for `*.iforeveryoungtours.com`
 
 | Country | Code | Subdomain |
 |---------|------|-----------|
-| Rwanda | RWA | visit-rwa.iforeveryoungtours.com |
-| Uganda | UGA | visit-uga.iforeveryoungtours.com |
-| Kenya | KEN | visit-ken.iforeveryoungtours.com |
-| Tanzania | TZA | visit-tza.iforeveryoungtours.com |
+| Rwanda | RW | visit-rw.iforeveryoungtours.com |
+| Uganda | UG | visit-ug.iforeveryoungtours.com |
+| Kenya | KE | visit-ke.iforeveryoungtours.com |
+| Tanzania | TZ | visit-tz.iforeveryoungtours.com |
 | South Africa | ZAF | visit-zaf.iforeveryoungtours.com |
 | Egypt | EGY | visit-egy.iforeveryoungtours.com |
 | Morocco | MAR | visit-mar.iforeveryoungtours.com |
@@ -84,9 +84,9 @@ Install wildcard SSL certificate for `*.iforeveryoungtours.com`
 
 ## How It Works
 
-1. User visits `visit-rwa.iforeveryoungtours.com`
+1. User visits `visit-rw.iforeveryoungtours.com`
 2. `.htaccess` detects the subdomain pattern
-3. `subdomain-handler.php` extracts country code (RWA)
+3. `subdomain-handler.php` extracts country code (RW)
 4. System loads Rwanda country page automatically
 5. All tours, destinations, and content filtered for Rwanda
 
@@ -97,8 +97,8 @@ Install wildcard SSL certificate for `*.iforeveryoungtours.com`
 require_once 'config/subdomain-config.php';
 
 // Generate country subdomain URL
-$rwanda_url = getCountrySubdomainUrl('RWA');
-// Returns: http://visit-rwa.iforeveryoungtours.com
+$rwanda_url = getCountrySubdomainUrl('RW');
+// Returns: http://visit-rw.iforeveryoungtours.com
 
 // Check if on country subdomain
 if (isCountrySubdomain()) {
