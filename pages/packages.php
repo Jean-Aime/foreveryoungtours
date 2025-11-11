@@ -90,87 +90,33 @@ include '../includes/header.php';
                 <div class="filter-sidebar rounded-2xl p-6 sticky top-24">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Filter Packages</h3>
                     
-                    <!-- Price Range -->
-                    <div class="mb-8">
-                        <h4 class="font-semibold text-gray-900 mb-4">Price Range</h4>
-                        <div class="space-y-3">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="price-filter" data-min="0" data-max="1000" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">Under $1,000</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="price-filter" data-min="1000" data-max="2000" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">$1,000 - $2,000</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="price-filter" data-min="2000" data-max="5000" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">$2,000 - $5,000</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="price-filter" data-min="5000" data-max="99999" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">$5,000+</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Duration -->
-                    <div class="mb-8">
-                        <h4 class="font-semibold text-gray-900 mb-4">Duration</h4>
-                        <div class="space-y-3">
-                            <label class="flex items-center">
-                                <input type="checkbox" class="duration-filter" data-min="1" data-max="3" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">1-3 days</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="duration-filter" data-min="4" data-max="7" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">4-7 days</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="duration-filter" data-min="8" data-max="14" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">1-2 weeks</span>
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" class="duration-filter" data-min="15" data-max="999" 
-                                       onchange="applyFilters()" class="mr-3">
-                                <span class="text-gray-700">2+ weeks</span>
-                            </label>
-                        </div>
-                    </div>
-                    
                     <!-- Experience Type -->
                     <div class="mb-8">
                         <h4 class="font-semibold text-gray-900 mb-4">Experience Type</h4>
                         <div class="space-y-3">
                             <label class="flex items-center">
-                                <input type="checkbox" class="experience-filter" value="safari" 
-                                       onchange="applyFilters()" class="mr-3">
+                                <input type="checkbox" class="experience-filter mr-3" value="safari" 
+                                       onchange="applyFilters()">
                                 <span class="text-gray-700">Safari & Wildlife</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="experience-filter" value="cultural" 
-                                       onchange="applyFilters()" class="mr-3">
+                                <input type="checkbox" class="experience-filter mr-3" value="cultural" 
+                                       onchange="applyFilters()">
                                 <span class="text-gray-700">Cultural Heritage</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="experience-filter" value="beach" 
-                                       onchange="applyFilters()" class="mr-3">
+                                <input type="checkbox" class="experience-filter mr-3" value="beach" 
+                                       onchange="applyFilters()">
                                 <span class="text-gray-700">Beach & Relaxation</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="experience-filter" value="adventure" 
-                                       onchange="applyFilters()" class="mr-3">
+                                <input type="checkbox" class="experience-filter mr-3" value="adventure" 
+                                       onchange="applyFilters()">
                                 <span class="text-gray-700">Adventure & Sports</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="checkbox" class="experience-filter" value="luxury" 
-                                       onchange="applyFilters()" class="mr-3">
+                                <input type="checkbox" class="experience-filter mr-3" value="luxury" 
+                                       onchange="applyFilters()">
                                 <span class="text-gray-700">Luxury Experiences</span>
                             </label>
                         </div>
@@ -182,8 +128,8 @@ include '../includes/header.php';
                         <div class="space-y-3">
                             <?php foreach ($regions as $region): ?>
                             <label class="flex items-center">
-                                <input type="radio" name="region_filter" value="<?php echo $region['slug']; ?>" 
-                                       onchange="filterByRegion(this.value)" class="mr-3" <?php echo $region_filter === $region['slug'] ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="region-filter mr-3" value="<?php echo $region['slug']; ?>" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700"><?php echo htmlspecialchars($region['name']); ?></span>
                             </label>
                             <?php endforeach; ?>
@@ -196,8 +142,8 @@ include '../includes/header.php';
                         <div class="space-y-3 max-h-64 overflow-y-auto">
                             <?php foreach ($countries as $country): ?>
                             <label class="flex items-center">
-                                <input type="radio" name="country_filter" value="<?php echo $country['slug']; ?>" 
-                                       onchange="filterByCountry(this.value)" class="mr-3" <?php echo $country_filter === $country['slug'] ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="country-filter mr-3" value="<?php echo $country['slug']; ?>" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700"><?php echo htmlspecialchars($country['name']); ?></span>
                                 <span class="text-xs text-gray-500 ml-2">(<?php echo htmlspecialchars($country['region_name']); ?>)</span>
                             </label>
@@ -210,48 +156,48 @@ include '../includes/header.php';
                         <h4 class="font-semibold text-gray-900 mb-4">Tour Types</h4>
                         <div class="space-y-3">
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="motorcoach" 
-                                       onchange="filterByTourType(this.value)" class="mr-3">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="motorcoach" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Motorcoach Tours</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="rail" 
-                                       onchange="filterByTourType(this.value)" class="mr-3">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="rail" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Rail Tours</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="cruise" 
-                                       onchange="filterByTourType(this.value)" class="mr-3">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="cruise" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Cruises</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="city" 
-                                       onchange="filterByTourType(this.value)" class="mr-3" <?php echo $category_filter === 'city' ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="tour-type-filter mr-3" value="city" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">City Breaks</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="agro" 
-                                       onchange="filterByTourType(this.value)" class="mr-3" <?php echo $category_filter === 'agro' ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="tour-type-filter mr-3" value="agro" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Agro Tours</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="adventure" 
-                                       onchange="filterByTourType(this.value)" class="mr-3" <?php echo $category_filter === 'adventure' ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="tour-type-filter mr-3" value="adventure" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Adventure Tours</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="sports" 
-                                       onchange="filterByTourType(this.value)" class="mr-3" <?php echo $category_filter === 'sports' ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="tour-type-filter mr-3" value="sports" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Sport Tours</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="cultural" 
-                                       onchange="filterByTourType(this.value)" class="mr-3" <?php echo $category_filter === 'cultural' ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="tour-type-filter mr-3" value="cultural" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Cultural Tours</span>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="tour_type_filter" value="conference" 
-                                       onchange="filterByTourType(this.value)" class="mr-3" <?php echo $category_filter === 'conference' ? 'checked' : ''; ?>>
+                                <input type="checkbox" class="tour-type-filter mr-3" value="conference" 
+                                       onchange="applyAllFilters()">
                                 <span class="text-gray-700">Conference & Expos</span>
                             </label>
                         </div>
@@ -339,7 +285,12 @@ include '../includes/header.php';
                     </div>
                     <?php else: ?>
                     <?php foreach ($tours as $tour): ?>
-                    <div class="package-card rounded-2xl overflow-hidden fade-in-up" data-price="<?php echo $tour['price']; ?>" data-duration="<?php echo $tour['duration_days']; ?>" data-destination="<?php echo strtolower($tour['destination']); ?>">
+                    <div class="package-card rounded-2xl overflow-hidden fade-in-up" 
+                         data-price="<?php echo $tour['price']; ?>" 
+                         data-duration="<?php echo $tour['duration_days']; ?>" 
+                         data-destination="<?php echo strtolower($tour['destination'] ?? ''); ?>"
+                         data-category="<?php echo strtolower($tour['category'] ?? ''); ?>"
+                         data-experience="<?php echo strtolower($tour['experience_type'] ?? ''); ?>">
                         <div class="relative">
                             <?php 
                             $image_src = $tour['cover_image'] ?: $tour['image_url'] ?: '../assets/images/default-tour.jpg';
@@ -530,52 +481,106 @@ include '../includes/header.php';
         </div>
     </div>
 
+<!-- Custom Checkbox Styling -->
+<style>
+/* Reset checkbox styling to default browser appearance */
+.experience-filter,
+.region-filter,
+.country-filter,
+.tour-type-filter {
+    appearance: checkbox !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 12px !important;
+    cursor: pointer !important;
+    background: white !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 3px !important;
+    position: relative !important;
+}
+
+.experience-filter:checked,
+.region-filter:checked,
+.country-filter:checked,
+.tour-type-filter:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.experience-filter:checked::before,
+.region-filter:checked::before,
+.country-filter:checked::before,
+.tour-type-filter:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: -2px !important;
+    left: 1px !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+}
+
+/* Ensure labels are clickable */
+label {
+    cursor: pointer !important;
+    user-select: none !important;
+}
+</style>
+
 <!-- JavaScript -->
 <script>
-    function filterByRegion(regionSlug) {
-        if (regionSlug) {
-            window.location.href = '/ForeverYoungTours/pages/packages.php?region=' + regionSlug;
+    // Initialize filters on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure all checkboxes start unchecked
+        const allFilters = document.querySelectorAll('.experience-filter, .region-filter, .country-filter, .tour-type-filter');
+        allFilters.forEach(filter => {
+            filter.checked = false;
+        });
+        
+        // Show all tours initially
+        const packageCards = document.querySelectorAll('.package-card');
+        packageCards.forEach(card => {
+            card.style.display = 'block';
+        });
+        
+        // Update initial count
+        const resultsCount = document.getElementById('results-count');
+        if (resultsCount) {
+            resultsCount.textContent = packageCards.length;
         }
-    }
-    
-    function filterByCountry(countrySlug) {
-        if (countrySlug) {
-            window.location.href = '/ForeverYoungTours/pages/packages.php?country=' + countrySlug;
-        }
-    }
-    
-    function filterByCategory(category) {
-        if (category) {
-            window.location.href = '/ForeverYoungTours/pages/packages.php?category=' + category;
-        }
-    }
-    
-    function filterByTourType(tourType) {
-        if (tourType) {
-            window.location.href = '/ForeverYoungTours/pages/packages.php?category=' + tourType;
-        }
-    }
-    
-    function clearRegionFilter() {
-        const currentUrl = new URL(window.location);
-        currentUrl.searchParams.delete('region');
-        window.location.href = currentUrl.toString();
-    }
-    
-    function clearCountryFilter() {
-        const currentUrl = new URL(window.location);
-        currentUrl.searchParams.delete('country');
-        window.location.href = currentUrl.toString();
-    }
-    
-    function clearCategoryFilter() {
-        const currentUrl = new URL(window.location);
-        currentUrl.searchParams.delete('category');
-        window.location.href = currentUrl.toString();
-    }
+    });
     
     function clearAllFilters() {
-        window.location.href = '/ForeverYoungTours/pages/packages.php';
+        // Clear all filter checkboxes
+        const experienceFilters = document.querySelectorAll('.experience-filter');
+        const regionFilters = document.querySelectorAll('.region-filter');
+        const countryFilters = document.querySelectorAll('.country-filter');
+        const tourTypeFilters = document.querySelectorAll('.tour-type-filter');
+        
+        experienceFilters.forEach(filter => filter.checked = false);
+        regionFilters.forEach(filter => filter.checked = false);
+        countryFilters.forEach(filter => filter.checked = false);
+        tourTypeFilters.forEach(filter => filter.checked = false);
+        
+        // Show all packages
+        const packageCards = document.querySelectorAll('.package-card');
+        packageCards.forEach(card => {
+            card.style.display = 'block';
+        });
+        
+        // Update results count
+        const resultsCount = document.getElementById('results-count');
+        if (resultsCount) {
+            resultsCount.textContent = packageCards.length;
+        }
+        
+        // Hide no results message
+        const noResultsMessage = document.querySelector('.col-span-full');
+        if (noResultsMessage) {
+            noResultsMessage.style.display = 'none';
+        }
     }
     
     function performSearch() {
@@ -614,6 +619,142 @@ include '../includes/header.php';
             gridView.classList.add('bg-gray-200', 'text-gray-700');
             gridView.classList.remove('bg-blue-500', 'text-white');
             packagesGrid.className = 'grid grid-cols-1 gap-6';
+        }
+    }
+    
+    function applyFilters() {
+        applyAllFilters();
+    }
+    
+    function applyAllFilters() {
+        // Add visual feedback - briefly highlight the filter area
+        const filterSidebar = document.querySelector('.filter-sidebar');
+        if (filterSidebar) {
+            filterSidebar.style.backgroundColor = '#f8fafc';
+            setTimeout(() => {
+                filterSidebar.style.backgroundColor = '';
+            }, 200);
+        }
+        
+        // Get all checked filters
+        const experienceFilters = document.querySelectorAll('.experience-filter:checked');
+        const regionFilters = document.querySelectorAll('.region-filter:checked');
+        const countryFilters = document.querySelectorAll('.country-filter:checked');
+        const tourTypeFilters = document.querySelectorAll('.tour-type-filter:checked');
+        
+        const selectedExperiences = Array.from(experienceFilters).map(filter => filter.value);
+        const selectedRegions = Array.from(regionFilters).map(filter => filter.value);
+        const selectedCountries = Array.from(countryFilters).map(filter => filter.value);
+        const selectedTourTypes = Array.from(tourTypeFilters).map(filter => filter.value);
+        
+        // Debug logging (remove in production)
+        console.log('Applying filters:', {
+            experiences: selectedExperiences,
+            regions: selectedRegions, 
+            countries: selectedCountries,
+            tourTypes: selectedTourTypes
+        });
+        
+        // Get all package cards
+        const packageCards = document.querySelectorAll('.package-card');
+        let visibleCount = 0;
+        
+        packageCards.forEach(card => {
+            let shouldShow = true;
+            
+            // Get card data
+            const cardExperience = card.dataset.experience || '';
+            const cardCategory = card.dataset.category || '';
+            const cardDescription = card.querySelector('p')?.textContent.toLowerCase() || '';
+            const cardTitle = card.querySelector('h3')?.textContent.toLowerCase() || '';
+            const cardRegion = card.querySelector('.bg-slate-100')?.textContent.toLowerCase() || '';
+            
+            // Check experience filters
+            if (selectedExperiences.length > 0) {
+                const matchesExperience = selectedExperiences.some(exp => {
+                    return cardExperience.includes(exp) || 
+                           cardCategory.includes(exp) || 
+                           cardDescription.includes(exp) ||
+                           cardTitle.includes(exp) ||
+                           (exp === 'safari' && (cardDescription.includes('safari') || cardDescription.includes('wildlife') || cardTitle.includes('safari') || cardTitle.includes('wildlife'))) ||
+                           (exp === 'cultural' && (cardDescription.includes('cultural') || cardDescription.includes('heritage') || cardTitle.includes('cultural') || cardTitle.includes('heritage'))) ||
+                           (exp === 'beach' && (cardDescription.includes('beach') || cardDescription.includes('coast') || cardTitle.includes('beach') || cardTitle.includes('coast'))) ||
+                           (exp === 'adventure' && (cardDescription.includes('adventure') || cardDescription.includes('hiking') || cardTitle.includes('adventure') || cardTitle.includes('hiking'))) ||
+                           (exp === 'luxury' && (cardDescription.includes('luxury') || cardDescription.includes('premium') || cardTitle.includes('luxury') || cardTitle.includes('premium')));
+                });
+                
+                if (!matchesExperience) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Check region filters
+            if (selectedRegions.length > 0 && shouldShow) {
+                const matchesRegion = selectedRegions.some(region => {
+                    return cardRegion.includes(region.toLowerCase()) || 
+                           cardRegion.includes(region.replace('-', ' ').toLowerCase());
+                });
+                
+                if (!matchesRegion) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Check country filters
+            if (selectedCountries.length > 0 && shouldShow) {
+                const matchesCountry = selectedCountries.some(country => {
+                    return cardRegion.includes(country.toLowerCase()) || 
+                           cardRegion.includes(country.replace('-', ' ').toLowerCase());
+                });
+                
+                if (!matchesCountry) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Check tour type filters
+            if (selectedTourTypes.length > 0 && shouldShow) {
+                const matchesTourType = selectedTourTypes.some(type => {
+                    return cardCategory.includes(type) || 
+                           cardDescription.includes(type) ||
+                           cardTitle.includes(type) ||
+                           (type === 'motorcoach' && (cardDescription.includes('bus') || cardTitle.includes('bus'))) ||
+                           (type === 'rail' && (cardDescription.includes('train') || cardTitle.includes('train'))) ||
+                           (type === 'cruise' && (cardDescription.includes('cruise') || cardTitle.includes('cruise'))) ||
+                           (type === 'city' && (cardDescription.includes('city') || cardTitle.includes('city'))) ||
+                           (type === 'agro' && (cardDescription.includes('farm') || cardTitle.includes('farm') || cardDescription.includes('agriculture'))) ||
+                           (type === 'adventure' && (cardDescription.includes('adventure') || cardTitle.includes('adventure'))) ||
+                           (type === 'sports' && (cardDescription.includes('sport') || cardTitle.includes('sport'))) ||
+                           (type === 'cultural' && (cardDescription.includes('cultural') || cardTitle.includes('cultural'))) ||
+                           (type === 'conference' && (cardDescription.includes('conference') || cardTitle.includes('conference') || cardDescription.includes('expo')));
+                });
+                
+                if (!matchesTourType) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Show/hide the card
+            if (shouldShow) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update results count
+        const resultsCount = document.getElementById('results-count');
+        if (resultsCount) {
+            resultsCount.textContent = visibleCount;
+        }
+        
+        // Show/hide no results message
+        const noResultsMessage = document.querySelector('.col-span-full');
+        if (visibleCount === 0 && noResultsMessage) {
+            noResultsMessage.style.display = 'block';
+        } else if (noResultsMessage) {
+            noResultsMessage.style.display = 'none';
         }
     }
 </script>

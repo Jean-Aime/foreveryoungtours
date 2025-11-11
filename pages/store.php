@@ -98,10 +98,40 @@ include '../includes/header.php';
 </section>
 
 <!-- Category Filter Section -->
-<section class="sticky top-20 z-40 bg-white border-b border-yellow-200 shadow-sm">
+<section class="sticky top-16 z-40 bg-white border-b border-yellow-200 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-4 overflow-x-auto">
+        <!-- Mobile Layout -->
+        <div class="block lg:hidden space-y-4">
+            <!-- Sort Dropdown - Mobile First -->
+            <div class="flex justify-center">
+                <select id="sortProductsMobile" class="w-full max-w-xs px-4 py-2 bg-white border-2 border-yellow-200 text-gray-700 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer text-center">
+                    <option value="featured">Sort by: Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="rating">Highest Rated</option>
+                    <option value="newest">Newest</option>
+                </select>
+            </div>
+            
+            <!-- Category Filters - Mobile Scrollable -->
+            <div class="overflow-x-auto scrollbar-hide">
+                <div class="flex space-x-3 pb-2 min-w-max px-1">
+                    <button class="category-filter active px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-full font-semibold whitespace-nowrap hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-md text-sm" data-category="all">
+                        All Products
+                    </button>
+                    <?php foreach($categories as $category): ?>
+                    <button class="category-filter px-4 py-2 bg-white text-gray-700 border-2 border-yellow-200 rounded-full font-semibold whitespace-nowrap hover:bg-yellow-50 hover:border-yellow-400 transition-all text-sm" 
+                            data-category="<?php echo htmlspecialchars($category['slug']); ?>">
+                        <?php echo htmlspecialchars($category['name']); ?>
+                    </button>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Desktop Layout -->
+        <div class="hidden lg:flex items-center justify-between">
+            <div class="flex items-center space-x-4 overflow-x-auto scrollbar-hide">
                 <button class="category-filter active px-6 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-full font-semibold whitespace-nowrap hover:from-yellow-600 hover:to-yellow-700 transition-all shadow-md" data-category="all">
                     All Products
                 </button>
@@ -113,8 +143,8 @@ include '../includes/header.php';
                 <?php endforeach; ?>
             </div>
             
-            <!-- Sort Dropdown -->
-            <div class="relative">
+            <!-- Sort Dropdown - Desktop -->
+            <div class="relative ml-4 flex-shrink-0">
                 <select id="sortProducts" class="px-4 py-2 bg-white border-2 border-yellow-200 text-gray-700 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 cursor-pointer">
                     <option value="featured">Sort by: Featured</option>
                     <option value="price-asc">Price: Low to High</option>
@@ -435,10 +465,26 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Sorting
+    // Sorting - Handle both mobile and desktop dropdowns
+    const sortSelectMobile = document.getElementById('sortProductsMobile');
+    
     if (sortSelect) {
         sortSelect.addEventListener('change', function() {
             sortProducts(this.value);
+            // Sync mobile dropdown
+            if (sortSelectMobile) {
+                sortSelectMobile.value = this.value;
+            }
+        });
+    }
+    
+    if (sortSelectMobile) {
+        sortSelectMobile.addEventListener('change', function() {
+            sortProducts(this.value);
+            // Sync desktop dropdown
+            if (sortSelect) {
+                sortSelect.value = this.value;
+            }
         });
     }
     

@@ -91,12 +91,13 @@ if (!isset($base_path)) {
             <div class="flex justify-between items-center h-16">
                 <!-- Logo Section -->
                 <div class="flex items-center space-x-3">
-                    <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="iForYoungTours Logo" class="w-10 h-10">
-
+                    <a href="<?php echo $base_path; ?>index.php" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                        <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="Forever Young Tours Logo" class="w-10 h-10">
+                    </a>
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div class="hidden lg:flex items-center space-x-1">
+                <div class="hidden xl:flex items-center space-x-1">
                     <a href="<?php echo $base_path; ?>index.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
 
                     <!-- Solution Dropdown -->
@@ -377,7 +378,7 @@ if (!isset($base_path)) {
                     </a>
                     
                     <!-- Mobile Menu Button -->
-                    <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors">
+                    <button id="mobileMenuBtn" class="xl:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -386,7 +387,7 @@ if (!isset($base_path)) {
             </div>
             
             <!-- Mobile Menu -->
-            <div id="mobileMenu" class="lg:hidden bg-white border-t border-slate-200 shadow-lg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; max-height: 80vh; overflow-y: auto;">
+            <div id="mobileMenu" class="xl:hidden bg-white border-t border-slate-200 shadow-lg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; max-height: 80vh; overflow-y: auto;">
                 <div class="px-4 py-6 space-y-2">
                     <!-- Main Navigation -->
                     <a href="/ForeverYoungTours/index.php" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>

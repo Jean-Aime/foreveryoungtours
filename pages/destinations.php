@@ -11,7 +11,7 @@ $continents = $stmt->fetchAll();
 $stmt = $pdo->query("SELECT t.*, c.name as country_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id WHERE t.status = 'active' AND t.featured = 1 ORDER BY t.popularity_score DESC, t.average_rating DESC LIMIT 6");
 $global_tours = $stmt->fetchAll();
 
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
@@ -39,12 +39,6 @@ include './header.php';
                 </a>
             </div>
         </div>
-    </div>
-    
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white animate-bounce">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-        </svg>
     </div>
 </section>
 

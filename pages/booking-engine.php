@@ -5,28 +5,28 @@ include '../includes/header.php';
 ?>
 
 <style>
-.booking-hero { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 5rem 0 8rem; position: relative; overflow: hidden; }
-.booking-hero::before { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920') center/cover; opacity: 0.15; }
-.booking-container { max-width: 1400px; margin: -5rem auto 3rem; padding: 0 1.5rem; position: relative; z-index: 10; }
+.booking-hero { padding: 5rem 0 8rem; position: relative; overflow: hidden; }
+.booking-hero::before { content: ''; position: absolute; inset: 0; background: url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1920') center/cover }
+.booking-container { max-width: 1400px; margin: -5rem auto 3rem; padding: 0 1.5rem; position: relative; z-index: 10; } @media (max-width: 768px) { .booking-container { margin: -3rem auto 2rem; padding: 0 1rem; } }
 .booking-card { background: white; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); overflow: hidden; }
-.tabs-header { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; gap: 1rem; }
-.tabs-nav { display: flex; gap: 0.5rem; background: #f3f4f6; padding: 0.5rem; border-radius: 12px; }
-.tab { display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: 10px; border: none; background: transparent; color: #6b7280; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.tabs-header { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; border-bottom: 1px solid #e5e7eb; gap: 1rem; } @media (max-width: 768px) { .tabs-header { padding: 1rem; } }
+.tabs-nav { display: flex; gap: 0.5rem; background: #f3f4f6; padding: 0.5rem; border-radius: 12px; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; } .tabs-nav::-webkit-scrollbar { display: none; }
+.tab { display: flex; align-items: center; gap: 0.5rem; padding: 0.875rem 1.5rem; border-radius: 10px; border: none; background: transparent; color: #6b7280; font-weight: 600; cursor: pointer; transition: all 0.3s; white-space: nowrap; flex-shrink: 0; }
 .tab.active { background: linear-gradient(135deg, #DAA520, #B8860B); color: white; box-shadow: 0 4px 12px rgba(218,165,32,0.3); }
 .tab:hover:not(.active) { background: white; }
 .help-text { display: flex; align-items: center; gap: 0.5rem; color: #6b7280; font-size: 0.875rem; }
-.tab-content { padding: 2rem; border-top: 1px solid #e5e7eb; display: none; }
+.tab-content { padding: 2rem; border-top: 1px solid #e5e7eb; display: none; } @media (max-width: 768px) { .tab-content { padding: 1.5rem; } }
 .tab-content.active { display: block; }
 .form-title { font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-bottom: 1.5rem; }
-.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; align-items: end; } @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } .form-grid .form-field[style*="grid-column: span 2"] { grid-column: 1 !important; } }
 .form-field label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
 .form-field input, .form-field select { width: 100%; padding: 0.875rem 1rem; border: 1px solid #d1d5db; border-radius: 10px; font-size: 1rem; transition: all 0.3s; }
 .form-field input:focus, .form-field select:focus { outline: none; border-color: #DAA520; box-shadow: 0 0 0 3px rgba(218,165,32,0.1); }
-.btn-search { background: linear-gradient(135deg, #DAA520, #B8860B); color: white; padding: 0.875rem 2rem; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(218,165,32,0.3); display: inline-flex; align-items: center; gap: 0.5rem; }
+.btn-search { background: linear-gradient(135deg, #DAA520, #B8860B); color: white; padding: 0.875rem 2rem; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(218,165,32,0.3); display: inline-flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center; }
 .btn-search:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(218,165,32,0.4); }
-.results-section { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem 3rem; }
+.results-section { max-width: 1400px; margin: 0 auto; padding: 0 1.5rem 3rem; } @media (max-width: 768px) { .results-section { padding: 0 1rem 2rem; } }
 .layout { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; }
-.sidebar { background: white; border-radius: 16px; padding: 1.5rem; height: fit-content; box-shadow: 0 2px 12px rgba(0,0,0,0.08); position: sticky; top: 100px; }
+.sidebar { background: white; border-radius: 16px; padding: 1.5rem; height: fit-content; box-shadow: 0 2px 12px rgba(0,0,0,0.08); position: sticky; top: 100px; } @media (max-width: 1024px) { .sidebar { margin-bottom: 2rem; } }
 .sidebar h3 { font-size: 1.125rem; font-weight: 700; margin: 0 0 1.5rem; }
 .filter-group { margin-bottom: 1.5rem; }
 .filter-group h4 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; color: #374151; }
@@ -57,7 +57,7 @@ include '../includes/header.php';
 .btn-submit { background: #10b981; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; width: 100%; font-weight: 600; }
 .btn-close { background: #6b7280; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; width: 100%; margin-top: 0.5rem; }
 @media (max-width: 1024px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } }
-@media (max-width: 768px) { .tabs-nav { overflow-x: auto; } .result-card { flex-direction: column; text-align: center; } .result-price { text-align: center; } }
+@media (max-width: 768px) { .tabs-nav { overflow-x: auto; padding: 0.5rem; } .tab { padding: 0.75rem 1rem; font-size: 0.875rem; } .result-card { flex-direction: column; text-align: center; padding: 1rem; } .result-price { text-align: center; } .result-logo { width: 60px; height: 60px; margin: 0 auto 1rem; } .sort-bar { flex-direction: column; gap: 0.5rem; } .sort-btn { text-align: center; padding: 0.75rem; } .btn-search { padding: 0.75rem 1.5rem; font-size: 0.875rem; } } @media (max-width: 480px) { .booking-hero h1 { font-size: 1.5rem; } .booking-hero p { font-size: 1rem; } .form-title { font-size: 1.25rem; } .booking-container { margin: -2rem auto 1.5rem; } .tab { padding: 0.625rem 0.875rem; font-size: 0.8rem; } } @media (max-width: 400px) { .tab { padding: 0.5rem; gap: 0; justify-content: center; min-width: 48px; } .tab-text { display: none; } .tab svg { width: 24px; height: 24px; } }
 </style>
 
 <div class="booking-hero">
@@ -79,23 +79,23 @@ include '../includes/header.php';
             <div class="tabs-nav">
                 <button class="tab active" onclick="switchTab('flights')">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
-                    Flights
+                    <span class="tab-text">Flights</span>
                 </button>
                 <button class="tab" onclick="switchTab('hotels')">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                    Hotels
+                    <span class="tab-text">Hotels</span>
                 </button>
                 <button class="tab" onclick="switchTab('cars')">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-                    Cars
+                    <span class="tab-text">Cars</span>
                 </button>
                 <button class="tab" onclick="switchTab('cruises')">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>
-                    Cruises
+                    <span class="tab-text">Cruises</span>
                 </button>
                 <button class="tab" onclick="switchTab('activities')">
                     <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                    Activities
+                    <span class="tab-text">Activities</span>
                 </button>
             </div>
             <div class="help-text">

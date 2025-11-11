@@ -118,7 +118,7 @@ $user_liked = $stmt->fetch() ? true : false;
 $page_title = htmlspecialchars($post['title']) . " - iForYoungTours Blog";
 $page_description = htmlspecialchars($post['excerpt']);
 
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <!-- Hero Section -->
