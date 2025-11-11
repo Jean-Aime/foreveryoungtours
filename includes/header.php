@@ -48,6 +48,21 @@ if (!isset($base_path)) {
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: {
+                        'xs': '475px',
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                        'playfair': ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
 
     <!-- Core Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -64,7 +79,6 @@ if (!isset($base_path)) {
     <!-- Modern Styles -->
     <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/browser-compatibility.css">
     <link rel="stylesheet" href="<?php echo isset($css_path) ? $css_path : 'assets/css/modern-styles.css'; ?>">
-    <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/responsive-utilities.css">
     <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/client-dashboard.css">
     
     <!-- Browser Compatibility JavaScript -->
@@ -77,12 +91,13 @@ if (!isset($base_path)) {
             <div class="flex justify-between items-center h-16">
                 <!-- Logo Section -->
                 <div class="flex items-center space-x-3">
-                    <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="iForYoungTours Logo" class="w-10 h-10">
-
+                    <a href="<?php echo $base_path; ?>index.php" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                        <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="Forever Young Tours Logo" class="w-10 h-10">
+                    </a>
                 </div>
 
                 <!-- Desktop Navigation -->
-                <div class="hidden lg:flex items-center space-x-1">
+                <div class="hidden xl:flex items-center space-x-1">
                     <a href="<?php echo $base_path; ?>index.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
 
                     <!-- Solution Dropdown -->
@@ -363,7 +378,7 @@ if (!isset($base_path)) {
                     </a>
                     
                     <!-- Mobile Menu Button -->
-                    <button class="lg:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors" onclick="toggleMobileMenu()">
+                    <button id="mobileMenuBtn" class="xl:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                         </svg>
@@ -372,30 +387,108 @@ if (!isset($base_path)) {
             </div>
             
             <!-- Mobile Menu -->
-            <div id="mobileMenu" class="lg:hidden bg-white border-t border-slate-200 hidden">
+            <div id="mobileMenu" class="xl:hidden bg-white border-t border-slate-200 shadow-lg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; max-height: 80vh; overflow-y: auto;">
                 <div class="px-4 py-6 space-y-2">
-                    <a href="<?php echo $base_path; ?>index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
-                    <a href="<?php echo $base_path; ?>pages/solutions.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Solution</a>
-                    <a href="<?php echo $base_path; ?>pages/community.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Community</a>
-                    <a href="<?php echo $base_path; ?>pages/resources.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Resources</a>
-                    <a href="<?php echo $base_path; ?>pages/contact.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
-                    <div class="pt-4 mt-4 border-t border-slate-200">
-                        <a href="<?php echo $base_path; ?>auth/login.php" target="_blank" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors mb-2">Login</a>
-                        <a href="<?php echo $base_path; ?>pages/packages.php" class="block btn-primary px-6 py-3 rounded-lg font-semibold text-center">
-                            Book Now
-                        </a>
+                    <!-- Main Navigation -->
+                    <a href="/ForeverYoungTours/index.php" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
+                    
+                    <!-- Solution -->
+                    <div class="space-y-1">
+                        <a href="/ForeverYoungTours/pages/solutions.php" class="block px-4 py-2 text-slate-900 font-semibold bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">Solution</a>
+                        <div class="pl-4 space-y-1">
+                            <a href="/ForeverYoungTours/pages/destinations.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Destinations</a>
+                            <a href="/ForeverYoungTours/pages/booking-engine.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Booking Engine</a>
+                            <a href="/ForeverYoungTours/pages/packing-guide.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Packing Guide</a>
+                            <a href="/ForeverYoungTours/pages/travel-tips.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Travel Tips</a>
+                            <a href="/ForeverYoungTours/pages/emergency.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Emergency</a>
+                            <a href="/ForeverYoungTours/pages/vip-support.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">VIP Support</a>
+                            <a href="/ForeverYoungTours/pages/personalized-planning.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Personalized Planning</a>
+                            <a href="/ForeverYoungTours/pages/store.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Store</a>
+                        </div>
                     </div>
+                    
+                    <!-- Community -->
+                    <div class="space-y-1">
+                        <a href="/ForeverYoungTours/pages/community.php" class="block px-4 py-2 text-slate-900 font-semibold bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">Community</a>
+                        <div class="pl-4 space-y-1">
+                            <a href="/ForeverYoungTours/pages/travel-club-membership.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Travel Club Membership</a>
+                            <a href="/ForeverYoungTours/pages/mca-advisor-network.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">MCA & Advisor Network</a>
+                            <a href="/ForeverYoungTours/pages/partners.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Partners</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Resources -->
+                    <div class="space-y-1">
+                        <a href="/ForeverYoungTours/pages/resources.php" class="block px-4 py-2 text-slate-900 font-semibold bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">Resources</a>
+                        <div class="pl-4 space-y-1">
+                            <a href="/ForeverYoungTours/pages/packing-guides-resources.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Packing Guides</a>
+                            <a href="/ForeverYoungTours/pages/travel-tips-resources.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Travel Tips</a>
+                            <a href="/ForeverYoungTours/pages/destination-guides.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Destination Guides</a>
+                            <a href="/ForeverYoungTours/pages/senior-discounts.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Senior Discounts</a>
+                            <a href="/ForeverYoungTours/pages/cultural-etiquette.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Cultural & Etiquette</a>
+                            <a href="/ForeverYoungTours/pages/visa-documents.php" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Visa & Documents</a>
+                        </div>
+                    </div>
+                    
+                    <a href="/ForeverYoungTours/pages/contact.php" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
                 </div>
             </div>
         </div>
     </nav>
     
-    <!-- Nextcloud-Style Navigation JavaScript -->
+    <!-- Mobile Menu JavaScript - Conflict-Free -->
     <script>
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            menu.classList.toggle('hidden');
-        }
+        (function() {
+            'use strict';
+            
+            // Wait for DOM to be ready
+            function initMobileMenu() {
+                const menuBtn = document.getElementById('mobileMenuBtn');
+                const menu = document.getElementById('mobileMenu');
+                
+                if (!menuBtn || !menu) {
+                    return;
+                }
+                
+                // Ensure menu starts hidden
+                menu.style.display = 'none';
+                
+                // Add click event to button
+                menuBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    if (menu.style.display === 'none' || menu.style.display === '') {
+                        menu.style.display = 'block';
+                    } else {
+                        menu.style.display = 'none';
+                    }
+                });
+                
+                // Close menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+                        if (menu.style.display === 'block') {
+                            menu.style.display = 'none';
+                        }
+                    }
+                });
+                
+                // Close menu on window resize to desktop
+                window.addEventListener('resize', function() {
+                    if (window.innerWidth >= 1024 && menu.style.display === 'block') {
+                        menu.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Initialize when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initMobileMenu);
+            } else {
+                initMobileMenu();
+            }
+        })();
         
 
         

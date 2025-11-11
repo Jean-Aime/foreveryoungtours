@@ -69,6 +69,101 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide scrollbars for horizontal scrolling */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
+/* Store Page Sticky Filter Section */
+.store-filter-sticky {
+    position: sticky;
+    top: 64px; /* Adjust based on header height */
+    z-index: 40;
+    background: white;
+    border-bottom: 1px solid #fbbf24;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+
+.store-filter-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem;
+    position: relative;
+}
+
+.store-filter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 0.5rem;
+}
+
+.store-filter-buttons::-webkit-scrollbar {
+    display: none;
+}
+
+.store-filter-button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 2px solid #fbbf24;
+    background: white;
+    color: #374151;
+}
+
+.store-filter-button.active {
+    background: linear-gradient(to right, #f59e0b, #d97706);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.store-sort-dropdown {
+    flex-shrink: 0;
+    margin-left: 1rem;
+    position: relative;
+}
+
+@media (max-width: 1024px) {
+    .store-filter-container {
+        padding: 0.75rem 1rem;
+    }
+    
+    .store-filter-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .store-filter-buttons {
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .store-filter-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .store-sort-dropdown {
+        margin-left: 0;
+        align-self: flex-end;
+    }
+}
+
 /* Nextcloud-Style Mega Dropdowns */
 .nextcloud-dropdown-mega {
     position: absolute;
@@ -2790,13 +2885,34 @@ html {
 
 /* Responsive Hero Styles */
 @media (max-width: 768px) {
+    .hero-section {
+        min-height: 100vh !important;
+        height: 100vh !important;
+    }
+    
     .hero-headline {
         font-size: 2.5rem !important;
-        line-height: 1.2;
+        line-height: 1.2 !important;
+        margin-bottom: 1rem !important;
     }
     
     .hero-subheadline {
         font-size: 1.125rem !important;
+        margin-bottom: 2rem !important;
+        padding: 0 1rem;
+    }
+    
+    .hero-content {
+        padding: 0 1rem !important;
+    }
+    
+    .cta-primary,
+    .cta-secondary {
+        width: 100% !important;
+        max-width: 300px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        justify-content: center !important;
     }
     
     .hero-body p {
@@ -2805,6 +2921,8 @@ html {
     
     .tagline-container {
         gap: 0.75rem !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
     }
     
     .tagline-item {
@@ -2814,11 +2932,25 @@ html {
 
 @media (max-width: 480px) {
     .hero-headline {
-        font-size: 2rem !important;
+        font-size: 1.875rem !important;
+        line-height: 1.1 !important;
+        margin-bottom: 0.75rem !important;
     }
     
     .hero-subheadline {
         font-size: 1rem !important;
+        margin-bottom: 1.5rem !important;
+        padding: 0 0.5rem;
+    }
+    
+    .hero-content {
+        padding: 0 0.5rem !important;
+    }
+    
+    .cta-primary,
+    .cta-secondary {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.875rem !important;
     }
     
     .hero-body p {
@@ -2967,5 +3099,292 @@ html {
     
     .newsletter-content h2 {
         font-size: 1.75rem;
+    }
+}
+
+/* WhatsApp Button Fixed Positioning - Critical CSS */
+#whatsapp-floating-button,
+.whatsapp-fixed-button {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 999999 !important;
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    #whatsapp-floating-button,
+    .whatsapp-fixed-button {
+        bottom: 15px !important;
+        right: 15px !important;
+    }
+}
+
+/* Enhanced Mobile Menu Styles */
+.mobile-menu-container {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    background-color: white !important;
+    border-top: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.mobile-menu-container[style*="display: block"] {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile dropdown sections */
+.mobile-dropdown-section {
+    margin: 8px 0;
+}
+
+.mobile-dropdown-header {
+    background-color: #f8fafc;
+    margin: 4px 0;
+    border-radius: 6px;
+}
+
+.mobile-dropdown-content {
+    background-color: #ffffff;
+}
+
+.mobile-dropdown-content a {
+    font-size: 14px;
+    padding: 8px 16px;
+    margin: 2px 0;
+}
+
+/* Hide mobile menu on large screens */
+@media (min-width: 1024px) {
+    .mobile-menu-container {
+        display: none !important;
+    }
+}
+
+/* Force mobile menu visibility when shown */
+.mobile-menu-container[style*="display: block"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Mobile Menu Button Animation */
+.lg\:hidden button svg {
+    transition: transform 0.3s ease;
+}
+
+.lg\:hidden button:hover svg {
+    transform: scale(1.1);
+}
+
+/* Improved Mobile Navigation */
+@media (max-width: 1024px) {
+    /* Hide desktop dropdowns on mobile */
+    .nextcloud-dropdown-mega {
+        display: none !important;
+    }
+    
+    /* Ensure mobile menu is accessible */
+    .mobile-menu-animated {
+        position: relative;
+        z-index: 1000;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Mobile menu links styling */
+    .mobile-menu-animated a {
+        display: block;
+        padding: 12px 16px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        font-weight: 500;
+    }
+    
+    .mobile-menu-animated a:hover {
+        background-color: #f1f5f9;
+        transform: translateX(4px);
+    }
+    
+    /* Mobile Book Now button */
+    .mobile-menu-animated .btn-primary {
+        background: linear-gradient(135deg, #DAA520, #F1C40F);
+        color: #000;
+        font-weight: 600;
+        text-align: center;
+        margin-top: 8px;
+        box-shadow: 0 2px 4px rgba(218, 165, 32, 0.3);
+    }
+    
+    .mobile-menu-animated .btn-primary:hover {
+        background: linear-gradient(135deg, #B8860B, #DAA520);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(218, 165, 32, 0.4);
+    }
+}
+
+/* Touch-friendly navigation */
+@media (max-width: 768px) {
+    /* Larger touch targets */
+    .mobile-menu-animated a {
+        padding: 16px 20px;
+        font-size: 16px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Navigation header improvements */
+    nav {
+        padding: 12px 0;
+    }
+    
+    /* Logo sizing on mobile */
+    nav img {
+        height: 40px;
+        width: auto;
+    }
+    
+    /* Mobile menu button improvements */
+    .lg\:hidden button {
+        padding: 12px;
+        min-width: 48px;
+        min-height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .mobile-menu-animated {
+        margin: 0 -16px;
+        border-radius: 0;
+    }
+    
+    .mobile-menu-animated .px-4 {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    /* Ensure content doesn't overflow */
+    .max-w-7xl {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+/* Responsive Typography Improvements */
+@media (max-width: 768px) {
+    /* Hero sections */
+    .hero-section h1 {
+        font-size: 2.5rem !important;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-section p {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+    
+    /* Section headings */
+    .text-4xl {
+        font-size: 2rem !important;
+    }
+    
+    .text-3xl {
+        font-size: 1.75rem !important;
+    }
+    
+    .text-2xl {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Button improvements */
+    .btn-primary,
+    .btn-secondary {
+        padding: 14px 24px;
+        font-size: 16px;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+/* Responsive Grid Improvements */
+@media (max-width: 768px) {
+    /* Force single column on mobile */
+    .grid-cols-2,
+    .grid-cols-3,
+    .grid-cols-4,
+    .md\:grid-cols-2,
+    .md\:grid-cols-3,
+    .lg\:grid-cols-3,
+    .lg\:grid-cols-4 {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Adjust spacing */
+    .gap-8 {
+        gap: 1.5rem !important;
+    }
+    
+    .gap-6 {
+        gap: 1rem !important;
+    }
+    
+    /* Section padding */
+    .py-20 {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+    }
+    
+    .py-16 {
+        padding-top: 2.5rem !important;
+        padding-bottom: 2.5rem !important;
+    }
+}
+
+/* Responsive Images and Cards */
+@media (max-width: 768px) {
+    /* Card improvements */
+    .card,
+    .package-card,
+    .destination-card {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Image aspect ratios */
+    .aspect-video {
+        aspect-ratio: 16/9;
+    }
+    
+    .aspect-square {
+        aspect-ratio: 1/1;
+    }
+    
+    /* Ensure images don't overflow */
+    img {
+        max-width: 100%;
+        height: auto;
     }
 }
