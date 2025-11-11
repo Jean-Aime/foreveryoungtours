@@ -64,9 +64,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { overflow: hidden; }
-        .form-container { height: 100vh; overflow-y: hidden; display: flex; flex-direction: column; }
+        .form-container { 
+            height: 100vh; 
+            overflow-y: hidden; 
+            display: flex; 
+            flex-direction: column; 
+        }
         .image-container { height: 100vh; }
-        .form-scroll { flex: 1; overflow-y: auto; }
+        .form-scroll { 
+            flex: 1; 
+            overflow-y: auto; 
+            min-height: 0; /* Ensures flex child can shrink */
+        }
+        /* Ensure proper spacing on mobile */
+        @media (max-width: 1024px) {
+            .form-container {
+                padding-top: 0;
+            }
+            .form-scroll {
+                padding-top: 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -74,19 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Left Side - Form -->
         <div class="w-full lg:w-1/2 form-container bg-white">
             <!-- Logo in Top Left -->
-            <div class="p-6">
+            <div class="p-4 lg:p-6 flex-shrink-0">
                 <a href="../index.php" class="inline-block hover:opacity-80 transition-opacity">
-                    <h1 class="text-2xl font-bold text-gradient">iForYoungTours</h1>
+                    <h1 class="text-xl lg:text-2xl font-bold text-gradient">iForYoungTours</h1>
                 </a>
             </div>
             
             <!-- Scrollable Form Content -->
-            <div class="form-scroll flex items-center justify-center px-8">
-                <div class="w-full max-w-md py-8">
+            <div class="form-scroll flex items-start justify-center px-4 lg:px-8 pt-4">
+                <div class="w-full max-w-md py-4">
                     <!-- Header -->
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-bold text-slate-900 mb-2">Create Account</h2>
-                        <p class="text-slate-600">Join us for amazing African adventures</p>
+                    <div class="text-center mb-6">
+                        <h2 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">Create Account</h2>
+                        <p class="text-sm lg:text-base text-slate-600">Join us for amazing African adventures</p>
                     </div>
 
                 <!-- Error Message -->
@@ -99,21 +117,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <!-- Registration Form -->
                 <div class="nextcloud-card p-8">
                         <form method="POST" id="registrationForm" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
+                                <label for="first_name" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                     First Name <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="first_name" required 
+                                <input type="text" id="first_name" name="first_name" required 
                                        value="<?php echo htmlspecialchars($_POST['first_name'] ?? ''); ?>"
                                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                        placeholder="John">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
+                                <label for="last_name" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                     Last Name <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="last_name" required 
+                                <input type="text" id="last_name" name="last_name" required 
                                        value="<?php echo htmlspecialchars($_POST['last_name'] ?? ''); ?>"
                                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                        placeholder="Doe">
@@ -121,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-900 mb-2">
+                            <label for="email" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                 Email Address <span class="text-red-500">*</span>
                             </label>
                             <input type="email" id="email" name="email" required 
@@ -131,30 +149,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-900 mb-2">
+                            <label for="phone" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                 Phone Number <span class="text-red-500">*</span>
                             </label>
-                            <input type="tel" name="phone" required
+                            <input type="tel" id="phone" name="phone" required
                                    value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>"
                                    class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                    placeholder="+1 (555) 000-0000">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
+                                <label for="country" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                     Country <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" name="country" required
+                                <input type="text" id="country" name="country" required
                                        value="<?php echo htmlspecialchars($_POST['country'] ?? ''); ?>"
                                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                        placeholder="United States">
                             </div>
                             <div>
-                                <label class="block text-sm font-semibold text-slate-900 mb-2">
+                                <label for="city" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                     City
                                 </label>
-                                <input type="text" name="city"
+                                <input type="text" id="city" name="city"
                                        value="<?php echo htmlspecialchars($_POST['city'] ?? ''); ?>"
                                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                        placeholder="New York">
@@ -162,20 +180,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-900 mb-2">
+                            <label for="password" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                 Password <span class="text-red-500">*</span>
                             </label>
-                            <input type="password" name="password" required 
+                            <input type="password" id="password" name="password" required 
                                    class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                    placeholder="Minimum 6 characters">
-                            <p class="text-xs text-slate-500 mt-1">Must be at least 6 characters</p>
+                            <p class="text-xs text-gray-500 mt-1">Must be at least 6 characters</p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-semibold text-slate-900 mb-2">
+                            <label for="confirm_password" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">
                                 Confirm Password <span class="text-red-500">*</span>
                             </label>
-                            <input type="password" name="confirm_password" required 
+                            <input type="password" id="confirm_password" name="confirm_password" required 
                                    class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-golden-500 focus:border-transparent text-black"
                                    placeholder="Re-enter password">
                         </div>
