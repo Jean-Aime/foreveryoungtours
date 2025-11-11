@@ -22,7 +22,7 @@ $page_title = $tour['name'] . " - iForYoungTours";
 $page_description = $tour['description'];
 // $base_path will be auto-detected in header.php based on server port
 $css_path = "../assets/css/modern-styles.css";
-include './header.php';
+include '../includes/header.php';
 ?>
 
 <main class="pt-16">

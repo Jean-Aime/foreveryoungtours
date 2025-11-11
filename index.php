@@ -84,21 +84,21 @@ include 'includes/header.php';
         <div class="absolute inset-0 bg-gradient-to-b from-yellow-600/20 via-black/60 to-black/80 hero-overlay"></div>
         
         <!-- Content -->
-        <div class="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8" style="display: flex !important; align-items: center !important; justify-content: center !important; text-align: center !important;">
-            <div class="w-full max-w-5xl mx-auto text-center hero-content" style="text-align: center !important; margin: 0 auto !important; display: block !important; width: 100% !important;">
+        <div class="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
+            <div class="w-full max-w-5xl mx-auto text-center hero-content">
                 <!-- Headline -->
-                <h1 class="hero-headline text-8xl md:text-8xl lg:text-5xl font-bold text-white mb-6 leading-tight" style="text-align: center !important; width: 100% !important; margin: 0 auto 1.5rem auto !important;">
+                <h1 class="hero-headline text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
                     Explore the World with <span class="text-yellow-400">Forever Young Tours</span>
                 </h1>
                 
                 <!-- Subheadline -->
-                <p class="hero-subheadline text-xl md:text-2xl text-gray-200 mb-12 max-w-4xl mx-auto" style="text-align: center !important; width: 100% !important; margin: 0 auto 3rem auto !important;">
+                <p class="hero-subheadline text-lg sm:text-xl md:text-2xl text-gray-200 mb-8 sm:mb-12 max-w-4xl mx-auto">
                     Luxury Group Travel Experiences Across Africa, the Caribbean, Europe, and Beyond
                 </p>
                 
                 <!-- CTA Buttons -->
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center" style="display: flex !important; justify-content: center !important; align-items: center !important; margin: 0 auto !important; width: 100% !important; text-align: center !important;">
-                    <a href="<?php echo $base_path; ?>pages/packages.php" class="group inline-flex items-center px-10 py-5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold rounded-2xl hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 transform hover:-translate-y-2 hover:scale-105 cta-primary">
+                <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+                    <a href="<?php echo $base_path; ?>pages/packages.php" class="group inline-flex items-center px-6 sm:px-10 py-3 sm:py-5 bg-gradient-to-r from-yellow-500 to-yellow-600 text-black font-bold rounded-2xl hover:from-yellow-600 hover:to-yellow-700 transition-all duration-300 shadow-2xl hover:shadow-yellow-500/25 transform hover:-translate-y-2 hover:scale-105 cta-primary w-full sm:w-auto justify-center">
                         <svg class="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                         </svg>
@@ -107,7 +107,7 @@ include 'includes/header.php';
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                         </svg>
                     </a>
-                    <a href="<?php echo $base_path; ?>auth/register.php" class="group inline-flex items-center px-10 py-5 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl border-2 border-white/40 hover:bg-white/20 hover:border-white/60 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 cta-secondary">
+                    <a href="<?php echo $base_path; ?>auth/register.php" class="group inline-flex items-center px-6 sm:px-10 py-3 sm:py-5 bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl border-2 border-white/40 hover:bg-white/20 hover:border-white/60 transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 cta-secondary w-full sm:w-auto justify-center">
                         <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>

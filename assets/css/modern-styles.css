@@ -69,6 +69,101 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Hide scrollbars for horizontal scrolling */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
+/* Store Page Sticky Filter Section */
+.store-filter-sticky {
+    position: sticky;
+    top: 64px; /* Adjust based on header height */
+    z-index: 40;
+    background: white;
+    border-bottom: 1px solid #fbbf24;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+
+.store-filter-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem;
+    position: relative;
+}
+
+.store-filter-buttons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 0.5rem;
+}
+
+.store-filter-buttons::-webkit-scrollbar {
+    display: none;
+}
+
+.store-filter-button {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 0.5rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 2px solid #fbbf24;
+    background: white;
+    color: #374151;
+}
+
+.store-filter-button.active {
+    background: linear-gradient(to right, #f59e0b, #d97706);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.store-sort-dropdown {
+    flex-shrink: 0;
+    margin-left: 1rem;
+    position: relative;
+}
+
+@media (max-width: 1024px) {
+    .store-filter-container {
+        padding: 0.75rem 1rem;
+    }
+    
+    .store-filter-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .store-filter-buttons {
+        gap: 0.75rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .store-filter-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .store-sort-dropdown {
+        margin-left: 0;
+        align-self: flex-end;
+    }
+}
+
 /* Nextcloud-Style Mega Dropdowns */
 .nextcloud-dropdown-mega {
     position: absolute;
@@ -2790,13 +2885,34 @@ html {
 
 /* Responsive Hero Styles */
 @media (max-width: 768px) {
+    .hero-section {
+        min-height: 100vh !important;
+        height: 100vh !important;
+    }
+    
     .hero-headline {
         font-size: 2.5rem !important;
-        line-height: 1.2;
+        line-height: 1.2 !important;
+        margin-bottom: 1rem !important;
     }
     
     .hero-subheadline {
         font-size: 1.125rem !important;
+        margin-bottom: 2rem !important;
+        padding: 0 1rem;
+    }
+    
+    .hero-content {
+        padding: 0 1rem !important;
+    }
+    
+    .cta-primary,
+    .cta-secondary {
+        width: 100% !important;
+        max-width: 300px !important;
+        margin: 0 auto !important;
+        text-align: center !important;
+        justify-content: center !important;
     }
     
     .hero-body p {
@@ -2805,6 +2921,8 @@ html {
     
     .tagline-container {
         gap: 0.75rem !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
     }
     
     .tagline-item {
@@ -2814,11 +2932,25 @@ html {
 
 @media (max-width: 480px) {
     .hero-headline {
-        font-size: 2rem !important;
+        font-size: 1.875rem !important;
+        line-height: 1.1 !important;
+        margin-bottom: 0.75rem !important;
     }
     
     .hero-subheadline {
         font-size: 1rem !important;
+        margin-bottom: 1.5rem !important;
+        padding: 0 0.5rem;
+    }
+    
+    .hero-content {
+        padding: 0 0.5rem !important;
+    }
+    
+    .cta-primary,
+    .cta-secondary {
+        padding: 0.75rem 1.5rem !important;
+        font-size: 0.875rem !important;
     }
     
     .hero-body p {
@@ -2967,6 +3099,24 @@ html {
     
     .newsletter-content h2 {
         font-size: 1.75rem;
+    }
+}
+
+/* WhatsApp Button Fixed Positioning - Critical CSS */
+#whatsapp-floating-button,
+.whatsapp-fixed-button {
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    z-index: 999999 !important;
+    display: block !important;
+}
+
+@media (max-width: 768px) {
+    #whatsapp-floating-button,
+    .whatsapp-fixed-button {
+        bottom: 15px !important;
+        right: 15px !important;
     }
 }
 
