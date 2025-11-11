@@ -241,7 +241,7 @@ include '../includes/header.php';
                 <!-- Filter Info & Results Count -->
                 <div class="mb-6">
                     <?php if ($region_filter || $country_filter || $category_filter): ?>
-                    <div class="mb-4 flex flex-wrap gap-2">
+                    <div class="mb-4 flex flex-wrap items-center gap-2">
                         <?php if ($region_filter): ?>
                         <span class="bg-golden-100 text-golden-800 px-3 py-1 rounded-full text-sm font-medium">
                             Region: <?php echo htmlspecialchars(array_filter($regions, fn($r) => $r['slug'] === $region_filter)[0]['name'] ?? $region_filter); ?>
@@ -260,6 +260,9 @@ include '../includes/header.php';
                             <button onclick="clearCategoryFilter()" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
                         </span>
                         <?php endif; ?>
+                        <button onclick="clearAllFilters()" class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-red-200 transition-colors">
+                            Clear All Filters
+                        </button>
                     </div>
                     <?php endif; ?>
                     <p class="text-gray-600">
@@ -564,23 +567,30 @@ label {
         countryFilters.forEach(filter => filter.checked = false);
         tourTypeFilters.forEach(filter => filter.checked = false);
         
-        // Show all packages
-        const packageCards = document.querySelectorAll('.package-card');
-        packageCards.forEach(card => {
-            card.style.display = 'block';
-        });
-        
-        // Update results count
-        const resultsCount = document.getElementById('results-count');
-        if (resultsCount) {
-            resultsCount.textContent = packageCards.length;
-        }
-        
-        // Hide no results message
-        const noResultsMessage = document.querySelector('.col-span-full');
-        if (noResultsMessage) {
-            noResultsMessage.style.display = 'none';
-        }
+        // Clear URL parameters and reload
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('category');
+        currentUrl.searchParams.delete('region');
+        currentUrl.searchParams.delete('country');
+        window.location.href = currentUrl.toString();
+    }
+    
+    function clearCategoryFilter() {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('category');
+        window.location.href = currentUrl.toString();
+    }
+    
+    function clearRegionFilter() {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('region');
+        window.location.href = currentUrl.toString();
+    }
+    
+    function clearCountryFilter() {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('country');
+        window.location.href = currentUrl.toString();
     }
     
     function performSearch() {
