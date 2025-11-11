@@ -1,7 +1,7 @@
     <!-- Footer -->
     <footer class="bg-white border-t border-gray-200 py-12">
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-            <div class="grid lg:grid-cols-3 gap-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
                 <!-- Column 1: Logo & Description -->
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
@@ -25,7 +25,7 @@
                 </div>
                 
                 <!-- Column 2: Tour Types & Resources -->
-                <div class="grid grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-4">Tour Categories</h4>
                         <ul class="space-y-2 text-sm">
@@ -51,11 +51,12 @@
                 </div>
                 
                 <!-- Column 3: Contact & Newsletter -->
-                <div>
+                <div class="lg:order-last">
                     <div class="mb-6">
-                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-0">
-                            <input type="email" placeholder="Enter your Email" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none text-sm focus:outline-none focus:border-yellow-500 min-w-0">
-                            <button class="bg-yellow-500 text-white px-4 sm:px-6 py-2 rounded-lg sm:rounded-l-none sm:rounded-r-lg font-semibold hover:bg-yellow-600 transition-colors whitespace-nowrap">Subscribe</button>
+                        <h4 class="font-semibold text-gray-900 mb-4">Stay Updated</h4>
+                        <div class="flex flex-col gap-3">
+                            <input type="email" placeholder="Enter your Email" class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20">
+                            <button class="w-full bg-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition-colors">Subscribe to our newsletter</button>
                         </div>
                     </div>
                     <div>
