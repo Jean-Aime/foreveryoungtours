@@ -16,10 +16,10 @@
                     </p>
                     <div>
                         <p class="text-sm font-semibold text-gray-900 mb-3">WE ACCEPT</p>
-                        <div class="flex space-x-3">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-8">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" class="h-8">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="h-8">
+                        <div class="flex space-x-3 items-center">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" class="h-6 w-auto object-contain">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" alt="Apple Pay" class="h-6 w-4 object-contain">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" class="h-6 w-16 object-contain">
                         </div>
                     </div>
                 </div>
@@ -53,15 +53,9 @@
                 <!-- Column 3: Contact & Newsletter -->
                 <div>
                     <div class="mb-6">
-                        <p class="text-sm text-gray-700 mb-1"><strong>Location:</strong> Kigali, Rwanda</p>
-                        <p class="text-sm text-gray-700 mb-1"><strong>Info:</strong> Info@iforeveryoungtours.com</p>
-                        <p class="text-sm text-gray-700 mb-1"><strong>Booking:</strong> booking@iforeveryoungtours.com</p>
-                        <p class="text-sm text-gray-700"><strong>WhatsApp:</strong> <a href="tel:+17374439646" class="text-yellow-600 hover:underline">+1 (737) 443-9646</a></p>
-                    </div>
-                    <div class="mb-6">
-                        <div class="flex">
-                            <input type="email" placeholder="Enter your Email" class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg text-sm focus:outline-none focus:border-yellow-500">
-                            <button class="bg-yellow-500 text-white px-6 py-2 rounded-r-lg font-semibold hover:bg-yellow-600 transition-colors">Subscribe</button>
+                        <div class="flex flex-col sm:flex-row gap-2 sm:gap-0">
+                            <input type="email" placeholder="Enter your Email" class="flex-1 px-4 py-2 border border-gray-300 rounded-lg sm:rounded-l-lg sm:rounded-r-none text-sm focus:outline-none focus:border-yellow-500 min-w-0">
+                            <button class="bg-yellow-500 text-white px-4 sm:px-6 py-2 rounded-lg sm:rounded-l-none sm:rounded-r-lg font-semibold hover:bg-yellow-600 transition-colors whitespace-nowrap">Subscribe</button>
                         </div>
                     </div>
                     <div>
@@ -100,7 +94,7 @@
     </footer>
 
     <!-- Floating WhatsApp Button with Dropup -->
-    <div class="fixed bottom-6 right-6 z-50">
+    <div id="whatsapp-floating-button" class="whatsapp-fixed-button">
         <!-- Dropdown Card -->
         <div id="whatsappDropup" class="hidden mb-4 bg-white rounded-2xl shadow-2xl w-80 animate-slide-up">
             <div class="bg-green-500 text-white px-6 py-4 rounded-t-2xl">
@@ -131,7 +125,7 @@
         </div>
         
         <!-- WhatsApp Button -->
-        <button onclick="toggleWhatsAppDropup()" class="bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-600 transition transform hover:scale-110">
+        <button onclick="toggleWhatsAppDropup()" class="whatsapp-main-button bg-green-500 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-600 transition transform hover:scale-110">
             <i class="fab fa-whatsapp text-3xl"></i>
         </button>
     </div>
@@ -144,13 +138,198 @@
     .animate-slide-up {
         animation: slideUp 0.3s ease-out;
     }
+    
+    /* WhatsApp Button - Ultra Strong Fixed Positioning */
+    .whatsapp-fixed-button,
+    #whatsapp-floating-button {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 999999 !important;
+        display: block !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        -webkit-transform: none !important;
+        top: auto !important;
+        left: auto !important;
+        float: none !important;
+        clear: none !important;
+    }
+    
+    /* Button inside container */
+    .whatsapp-fixed-button button,
+    #whatsapp-floating-button button {
+        position: relative !important;
+        z-index: 1000000 !important;
+        width: 64px !important;
+        height: 64px !important;
+        border-radius: 50% !important;
+        background-color: #25d366 !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .whatsapp-fixed-button button:hover,
+    #whatsapp-floating-button button:hover {
+        background-color: #128c7e !important;
+        transform: scale(1.1) !important;
+    }
+    
+    /* Mobile specific overrides */
+    @media screen and (max-width: 768px) {
+        .whatsapp-fixed-button,
+        #whatsapp-floating-button {
+            position: fixed !important;
+            bottom: 15px !important;
+            right: 15px !important;
+            z-index: 999999 !important;
+        }
+        
+        .whatsapp-fixed-button button,
+        #whatsapp-floating-button button {
+            width: 56px !important;
+            height: 56px !important;
+        }
+        
+        /* Dropup positioning for mobile */
+        .whatsapp-fixed-button #whatsappDropup,
+        #whatsapp-floating-button #whatsappDropup {
+            position: fixed !important;
+            bottom: 80px !important;
+            right: 15px !important;
+            z-index: 999998 !important;
+            width: calc(100vw - 30px) !important;
+            max-width: 300px !important;
+        }
+    }
+    
+    /* Tablet overrides */
+    @media screen and (min-width: 769px) and (max-width: 1024px) {
+        .whatsapp-fixed-button,
+        #whatsapp-floating-button {
+            bottom: 20px !important;
+            right: 20px !important;
+        }
+    }
+    
+    /* Desktop overrides */
+    @media screen and (min-width: 1025px) {
+        .whatsapp-fixed-button,
+        #whatsapp-floating-button {
+            bottom: 25px !important;
+            right: 25px !important;
+        }
+    }
+    
+    /* Nuclear option - override everything */
+    html .whatsapp-fixed-button,
+    body .whatsapp-fixed-button,
+    div .whatsapp-fixed-button,
+    section .whatsapp-fixed-button,
+    main .whatsapp-fixed-button,
+    html #whatsapp-floating-button,
+    body #whatsapp-floating-button,
+    div #whatsapp-floating-button,
+    section #whatsapp-floating-button,
+    main #whatsapp-floating-button {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 999999 !important;
+    }
     </style>
 
     <script>
+    // Immediate WhatsApp button fix - runs as soon as script loads
+    (function() {
+        function immediateWhatsAppFix() {
+            const whatsappButton = document.getElementById('whatsapp-floating-button');
+            if (whatsappButton) {
+                whatsappButton.style.cssText = `
+                    position: fixed !important;
+                    bottom: ${window.innerWidth <= 768 ? '15px' : '20px'} !important;
+                    right: ${window.innerWidth <= 768 ? '15px' : '20px'} !important;
+                    z-index: 999999 !important;
+                    display: block !important;
+                    transform: none !important;
+                    -webkit-transform: none !important;
+                `;
+            }
+        }
+        
+        // Run immediately
+        immediateWhatsAppFix();
+        
+        // Run when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', immediateWhatsAppFix);
+        } else {
+            immediateWhatsAppFix();
+        }
+    })();
+    
     function toggleWhatsAppDropup() {
         const dropup = document.getElementById('whatsappDropup');
         dropup.classList.toggle('hidden');
     }
+    
+    // Ensure WhatsApp button stays fixed on mobile
+    function enforceWhatsAppPosition() {
+        const whatsappContainer = document.getElementById('whatsapp-floating-button');
+        if (whatsappContainer) {
+            // Force fixed positioning with ultra-strong rules
+            whatsappContainer.style.position = 'fixed';
+            whatsappContainer.style.zIndex = '999999';
+            whatsappContainer.style.display = 'block';
+            whatsappContainer.style.transform = 'none';
+            whatsappContainer.style.webkitTransform = 'none';
+            
+            // Adjust for different screen sizes
+            if (window.innerWidth <= 768) {
+                whatsappContainer.style.position = 'fixed';
+                whatsappContainer.style.bottom = '15px';
+                whatsappContainer.style.right = '15px';
+            } else if (window.innerWidth <= 1280) {
+                whatsappContainer.style.position = 'fixed';
+                whatsappContainer.style.bottom = '20px';
+                whatsappContainer.style.right = '20px';
+            } else {
+                whatsappContainer.style.position = 'fixed';
+                whatsappContainer.style.bottom = '25px';
+                whatsappContainer.style.right = '25px';
+            }
+            
+            // Also ensure the button inside is properly styled
+            const button = whatsappContainer.querySelector('button');
+            if (button) {
+                button.style.position = 'relative';
+                button.style.zIndex = '1000000';
+            }
+        }
+    }
+    
+    // Run on page load
+    document.addEventListener('DOMContentLoaded', enforceWhatsAppPosition);
+    
+    // Run on window resize
+    window.addEventListener('resize', enforceWhatsAppPosition);
+    
+    // Run on scroll (for extra safety)
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(enforceWhatsAppPosition, 100);
+    });
+    
     document.addEventListener('click', function(e) {
         const dropup = document.getElementById('whatsappDropup');
         const button = e.target.closest('button[onclick="toggleWhatsAppDropup()"]');
