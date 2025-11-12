@@ -1,0 +1,184 @@
+# Production .htaccess for ForeverYoung Tours
+# Copy this to your main public_html/.htaccess file on Hostinger
+
+RewriteEngine On
+
+# Force HTTPS (SSL)
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# ========================================
+# CONTINENT SUBDOMAIN ROUTING
+# ========================================
+
+# Africa Continent
+RewriteCond %{HTTP_HOST} ^africa\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/africa/
+RewriteRule ^(.*)$ /continents/africa/$1 [L]
+
+# Asia Continent
+RewriteCond %{HTTP_HOST} ^asia\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/asia/
+RewriteRule ^(.*)$ /continents/asia/$1 [L]
+
+# Europe Continent
+RewriteCond %{HTTP_HOST} ^europe\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/europe/
+RewriteRule ^(.*)$ /continents/europe/$1 [L]
+
+# North America Continent
+RewriteCond %{HTTP_HOST} ^north-america\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/north-america/
+RewriteRule ^(.*)$ /continents/north-america/$1 [L]
+
+# South America Continent
+RewriteCond %{HTTP_HOST} ^south-america\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/south-america/
+RewriteRule ^(.*)$ /continents/south-america/$1 [L]
+
+# Caribbean Continent
+RewriteCond %{HTTP_HOST} ^caribbean\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/caribbean/
+RewriteRule ^(.*)$ /continents/caribbean/$1 [L]
+
+# ========================================
+# COUNTRY SUBDOMAIN ROUTING
+# ========================================
+
+# Rwanda
+RewriteCond %{HTTP_HOST} ^visit-rw\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/rwanda/
+RewriteRule ^(.*)$ /countries/rwanda/$1 [L]
+
+# Kenya
+RewriteCond %{HTTP_HOST} ^visit-ke\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/kenya/
+RewriteRule ^(.*)$ /countries/kenya/$1 [L]
+
+# Tanzania
+RewriteCond %{HTTP_HOST} ^visit-tz\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/tanzania/
+RewriteRule ^(.*)$ /countries/tanzania/$1 [L]
+
+# Uganda
+RewriteCond %{HTTP_HOST} ^visit-ug\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/uganda/
+RewriteRule ^(.*)$ /countries/uganda/$1 [L]
+
+# Egypt
+RewriteCond %{HTTP_HOST} ^visit-eg\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/egypt/
+RewriteRule ^(.*)$ /countries/egypt/$1 [L]
+
+# Morocco
+RewriteCond %{HTTP_HOST} ^visit-ma\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/morocco/
+RewriteRule ^(.*)$ /countries/morocco/$1 [L]
+
+# South Africa
+RewriteCond %{HTTP_HOST} ^visit-za\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/south-africa/
+RewriteRule ^(.*)$ /countries/south-africa/$1 [L]
+
+# Botswana
+RewriteCond %{HTTP_HOST} ^visit-bw\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/botswana/
+RewriteRule ^(.*)$ /countries/botswana/$1 [L]
+
+# Namibia
+RewriteCond %{HTTP_HOST} ^visit-na\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/namibia/
+RewriteRule ^(.*)$ /countries/namibia/$1 [L]
+
+# Zimbabwe
+RewriteCond %{HTTP_HOST} ^visit-zw\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/zimbabwe/
+RewriteRule ^(.*)$ /countries/zimbabwe/$1 [L]
+
+# Ghana
+RewriteCond %{HTTP_HOST} ^visit-gh\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/ghana/
+RewriteRule ^(.*)$ /countries/ghana/$1 [L]
+
+# Nigeria
+RewriteCond %{HTTP_HOST} ^visit-ng\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/nigeria/
+RewriteRule ^(.*)$ /countries/nigeria/$1 [L]
+
+# Ethiopia
+RewriteCond %{HTTP_HOST} ^visit-et\.foreveryoungtours\.com$ [NC]
+RewriteCond %{REQUEST_URI} !^/countries/ethiopia/
+RewriteRule ^(.*)$ /countries/ethiopia/$1 [L]
+
+# ========================================
+# SECURITY & PERFORMANCE
+# ========================================
+
+# Prevent access to sensitive files
+<Files "*.sql">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.md">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "*.txt">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files ".htaccess">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Enable compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# Set cache headers
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/pdf "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/x-javascript "access plus 1 month"
+    ExpiresByType application/x-shockwave-flash "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresDefault "access plus 2 days"
+</IfModule>
+
+# ========================================
+# ERROR PAGES
+# ========================================
+
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php
+
+# ========================================
+# WWW REDIRECT (Optional)
+# ========================================
+
+# Redirect www to non-www
+RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
