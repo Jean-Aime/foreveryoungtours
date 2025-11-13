@@ -14,10 +14,20 @@ RewriteRule ^.*$ subdomain-handler.php [L]
 RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
 RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
 
+# Redirect home to index.php
+RewriteRule ^home/?$ index.php [L]
+
+# Redirect index to home (clean URL)
+RewriteRule ^index/?$ /foreveryoungtours/home [R=301,L]
+
 # Remove .php extension
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php [L]
+
+# Redirect .php URLs to clean URLs
+RewriteCond %{THE_REQUEST} /([^?\s]*?)\.php[\s?] [NC]
+RewriteRule ^(.*)\.php$ /%1 [R=301,L]
 
 # Custom error pages
 ErrorDocument 404 /404.php
