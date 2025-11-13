@@ -78,6 +78,128 @@ body {
     display: none;  /* Safari and Chrome */
 }
 
+/* Contact Form Styles */
+.contact-form-container {
+    background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+    border: 1px solid rgba(218, 165, 32, 0.1);
+    backdrop-filter: blur(10px);
+    position: relative;
+}
+
+.contact-form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-gold), var(--secondary-gold), var(--primary-gold));
+    border-radius: 24px 24px 0 0;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-group label {
+    color: var(--text-dark);
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    transition: all 0.3s ease;
+}
+
+.form-group.focused label {
+    color: var(--primary-gold);
+    transform: translateY(-2px);
+}
+
+.contact-input {
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.contact-input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(218, 165, 32, 0.15);
+    outline: none;
+}
+
+.contact-input::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.contact-submit-btn {
+    background: linear-gradient(135deg, var(--primary-gold) 0%, var(--secondary-gold) 50%, var(--primary-gold) 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.contact-submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+}
+
+.contact-submit-btn:hover::before {
+    left: 100%;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Contact Form Responsive Styles */
+@media (max-width: 768px) {
+    .contact-form-container {
+        padding: 1.5rem !important;
+        margin: 0 1rem;
+        border-radius: 1.5rem;
+    }
+    
+    .contact-input {
+        padding: 1rem;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    .contact-submit-btn {
+        padding: 1rem;
+        font-size: 1rem;
+    }
+    
+    .form-group label {
+        font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-form-container {
+        padding: 1rem !important;
+        margin: 0 0.5rem;
+    }
+    
+    .contact-input {
+        padding: 0.875rem;
+    }
+    
+    .contact-submit-btn {
+        padding: 0.875rem;
+    }
+}
+
 /* Store Page Sticky Filter Section */
 .store-filter-sticky {
     position: sticky;
