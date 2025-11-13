@@ -7,9 +7,29 @@ session_start();
 $host = $_SERVER['HTTP_HOST'];
 $country_code = '';
 
-// Extract subdomain
-if (preg_match('/^visit-([a-z]{3})\./', $host, $matches)) {
-    $country_code = strtoupper($matches[1]);
+// Extract subdomain (2 or 3 letter codes)
+if (preg_match('/^visit-([a-z]{2,3})\./', $host, $matches)) {
+    $extracted_code = strtoupper($matches[1]);
+    
+    // Map 2-letter codes to 3-letter codes for database lookup
+    $code_mapping = [
+        'RW' => 'RWA',  // Rwanda
+        'KE' => 'KEN',  // Kenya
+        'TZ' => 'TZA',  // Tanzania
+        'UG' => 'UGA',  // Uganda
+        'ZA' => 'ZAF',  // South Africa
+        'EG' => 'EGY',  // Egypt
+        'MA' => 'MAR',  // Morocco
+        'BW' => 'BWA',  // Botswana
+        'NA' => 'NAM',  // Namibia
+        'ZW' => 'ZWE',  // Zimbabwe
+        'GH' => 'GHA',  // Ghana
+        'NG' => 'NGA',  // Nigeria
+        'ET' => 'ETH'   // Ethiopia
+    ];
+    
+    // Use mapping if it's a 2-letter code, otherwise use as-is
+    $country_code = $code_mapping[$extracted_code] ?? $extracted_code;
 }
 
 // If country subdomain detected, set country filter for entire site
@@ -34,8 +54,33 @@ if ($country_code) {
         define('CURRENT_COUNTRY_NAME', $country['name']);
         define('CURRENT_COUNTRY_SLUG', $country['slug']);
         
-        // Load homepage with country filter
-        require_once 'index.php';
+        // Load country-specific page
+        // Map database slug to actual folder name
+        $folder_mapping = [
+            'visit-rw' => 'rwanda',
+            'visit-ke' => 'kenya', 
+            'visit-tz' => 'tanzania',
+            'visit-ug' => 'uganda',
+            'visit-za' => 'south-africa',
+            'visit-eg' => 'egypt',
+            'visit-ma' => 'morocco',
+            'visit-bw' => 'botswana',
+            'visit-na' => 'namibia',
+            'visit-zw' => 'zimbabwe',
+            'visit-gh' => 'ghana',
+            'visit-ng' => 'nigeria',
+            'visit-et' => 'ethiopia'
+        ];
+        
+        $folder_name = $folder_mapping[$country['slug']] ?? $country['slug'];
+        $country_page = "countries/{$folder_name}/index.php";
+        
+        if (file_exists($country_page)) {
+            require_once $country_page;
+        } else {
+            // Fallback to main homepage with country filter if country page doesn't exist
+            require_once 'index.php';
+        }
         exit;
     }
 }

@@ -7,6 +7,7 @@ $js_path = "assets/js/main.js";
 
 // Database connection
 require_once 'config/database.php';
+require_once 'config/environment.php';
 
 // Check if on country subdomain
 $country_filter = isset($_SESSION['subdomain_country_id']) ? $_SESSION['subdomain_country_id'] : null;
@@ -709,7 +710,7 @@ include 'includes/header.php';
                             'tunisia' => 'tn'
                         ];
                         $dest_code = $dest_country_codes[$destination['slug']] ?? strtolower(substr($destination['country_code'] ?? $destination['name'], 0, 2));
-                        $dest_url = "http://visit-{$dest_code}.foreveryoungtours.local";
+                        $dest_url = getCountryUrl($dest_code);
                         ?>
                         <li class="splide__slide">
                             <div class="relative rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="window.location.href='<?php echo $dest_url; ?>'">

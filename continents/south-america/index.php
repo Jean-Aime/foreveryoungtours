@@ -200,8 +200,17 @@ $css_path = '../assets/css/modern-styles.css';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php foreach ($countries as $country): ?>
             <?php
-            $country_code = strtolower($country['country_code']);
-            $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
+            $country_code = strtolower(substr($country['country_code'], 0, 2));
+            
+            // Detect environment based on current host
+            $current_host = $_SERVER['HTTP_HOST'];
+            if (strpos($current_host, 'iforeveryoungtours.com') !== false) {
+                // Production environment
+                $country_url = "https://visit-{$country_code}.iforeveryoungtours.com";
+            } else {
+                // Local environment
+                $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
+            }
             ?>
             <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2" onclick="window.open('<?php echo $country_url; ?>', '_blank')">
                 <div class="relative h-72 overflow-hidden">
