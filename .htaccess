@@ -1,7 +1,12 @@
 RewriteEngine On
 
-# Handle country subdomains
-RewriteCond %{HTTP_HOST} ^visit-([a-z]{3})\.(localhost|iforeveryoungtours\.com)(:[0-9]+)?$ [NC]
+# Handle continent subdomains
+RewriteCond %{HTTP_HOST} ^(africa|asia|europe|north-america|south-america|caribbean)\.(localhost|iforeveryoungtours\.com)(:[0-9]+)?$ [NC]
+RewriteCond %{REQUEST_URI} !^/continents/
+RewriteRule ^(.*)$ continents/%1/$1 [L]
+
+# Handle country subdomains (2 or 3 letter codes)
+RewriteCond %{HTTP_HOST} ^visit-([a-z]{2,3})\.(localhost|iforeveryoungtours\.com)(:[0-9]+)?$ [NC]
 RewriteCond %{REQUEST_URI} !^/subdomain-handler\.php$
 RewriteRule ^.*$ subdomain-handler.php [L]
 

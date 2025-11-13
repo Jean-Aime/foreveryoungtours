@@ -294,7 +294,16 @@ $css_path = '../assets/css/modern-styles.css';
                 'zimbabwe' => 'zw'
             ];
             $country_code = $country_codes[$country['slug']] ?? strtolower(substr($country['country_code'], 0, 2));
-            $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
+            
+            // Detect environment based on current host
+            $current_host = $_SERVER['HTTP_HOST'];
+            if (strpos($current_host, 'iforeveryoungtours.com') !== false) {
+                // Production environment
+                $country_url = "https://visit-{$country_code}.iforeveryoungtours.com";
+            } else {
+                // Local environment
+                $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
+            }
             ?>
             <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2" onclick="window.open('<?php echo $country_url; ?>', '_blank')">
                 <div class="relative h-64 sm:h-72 overflow-hidden">

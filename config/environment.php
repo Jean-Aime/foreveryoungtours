@@ -66,30 +66,30 @@ class EnvironmentConfig {
         } else {
             // Production domains
             $this->domains = [
-                'main' => 'https://foreveryoungtours.com',
+                'main' => 'https://iforeveryoungtours.com',
                 
                 // Continents
-                'africa' => 'https://africa.foreveryoungtours.com',
-                'asia' => 'https://asia.foreveryoungtours.com',
-                'europe' => 'https://europe.foreveryoungtours.com',
-                'north-america' => 'https://north-america.foreveryoungtours.com',
-                'south-america' => 'https://south-america.foreveryoungtours.com',
-                'caribbean' => 'https://caribbean.foreveryoungtours.com',
+                'africa' => 'https://africa.iforeveryoungtours.com',
+                'asia' => 'https://asia.iforeveryoungtours.com',
+                'europe' => 'https://europe.iforeveryoungtours.com',
+                'north-america' => 'https://north-america.iforeveryoungtours.com',
+                'south-america' => 'https://south-america.iforeveryoungtours.com',
+                'caribbean' => 'https://caribbean.iforeveryoungtours.com',
                 
                 // Countries
-                'visit-rw' => 'https://visit-rw.foreveryoungtours.com',
-                'visit-ke' => 'https://visit-ke.foreveryoungtours.com',
-                'visit-tz' => 'https://visit-tz.foreveryoungtours.com',
-                'visit-ug' => 'https://visit-ug.foreveryoungtours.com',
-                'visit-eg' => 'https://visit-eg.foreveryoungtours.com',
-                'visit-ma' => 'https://visit-ma.foreveryoungtours.com',
-                'visit-za' => 'https://visit-za.foreveryoungtours.com',
-                'visit-bw' => 'https://visit-bw.foreveryoungtours.com',
-                'visit-na' => 'https://visit-na.foreveryoungtours.com',
-                'visit-zw' => 'https://visit-zw.foreveryoungtours.com',
-                'visit-gh' => 'https://visit-gh.foreveryoungtours.com',
-                'visit-ng' => 'https://visit-ng.foreveryoungtours.com',
-                'visit-et' => 'https://visit-et.foreveryoungtours.com',
+                'visit-rw' => 'https://visit-rw.iforeveryoungtours.com',
+                'visit-ke' => 'https://visit-ke.iforeveryoungtours.com',
+                'visit-tz' => 'https://visit-tz.iforeveryoungtours.com',
+                'visit-ug' => 'https://visit-ug.iforeveryoungtours.com',
+                'visit-eg' => 'https://visit-eg.iforeveryoungtours.com',
+                'visit-ma' => 'https://visit-ma.iforeveryoungtours.com',
+                'visit-za' => 'https://visit-za.iforeveryoungtours.com',
+                'visit-bw' => 'https://visit-bw.iforeveryoungtours.com',
+                'visit-na' => 'https://visit-na.iforeveryoungtours.com',
+                'visit-zw' => 'https://visit-zw.iforeveryoungtours.com',
+                'visit-gh' => 'https://visit-gh.iforeveryoungtours.com',
+                'visit-ng' => 'https://visit-ng.iforeveryoungtours.com',
+                'visit-et' => 'https://visit-et.iforeveryoungtours.com',
             ];
         }
     }
@@ -119,7 +119,7 @@ class EnvironmentConfig {
                 return $matches[1];
             }
         } else {
-            if (preg_match('/^([^.]+)\.foreveryoungtours\.com$/', $host, $matches)) {
+            if (preg_match('/^([^.]+)\.iforeveryoungtours\.com$/', $host, $matches)) {
                 return $matches[1];
             }
         }
