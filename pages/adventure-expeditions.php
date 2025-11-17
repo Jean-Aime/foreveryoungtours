@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Adventure Expeditions - iForYoungTours";
 $page_description = "Ultimate adventure package including mountain climbing, desert expeditions, and wilderness survival.";
 $base_path = "../";

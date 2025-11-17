@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 require_once '../config/database.php';
 
 $booking_id = $_GET['id'] ?? 0;

@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 session_start();
 $page_title = "Travel Store - Forever Young Tours | Essential Travel Gear & Equipment";
 $page_description = "Shop essential travel gear, equipment, and accessories for your next adventure. Quality camping gear, hiking equipment, and travel essentials.";

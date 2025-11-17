@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Country - iForYoungTours";
 $css_path = '../../assets/css/modern-styles.css';
 require_once '../../config/database.php';

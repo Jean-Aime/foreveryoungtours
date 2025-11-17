@@ -25,7 +25,11 @@ if (preg_match('/^visit-([a-z]{2,3})\./', $host, $matches)) {
         'ZW' => 'ZWE',  // Zimbabwe
         'GH' => 'GHA',  // Ghana
         'NG' => 'NGA',  // Nigeria
-        'ET' => 'ETH'   // Ethiopia
+        'ET' => 'ETH',  // Ethiopia
+        'SN' => 'SEN',  // Senegal
+        'TN' => 'TUN',  // Tunisia
+        'CM' => 'CMR',  // Cameroon
+        'CD' => 'COD'   // DR Congo
     ];
     
     // Use mapping if it's a 2-letter code, otherwise use as-is
@@ -58,7 +62,7 @@ if ($country_code) {
         // Map database slug to actual folder name
         $folder_mapping = [
             'visit-rw' => 'rwanda',
-            'visit-ke' => 'kenya', 
+            'visit-ke' => 'kenya',
             'visit-tz' => 'tanzania',
             'visit-ug' => 'uganda',
             'visit-za' => 'south-africa',
@@ -69,12 +73,42 @@ if ($country_code) {
             'visit-zw' => 'zimbabwe',
             'visit-gh' => 'ghana',
             'visit-ng' => 'nigeria',
-            'visit-et' => 'ethiopia'
+            'visit-et' => 'ethiopia',
+            'visit-sn' => 'senegal',
+            'visit-tn' => 'tunisia',
+            'visit-cm' => 'cameroon',
+            'visit-cd' => 'democratic-republic-of-congo'
         ];
         
         $folder_name = $folder_mapping[$country['slug']] ?? $country['slug'];
+
+        // Handle specific page requests
+        $request_uri = $_SERVER['REQUEST_URI'];
+        $parsed_uri = parse_url($request_uri);
+        $path = $parsed_uri['path'];
+
+        // Check if it's a page request (e.g., /pages/tour-detail)
+        if (preg_match('/^\/pages\/(.+)$/', $path, $matches)) {
+            $page_name = $matches[1];
+            $country_page_file = "countries/{$folder_name}/pages/{$page_name}.php";
+
+            // If the specific page exists in the country folder, use it
+            if (file_exists($country_page_file)) {
+                require_once $country_page_file;
+                exit;
+            }
+
+            // Fallback to main pages directory
+            $main_page_file = "pages/{$page_name}.php";
+            if (file_exists($main_page_file)) {
+                require_once $main_page_file;
+                exit;
+            }
+        }
+
+        // Default to country homepage
         $country_page = "countries/{$folder_name}/index.php";
-        
+
         if (file_exists($country_page)) {
             require_once $country_page;
         } else {

@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Sports & Adventure Tours - iForYoungTours";
 $page_description = "Combine thrilling sports activities with adventure tourism including hiking, rafting, and extreme sports.";
 $base_path = "../";

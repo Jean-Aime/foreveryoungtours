@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 session_start();
 $page_title = "My Stories - Client Dashboard";
 $page_description = "Manage your travel stories and submissions";

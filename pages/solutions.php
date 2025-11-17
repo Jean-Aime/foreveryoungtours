@@ -1,4 +1,6 @@
 <?php 
+
+require_once 'config.php';
 $page_title = "Solutions - ForeverYoung Tours";
 $page_description = "Comprehensive travel solutions including custom tours, travel insurance, emergency support, VIP services, and personalized planning for your African adventure.";
 $css_path = "../assets/css/modern-styles.css";

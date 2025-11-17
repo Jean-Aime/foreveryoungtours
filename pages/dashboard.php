@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Dashboard - iForYoungTours | Your Travel Management Hub";
 $page_description = "Manage your bookings, track commissions, and access your travel advisor tools in the iForYoungTours dashboard.";
 // $base_path will be auto-detected in header.php based on server port
@@ -79,7 +81,7 @@ include './header.php';
                         Create Story
                     </a>
                     
-                    <a href="../index.php" class="nav-item flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
+                    <a href="../Home" class="nav-item flex items-center px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                         </svg>
@@ -277,9 +279,9 @@ include './header.php';
 </div>
 
 <!-- JavaScript -->
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/dashboard-modules.js"></script>
+<script src="<?= getImageUrl('assets/js/main.js') ?>"></script>
+<script src="<?= getImageUrl('assets/js/dashboard-modules.js') ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
-<script src="../assets/js/pages.js"></script>
+<script src="<?= getImageUrl('assets/js/pages.js') ?>"></script>
 
 <?php include '../includes/footer.php'; ?>
