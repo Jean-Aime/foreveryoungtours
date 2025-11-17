@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Packing Guide - Forever Young Tours | Travel Smart. Pack Bold.";
 $page_description = "Our curated packing guides take the guesswork out of preparation. Download tailored guides for your specific tour type—Safari, Cruise, Heritage, or Adventure.";
 $css_path = "../assets/css/modern-styles.css";

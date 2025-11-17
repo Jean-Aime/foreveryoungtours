@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "City Breaks - iForYoungTours";
 $page_description = "Explore vibrant African cities with guided tours, cultural experiences, and urban adventures.";
 $base_path = "../";

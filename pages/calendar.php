@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Calendar - iForYoungTours | Events, Departures & Promotions";
 $page_description = "View upcoming departures, special events, and seasonal promotions. Plan your African adventure with our comprehensive travel calendar.";
 // $base_path will be auto-detected in header.php based on server port
@@ -162,7 +164,7 @@ include './header.php';
 </section>
 
 <!-- JavaScript -->
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/pages.js"></script>
+<script src="<?= getImageUrl('assets/js/main.js') ?>"></script>
+<script src="<?= getImageUrl('assets/js/pages.js') ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

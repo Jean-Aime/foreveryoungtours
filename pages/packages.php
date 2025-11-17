@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "African Travel Packages - iForYoungTours | Expert-Curated Adventures";
 $page_description = "Explore 1200+ expertly curated African travel packages. From safaris to cultural experiences, find your perfect adventure with transparent pricing and 24/7 support.";
 // $base_path will be auto-detected in header.php based on server port
@@ -75,7 +77,6 @@ include '../includes/header.php';
                     </button>
                 </div>
             </div>
-            
 
         </div>
     </div>
@@ -301,7 +302,7 @@ include '../includes/header.php';
                                 $image_src = '../' . $image_src;
                             }
                             ?>
-                            <img src="<?php echo htmlspecialchars($image_src); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-40 object-cover" onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                            <img src="<?php echo htmlspecialchars($image_src); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-40 object-cover" onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                             <div class="absolute top-4 right-4 bg-golden-500 text-black px-3 py-1 rounded-full text-sm font-semibold">
                                 From $<?php echo number_format($tour['price']); ?>
                             </div>
@@ -340,7 +341,6 @@ include '../includes/header.php';
                     </div>
                     <?php endforeach; ?>
                     <?php endif; ?>
-
 
                 </div>
                 
@@ -768,7 +768,7 @@ label {
         }
     }
 </script>
-<script src="../assets/js/booking.js"></script>
+<script src="<?= getImageUrl('assets/js/booking.js') ?>"></script>
 
 <?php include 'inquiry-modal.php'; ?>
 <?php include '../includes/footer.php'; ?>

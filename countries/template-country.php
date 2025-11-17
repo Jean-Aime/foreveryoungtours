@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Discover {COUNTRY_NAME} | Premium African Travel | Forever Young Tours";
 $meta_description = "Experience {COUNTRY_NAME} with curated luxury tours. Wildlife, culture, adventure. Expert guides, premium lodges, seamless logistics.";
 require_once __DIR__ . '/../config/database.php';

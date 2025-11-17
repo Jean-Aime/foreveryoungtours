@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "iForYoungTours - Discover Africa's Wonders | Professional Travel Platform";
 $page_description = "Explore Africa's most breathtaking destinations with expert guidance. From safaris to cultural experiences, book your dream African adventure with confidence.";
 // $base_path will be auto-detected in header.php based on server port
@@ -122,61 +124,60 @@ include 'includes/header.php';
     <!-- Partner Logos Section -->
     <section class="partner-logos-section py-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-t border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            
-            
+
             <!-- Continuous Sliding Partner Logos -->
             <div class="partner-logos-sliding-container overflow-hidden">
                 <div class="partner-logos-sliding-track" id="partnerLogosSlider">
                     <!-- KCB Group Logo -->
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/KCB Group Plc Logo.jpg" alt="KCB Group Plc" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/KCB Group Plc Logo.jpg') ?>" alt="KCB Group Plc" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <!-- Visit Rwanda Logo -->
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/Visit Rwanda vector logo.jpg" alt="Visit Rwanda" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/Visit Rwanda vector logo.jpg') ?>" alt="Visit Rwanda" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <!-- Equity ATM Logo -->
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/Equity ATM Logo.jpg" alt="Equity ATM" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/Equity ATM Logo.jpg') ?>" alt="Equity ATM" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <!-- Western Union Logo -->
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/western Union logo.jpg" alt="Western Union" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/western Union logo.jpg') ?>" alt="Western Union" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <!-- Duplicate set for seamless loop -->
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/KCB Group Plc Logo.jpg" alt="KCB Group Plc" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/KCB Group Plc Logo.jpg') ?>" alt="KCB Group Plc" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/Visit Rwanda vector logo.jpg" alt="Visit Rwanda" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/Visit Rwanda vector logo.jpg') ?>" alt="Visit Rwanda" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/Equity ATM Logo.jpg" alt="Equity ATM" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/Equity ATM Logo.jpg') ?>" alt="Equity ATM" class="w-full h-full object-contain">
                         </div>
                     </div>
                     
                     <div class="partner-logo-item">
                         <div class="partner-logo-circle">
-                            <img src="assets/images/western Union logo.jpg" alt="Western Union" class="w-full h-full object-contain">
+                            <img src="<?= getImageUrl('assets/images/western Union logo.jpg') ?>" alt="Western Union" class="w-full h-full object-contain">
                         </div>
                     </div>
                 </div>
@@ -450,7 +451,6 @@ include 'includes/header.php';
         </div>
     </section>
 
-    
     <script>
     let currentDate = new Date();
     const tourDates = <?php 
@@ -714,11 +714,9 @@ include 'includes/header.php';
                         ?>
                         <li class="splide__slide">
                             <div class="relative rounded-2xl overflow-hidden card-hover cursor-pointer" onclick="window.location.href='<?php echo $dest_url; ?>'">
-                                <?php 
+                                <?php
                                 $dest_image = $destination['image_url'] ?: 'assets/images/default-destination.jpg';
-                                if (strpos($dest_image, 'uploads/') === 0) {
-                                    $dest_image = $dest_image;
-                                }
+                                // uploads/ paths are already correct, no need to modify
                                 if (strtolower($destination['name']) === 'nigeria') {
                                     $dest_image = 'assets/images/nigeria.jpg';
                                 }
@@ -726,7 +724,7 @@ include 'includes/header.php';
                                     $dest_image = 'assets/images/rwanda.jpg';
                                 }
                                 ?>
-                                <img src="<?php echo htmlspecialchars($dest_image); ?>" alt="<?php echo htmlspecialchars($destination['name']); ?>" class="w-full h-80 object-cover" onerror="this.src='assets/images/south africa.jpg'; this.onerror=null;">
+                                <img src="<?php echo htmlspecialchars($dest_image); ?>" alt="<?php echo htmlspecialchars($destination['name']); ?>" class="w-full h-80 object-cover" onerror="this.src="<?= getImageUrl('assets/images/south africa.jpg') ?>"; this.onerror=null;">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                 <div class="absolute bottom-6 left-6">
                                     <h3 class="text-2xl font-bold mb-2 image-overlay-text"><?php echo htmlspecialchars($destination['name']); ?></h3>
@@ -742,7 +740,7 @@ include 'includes/header.php';
                         <?php else: ?>
                         <li class="splide__slide">
                             <div class="relative rounded-2xl overflow-hidden card-hover">
-                                <img src="assets/images/default-destination.jpg" alt="Coming Soon" class="w-full h-80 object-cover">
+                                <img src="<?= getImageUrl('assets/images/default-destination.jpg') ?>" alt="Coming Soon" class="w-full h-80 object-cover">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                 <div class="absolute bottom-6 left-6">
                                     <h3 class="text-2xl font-bold mb-2 image-overlay-text">Coming Soon</h3>
@@ -773,7 +771,7 @@ include 'includes/header.php';
                 <!-- Explore Ruins -->
                 <div class="activity-item text-center">
                     <div class="activity-circle">
-                        <img src="assets/images/Destination.jpg" 
+                        <img src="<?= getImageUrl('assets/images/Destination.jpg') ?>" 
                              alt="Explore Ruins" 
                              class="w-full h-full object-cover">
                     </div>
@@ -783,7 +781,7 @@ include 'includes/header.php';
                 <!-- Beach Snorkel -->
                 <div class="activity-item text-center">
                     <div class="activity-circle">
-                        <img src="assets/images/snorkeling.jpg" 
+                        <img src="<?= getImageUrl('assets/images/snorkeling.jpg') ?>" 
                              alt="Beach Snorkel" 
                              class="w-full h-full object-cover">
                     </div>
@@ -793,7 +791,7 @@ include 'includes/header.php';
                 <!-- City Cycling -->
                 <div class="activity-item text-center">
                     <div class="activity-circle">
-                        <img src="assets/images/cycling.jpg" 
+                        <img src="<?= getImageUrl('assets/images/cycling.jpg') ?>" 
                              alt="City Cycling" 
                              class="w-full h-full object-cover">
                     </div>
@@ -803,7 +801,7 @@ include 'includes/header.php';
                 <!-- Mountain Trek -->
                 <div class="activity-item text-center">
                     <div class="activity-circle">
-                        <img src="assets/images/TREKKING.jpg" 
+                        <img src="<?= getImageUrl('assets/images/TREKKING.jpg') ?>" 
                              alt="Mountain Trek" 
                              class="w-full h-full object-cover">
                     </div>
@@ -833,7 +831,7 @@ include 'includes/header.php';
                 <!-- Spa Retreat -->
                 <div class="activity-item text-center">
                     <div class="activity-circle">
-                        <img src="assets/images/spa retreat.jpg" 
+                        <img src="<?= getImageUrl('assets/images/spa retreat.jpg') ?>" 
                              alt="Spa Retreat" 
                              class="w-full h-full object-cover">
                     </div>
@@ -843,7 +841,7 @@ include 'includes/header.php';
                 <!-- Road Trip -->
                 <div class="activity-item text-center">
                     <div class="activity-circle">
-                        <img src="assets/images/Road Trip.jpg" 
+                        <img src="<?= getImageUrl('assets/images/Road Trip.jpg') ?>" 
                              alt="Road Trip" 
                              class="w-full h-full object-cover">
                     </div>
@@ -866,7 +864,7 @@ include 'includes/header.php';
                 <!-- Large Card 1: Destinations -->
                 <div class="quick-link-card-large group cursor-pointer" onclick="window.location.href='pages/destinations.php'">
                     <div class="relative h-80 rounded-2xl overflow-hidden">
-                        <img src="assets/images/landscape.jpg" 
+                        <img src="<?= getImageUrl('assets/images/landscape.jpg') ?>" 
                              alt="African Safari" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -883,7 +881,7 @@ include 'includes/header.php';
                 <!-- Large Card 2: Adventure Tours -->
                 <div class="quick-link-card-large group cursor-pointer" onclick="window.location.href='pages/packages.php?category=adventure'">
                     <div class="relative h-80 rounded-2xl overflow-hidden">
-                        <img src="assets/images/adventure.jpg" 
+                        <img src="<?= getImageUrl('assets/images/adventure.jpg') ?>" 
                              alt="Paris Adventure" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -903,7 +901,7 @@ include 'includes/header.php';
                 <!-- Card 3: Explore the World -->
                 <div class="quick-link-card-small group cursor-pointer" onclick="window.location.href='pages/about.php'">
                     <div class="relative h-64 rounded-2xl overflow-hidden">
-                        <img src="assets/images/cruise.jpg" 
+                        <img src="<?= getImageUrl('assets/images/cruise.jpg') ?>" 
                              alt="Tropical Beach" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -945,7 +943,7 @@ include 'includes/header.php';
                 <!-- Card 5: Special Offers -->
                 <div class="quick-link-card-small group cursor-pointer" onclick="window.location.href='pages/packages.php?filter=deals'">
                     <div class="relative h-64 rounded-2xl overflow-hidden">
-                        <img src="assets/images/passport.jpg" 
+                        <img src="<?= getImageUrl('assets/images/passport.jpg') ?>" 
                              alt="Luxury Resort" 
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
@@ -1067,7 +1065,7 @@ include 'includes/header.php';
                 <div class="newsletter-image">
                     <div class="relative rounded-2xl overflow-hidden shadow-2xl">
                         <img 
-                            src="assets/images/beach and sunset.jpg" 
+                            src="<?= getImageUrl('assets/images/beach and sunset.jpg') ?>" 
                             alt="Beautiful tropical resort with pool and palm trees" 
                             class="w-full h-96 object-cover"
                         >

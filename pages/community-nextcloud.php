@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Community - iForYoungTours | Connect with Fellow African Travelers";
 $page_description = "Join our exclusive travel community and connect with fellow African adventure enthusiasts. Share experiences, get tips, and discover new destinations together.";
 // $base_path will be auto-detected in header.php based on server port

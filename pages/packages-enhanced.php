@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Packages - iForYoungTours | Premium African Adventures";
 $page_description = "Discover premium African travel packages with expert guides, luxury accommodations, and authentic experiences. Book your dream African adventure today.";
 // $base_path will be auto-detected in header.php based on server port
@@ -402,7 +404,7 @@ include '../includes/header.php';
     </div>
 </div>
 
-<script src="../assets/js/booking.js"></script>
+<script src="<?= getImageUrl('assets/js/booking.js') ?>"></script>
 <script>
 function loadMorePackages() {
     // Implementation for loading more packages

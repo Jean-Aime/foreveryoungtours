@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "My Dashboard - iForYoungTours";
 $page_description = "Manage your African tour bookings and profile";
 $css_path = "../assets/css/modern-styles.css";
@@ -183,7 +185,7 @@ include './header.php';
                                 <img src="<?php echo htmlspecialchars($image); ?>" 
                                      alt="<?php echo htmlspecialchars($booking['tour_name']); ?>" 
                                      class="w-16 h-16 rounded-lg object-cover"
-                                     onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                                     onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                                 <div>
                                     <h3 class="font-semibold text-slate-900"><?php echo htmlspecialchars($booking['tour_name']); ?></h3>
                                     <p class="text-sm text-slate-600"><?php echo htmlspecialchars($booking['destination'] . ', ' . $booking['country_name']); ?></p>

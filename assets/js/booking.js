@@ -34,16 +34,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if (bookingForm) {
         bookingForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const participants = formData.get('participants');
             const totalPrice = currentTourPrice * participants;
-            
+
             // Add calculated total price to form data
             formData.append('total_price', totalPrice);
-            
+
+            // Determine the correct booking handler URL based on current location
+            let bookingHandlerUrl = 'booking-handler.php';
+
+            // Check if we're in a subdomain or country folder
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('/countries/')) {
+                // We're in a country subdomain/folder
+                bookingHandlerUrl = '../../../booking-handler.php';
+            } else if (currentPath.includes('/continents/')) {
+                // We're in a continent folder
+                bookingHandlerUrl = '../../booking-handler.php';
+            } else if (currentPath.includes('/pages/')) {
+                // We're in main pages folder
+                bookingHandlerUrl = '../booking-handler.php';
+            }
+
             // Submit booking
-            fetch('booking-handler.php', {
+            fetch(bookingHandlerUrl, {
                 method: 'POST',
                 body: formData
             })

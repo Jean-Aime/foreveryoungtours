@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Cultural Heritage Tours - iForYoungTours";
 $page_description = "Immerse yourself in rich African cultures, traditions, and historical sites across multiple countries.";
 $base_path = "../";

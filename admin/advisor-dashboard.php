@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 require_once '../config/database.php';
 
 // For demo, assume Advisor ID = 5 (you can add login system later)

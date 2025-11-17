@@ -1,8 +1,9 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Stories & Experiences - Forever Young Tours Blog";
 $page_description = "Read amazing travel stories and share your own African adventure experiences. Discover insider tips, cultural insights, and inspiring journeys.";
 $css_path = "../assets/css/modern-styles.css";
-
 
 include '../includes/header.php';
 ?>
@@ -33,7 +34,7 @@ include '../includes/header.php';
         <div class="nextcloud-card overflow-hidden">
             <div class="grid lg:grid-cols-2 gap-8">
                 <div class="relative">
-                    <img src="../assets/images/Africa Travel.jpg" alt="Featured Story" class="w-full h-80 lg:h-full object-cover rounded-2xl">
+                    <img src="<?= getImageUrl('assets/images/Africa Travel.jpg') ?>" alt="Featured Story" class="w-full h-80 lg:h-full object-cover rounded-2xl">
                     <span class="absolute top-4 left-4 px-3 py-1 rounded-full text-sm font-semibold text-white bg-blue-500">
                         Adventure
                     </span>
@@ -57,7 +58,6 @@ include '../includes/header.php';
         </div>
     </div>
 </section>
-<?php endif; ?>
 
 <!-- Filters & Search -->
 <section class="py-8 bg-slate-50">
@@ -159,7 +159,6 @@ include '../includes/header.php';
             <!-- Sidebar -->
             <div class="lg:w-1/4">
 
-                
                 <!-- Popular Tags -->
                 <?php if (!empty($tags)): ?>
                 <div class="nextcloud-card mb-8">

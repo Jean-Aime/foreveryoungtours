@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 require_once '../config/database.php';
 
 // For demo, assume MCA ID = 11 (you can add login system later)

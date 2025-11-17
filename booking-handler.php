@@ -1,5 +1,8 @@
 <?php
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
 
 require_once 'config/database.php';
 
@@ -9,8 +12,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 try {
-    $db = new Database();
-    $conn = $db->getConnection();
+    // Use PDO directly instead of Database class
+    global $pdo;
     
     // Validate required fields
     $required_fields = ['tour_id', 'customer_name', 'customer_email', 'customer_phone', 'travel_date', 'participants', 'total_price'];
@@ -22,9 +25,9 @@ try {
     }
     
     // Insert booking
-    $stmt = $conn->prepare("
-        INSERT INTO bookings (tour_id, customer_name, customer_email, customer_phone, travel_date, participants, total_price, notes, status, payment_status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending')
+    $stmt = $pdo->prepare("
+        INSERT INTO bookings (tour_id, customer_name, customer_email, customer_phone, travel_date, participants, total_price, notes, status, payment_status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', NOW())
     ");
     
     $result = $stmt->execute([
