@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "VIP Support - Forever Young Tours | Elite Service. Every Step of the Way.";
 $page_description = "Exclusive concierge access for FYT Club Members and Premium Tour Guests. Airport fast-track, luggage handling, private transfers, and on-demand itinerary adjustments.";
 $css_path = "../assets/css/modern-styles.css";

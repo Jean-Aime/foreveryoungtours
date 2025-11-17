@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 function uploadTourImage($file, $tour_id, $type = 'gallery') {
     $upload_dir = '../uploads/tours/';
     

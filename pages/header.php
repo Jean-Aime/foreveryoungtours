@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 // Auto-detect base path based on server configuration
 if (!isset($base_path)) {
     // Check if running on PHP built-in server (port 8000) or XAMPP
@@ -60,7 +62,7 @@ if (!isset($base_path)) {
 
                 <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center space-x-1">
-                    <a href="../index.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
+                    <a href="../Home" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
 
                     <!-- Solution Dropdown -->
                     <div class="relative dropdown-container">
@@ -219,7 +221,6 @@ if (!isset($base_path)) {
                         </div>
                     </div>
 
-                    
                     <!-- Resources Dropdown -->
                     <div class="relative dropdown-container">
                         <a href="./resources.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all flex items-center space-x-1" onmouseover="showDropdown('resourcesDropdown')" onmouseout="hideDropdown('resourcesDropdown')">
@@ -351,7 +352,7 @@ if (!isset($base_path)) {
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="lg:hidden bg-white border-t border-slate-200 hidden">
                 <div class="px-4 py-6 space-y-2">
-                    <a href="../index.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
+                    <a href="../Home" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
                     <a href="./solutions.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Solution</a>
                     <a href="./community.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Community</a>
                     <a href="./resources.php" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg font-medium transition-colors">Resources</a>
@@ -373,9 +374,7 @@ if (!isset($base_path)) {
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('hidden');
         }
-        
 
-        
         let dropdownTimeout;
         
         function showDropdown(dropdownId) {

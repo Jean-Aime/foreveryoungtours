@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Conference & Expos - iForYoungTours";
 $page_description = "Professional conference packages with networking opportunities and business tourism experiences.";
 $base_path = "../";

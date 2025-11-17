@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 session_start();
 require_once '../config/database.php';
 require_once '../auth/check_auth.php';
@@ -105,7 +107,7 @@ require_once 'includes/admin-sidebar.php';
                                             $display_image = '../' . $display_image;
                                         }
                                         ?>
-                                        <img src="<?php echo htmlspecialchars($display_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-16 h-16 object-cover rounded-lg mr-4" onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                                        <img src="<?php echo htmlspecialchars($display_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-16 h-16 object-cover rounded-lg mr-4" onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                                         <div>
                                             <h4 class="font-bold text-slate-900"><?php echo htmlspecialchars($tour['name']); ?></h4>
                                             <p class="text-sm text-slate-600"><?php echo htmlspecialchars(substr($tour['description'], 0, 60)); ?>...</p>

@@ -36,6 +36,13 @@ if (!defined('COUNTRY_SUBDOMAIN') || !COUNTRY_SUBDOMAIN) {
 $page_title = "Discover Rwanda | Luxury Group Travel, Primate Safaris, Culture | Forever Young Tours";
 $meta_description = "Premium Rwanda travel. Gorillas, chimps, volcanoes, canopy walks, culture. Curated 6–10 day programs, premium lodges, seamless logistics. Request dates via WhatsApp or email.";
 
+// Handle case where country is not found
+if (!$country) {
+    // Redirect to main site or show error
+    header('Location: ../../index.php');
+    exit;
+}
+
 // Get featured tours
 if (isset($country['id'])) {
     $stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC LIMIT 4");
@@ -60,14 +67,14 @@ if (isset($country['id'])) {
     <meta property="og:url" content="https://visit-rw.iforeveryoungtours.com/">
     <meta property="og:title" content="<?= $page_title ?>">
     <meta property="og:description" content="<?= $meta_description ?>">
-    <meta property="og:image" content="https://visit-rw.iforeveryoungtours.com/assets/images/rwanda-og.jpg">
+    <meta property="og:image" content="<?= getImageUrl('assets/images/Rwanda.jpg') ?>">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://visit-rw.iforeveryoungtours.com/">
     <meta property="twitter:title" content="<?= $page_title ?>">
     <meta property="twitter:description" content="<?= $meta_description ?>">
-    <meta property="twitter:image" content="https://visit-rw.iforeveryoungtours.com/assets/images/rwanda-og.jpg">
+    <meta property="twitter:image" content="<?= getImageUrl('assets/images/Rwanda.jpg') ?>">
     
     <!-- Mobile Optimization -->
     <meta name="theme-color" content="#F59E0B">
@@ -134,7 +141,7 @@ if (isset($country['id'])) {
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
     <!-- Parallax Background -->
     <div class="absolute inset-0 z-0" data-parallax>
-        <img src="assets/images/rwanda-gorilla-hero.png" alt="Rwanda Gorillas" class="w-full h-full object-cover scale-110">
+        <img src="<?= getImageUrl('countries/rwanda/assets/images/hero-rwanda.jpg') ?>" alt="Rwanda Gorillas" class="w-full h-full object-cover scale-110" onerror="this.src='<?= getImageUrl('countries/rwanda/assets/images/rwanda-gorilla-hero.png') ?>'; this.onerror=function(){this.src='<?= getImageUrl('assets/images/africa.png') ?>';}">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-amber-900/70"></div>
         
         <!-- Animated Overlay Pattern -->
@@ -330,7 +337,7 @@ if (isset($country['id'])) {
             <?php foreach (array_slice($tours, 0, 3) as $tour): ?>
             <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="relative overflow-hidden">
-                    <img src="<?= htmlspecialchars($tour['image_url'] ?: '../../assets/images/africa.png') ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                    <img src="<?= getImageUrl($tour['image_url'] ?: $tour['cover_image'], 'countries/rwanda/assets/images/hero-rwanda.jpg') ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='<?= getImageUrl('countries/rwanda/assets/images/rwanda-gorilla-hero.png') ?>'; this.onerror=function(){this.src='<?= getImageUrl('assets/images/africa.png') ?>';}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute top-4 right-4">
                         <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">Featured</span>
@@ -348,7 +355,7 @@ if (isset($country['id'])) {
                     </div>
                     <div class="flex gap-3">
                         <a href="../../pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
-                        <button onclick="openRequestModal('<?= htmlspecialchars($tour['name']) ?>')" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Book Now</button>
+                        <button onclick="openBookingModal(<?= $tour['id'] ?>, '<?= htmlspecialchars($tour['name']) ?>', <?= $tour['price'] ?>)" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Book Now</button>
                     </div>
                 </div>
             </div>
@@ -548,8 +555,6 @@ document.getElementById('requestModal')?.addEventListener('click', function(e) {
 });
 </script>
 
-
-
 <!-- FAQS -->
 <section class="py-20 bg-gradient-to-b from-gray-50 to-white">
     <div class="max-w-4xl mx-auto px-4">
@@ -599,9 +604,6 @@ function toggleFaq(index) {
     }
 }
 </script>
-
-
-
 
 <!-- Floating WhatsApp Button -->
 <div class="fixed bottom-6 right-6 z-50">
@@ -804,6 +806,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<!-- Include Enhanced Booking Modal -->
+<?php include '../../pages/enhanced-booking-modal.php'; ?>
 
 </body>
 </html>

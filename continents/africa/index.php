@@ -75,6 +75,38 @@ $featured_tours = $stmt->fetchAll();
 // Set paths for subdomain
 $base_path = '../../';
 $css_path = '../assets/css/modern-styles.css';
+
+// Function to fix image paths for continent context
+function fixContinentImagePath($imagePath) {
+    if (empty($imagePath)) {
+        return '/foreveryoungtours/assets/images/default-tour.jpg';
+    }
+
+    // If it's an upload path, use absolute path from web root
+    if (strpos($imagePath, 'uploads/') === 0) {
+        return '/foreveryoungtours/' . $imagePath;
+    }
+
+    // If it's already a relative path starting with ../
+    if (strpos($imagePath, '../') === 0) {
+        // Convert any relative path to absolute
+        $cleanPath = str_replace(['../../', '../'], '', $imagePath);
+        return '/foreveryoungtours/' . $cleanPath;
+    }
+
+    // If it's an assets path
+    if (strpos($imagePath, 'assets/') === 0) {
+        return '/foreveryoungtours/' . $imagePath;
+    }
+
+    // If it's an external URL, return as-is
+    if (strpos($imagePath, 'http') === 0) {
+        return $imagePath;
+    }
+
+    // Default case - assume it needs the full absolute path
+    return '/foreveryoungtours/' . $imagePath;
+}
 ?>
 
 <!-- Hero Section - Professional Parallax -->
@@ -222,9 +254,9 @@ $css_path = '../assets/css/modern-styles.css';
             <!-- Right Featured Tour Card - 2 columns -->
             <div class="lg:col-span-2">
                 <?php if (!empty($featured_tours)): ?>
-                <?php 
+                <?php
                 $hero_tour = $featured_tours[0];
-                $hero_image = $hero_tour['cover_image'] ?: $hero_tour['image_url'] ?: '../../assets/images/default-tour.jpg';
+                $hero_image = fixContinentImagePath($hero_tour['cover_image'] ?: $hero_tour['image_url']);
                 ?>
                 <div class="group relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
                     <div class="absolute top-4 right-4 z-10">
@@ -345,7 +377,13 @@ $css_path = '../assets/css/modern-styles.css';
                 foreach ($visible_tours as $tour): 
                 ?>
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='../../pages/tour-detail.php?id=<?php echo $tour['id']; ?>'">
-                    <img src="<?php echo htmlspecialchars($tour['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80'); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-56 object-cover">
+                    <?php
+                    $tour_image = fixContinentImagePath($tour['cover_image'] ?: $tour['image_url']);
+                    if (empty($tour['cover_image']) && empty($tour['image_url'])) {
+                        $tour_image = 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80';
+                    }
+                    ?>
+                    <img src="<?php echo htmlspecialchars($tour_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-56 object-cover" onerror="this.src='../../assets/images/default-tour.jpg'; this.onerror=null;">
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-900 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h3>
                         <p class="text-gray-600 mb-4 line-clamp-2"><?php echo htmlspecialchars(substr($tour['description'] ?: 'Discover amazing experiences', 0, 100)) . '...'; ?></p>

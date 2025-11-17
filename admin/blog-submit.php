@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 session_start();
 $page_title = "Share Your Travel Story - iForYoungTours Blog";
 $page_description = "Share your amazing African travel experience with fellow adventurers. Submit your story, photos, and tips to inspire others.";

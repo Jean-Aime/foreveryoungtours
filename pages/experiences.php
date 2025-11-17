@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "African Experiences - iForYoungTours | Safari, Culture & Adventure";
 $page_description = "Discover curated African experiences from luxury safaris to cultural immersions. Choose your perfect adventure style and create unforgettable memories.";
 // $base_path will be auto-detected in header.php based on server port
@@ -138,6 +140,6 @@ include '../includes/header.php';
 <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
 
-<script src="../assets/js/pages.js"></script>
+<script src="<?= getImageUrl('assets/js/pages.js') ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

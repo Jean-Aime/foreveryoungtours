@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = 'Destination Management';
 $current_page = 'destinations';
 session_start();

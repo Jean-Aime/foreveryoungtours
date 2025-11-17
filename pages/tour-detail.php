@@ -1,5 +1,9 @@
 <?php
+
+require_once 'config.php';
 require_once '../config/database.php';
+
+// Note: getImageUrl function is now defined in config.php
 
 $tour_id = $_GET['id'] ?? 0;
 
@@ -45,7 +49,7 @@ include '../includes/header.php';
         <!-- Breadcrumb -->
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
             <nav class="flex items-center space-x-2 text-sm text-slate-500">
-                <a href="../index.php" class="hover:text-golden-600 transition-colors">Home</a>
+                <a href="../Home" class="hover:text-golden-600 transition-colors">Home</a>
                 <span>/</span>
                 <a href="packages.php" class="hover:text-golden-600 transition-colors">Tours</a>
                 <span>/</span>
@@ -56,9 +60,7 @@ include '../includes/header.php';
         <!-- Title and Meta -->
         <?php 
         $bg_image = $tour['cover_image'] ?: $tour['image_url'] ?: '../assets/images/default-tour.jpg';
-        if (strpos($bg_image, 'uploads/') === 0) {
-            $bg_image = '../' . $bg_image;
-        }
+        $bg_image = getImageUrl($bg_image);
         ?>
         <div class="relative w-full mb-12" style="background-image: url('<?php echo htmlspecialchars($bg_image); ?>'); background-size: cover; background-position: center; min-height: 400px;">
             <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80"></div>
@@ -153,17 +155,14 @@ include '../includes/header.php';
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <?php foreach ($gallery_images as $index => $image): ?>
                 <?php 
-                // Fix relative paths
-                $image_src = $image;
-                if (strpos($image, 'uploads/') === 0) {
-                    $image_src = '../' . $image;
-                }
+                // Fix relative paths for current context
+                $image_src = getImageUrl($image);
                 ?>
                 <div class="relative overflow-hidden rounded-lg cursor-pointer" onclick="openImageModal(<?php echo $index; ?>)">
-                    <img src="<?php echo htmlspecialchars($image_src); ?>" 
-                         alt="<?php echo htmlspecialchars($tour['name']); ?> - Image <?php echo $index + 1; ?>" 
+                    <img src="<?php echo htmlspecialchars($image_src); ?>"
+                         alt="<?php echo htmlspecialchars($tour['name']); ?> - Image <?php echo $index + 1; ?>"
                          class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
-                         onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                         onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                     <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
                         <i class="fas fa-expand text-white opacity-0 hover:opacity-100 transition-opacity duration-300"></i>
                     </div>
@@ -358,14 +357,12 @@ include '../includes/header.php';
                 <div class="bg-white rounded-lg overflow-hidden shadow-sm border hover:shadow-md transition-shadow">
                     <?php 
                     $related_image = $related['cover_image'] ?: $related['image_url'] ?: '../assets/images/default-tour.jpg';
-                    if (strpos($related_image, 'uploads/') === 0) {
-                        $related_image = '../' . $related_image;
-                    }
+                    $related_image = getImageUrl($related_image);
                     ?>
-                    <img src="<?php echo htmlspecialchars($related_image); ?>" 
-                         alt="<?php echo htmlspecialchars($related['name']); ?>" 
+                    <img src="<?php echo htmlspecialchars($related_image); ?>"
+                         alt="<?php echo htmlspecialchars($related['name']); ?>"
                          class="w-full h-32 object-cover"
-                         onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                         onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                     <div class="p-4">
                         <h3 class="font-bold text-sm mb-2"><?php echo htmlspecialchars($related['name']); ?></h3>
                         <p class="text-xs text-slate-600 mb-2"><?php echo htmlspecialchars($related['country_name']); ?></p>
@@ -431,8 +428,17 @@ function prevImage() {
 
 function updateModalImage() {
     let imageSrc = galleryImages[currentImageIndex];
+    // Fix image path based on context
     if (imageSrc.startsWith('uploads/')) {
-        imageSrc = '../' + imageSrc;
+        if (window.location.host.indexOf('foreveryoungtours.local') !== -1) {
+            imageSrc = imageSrc; // Keep as-is for subdomain
+        } else {
+            imageSrc = '../' + imageSrc; // Add ../ for normal context
+        }
+    } else if (imageSrc.startsWith('../assets/')) {
+        if (window.location.host.indexOf('foreveryoungtours.local') !== -1) {
+            imageSrc = imageSrc.replace('../', ''); // Remove ../ for subdomain
+        }
     }
     document.getElementById('modalImage').src = imageSrc;
     document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
@@ -447,8 +453,6 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowRight') nextImage();
 });
 </script>
-
-
 
 <?php include 'inquiry-modal.php'; ?>
 <?php include '../includes/footer.php'; ?>

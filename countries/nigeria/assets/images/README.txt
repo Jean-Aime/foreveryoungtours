@@ -1,0 +1,1 @@
+Place the Rwanda gorilla hero image here as: rwanda-gorilla-hero.jpg

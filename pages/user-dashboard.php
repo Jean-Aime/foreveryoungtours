@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "My Dashboard - iForYoungTours | Travel Hub";
 $page_description = "Manage your bookings, view travel history, and plan your next African adventure.";
 // $base_path will be auto-detected in header.php based on server port
@@ -13,7 +15,7 @@ include './header.php';
         <div class="w-64 bg-white shadow-sm h-screen fixed left-0 top-16 overflow-y-auto">
             <nav class="p-6">
                 <div class="mb-6 text-center">
-                    <img src="../assets/images/logo.png" alt="User" class="w-16 h-16 rounded-full mx-auto mb-2">
+                    <img src="<?= getImageUrl('assets/images/logo.png') ?>" alt="User" class="w-16 h-16 rounded-full mx-auto mb-2">
                     <h3 class="font-semibold text-gray-900">Welcome Back!</h3>
                     <p class="text-sm text-gray-600">Travel Explorer</p>
                 </div>
@@ -127,7 +129,7 @@ include './header.php';
                         </div>
                         <div class="space-y-4">
                             <div class="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50">
-                                <img src="../assets/images/africa.png" alt="Kenya Safari" class="w-12 h-12 rounded-lg object-cover">
+                                <img src="<?= getImageUrl('assets/images/africa.png') ?>" alt="Kenya Safari" class="w-12 h-12 rounded-lg object-cover">
                                 <div class="flex-1">
                                     <h4 class="font-medium text-gray-900">Kenya Safari Adventure</h4>
                                     <p class="text-sm text-gray-600">Kenya</p>
@@ -140,7 +142,7 @@ include './header.php';
                             </div>
                             
                             <div class="flex items-center space-x-4 p-4 border border-gray-100 rounded-lg hover:bg-gray-50">
-                                <img src="../assets/images/africa.png" alt="Morocco Desert" class="w-12 h-12 rounded-lg object-cover">
+                                <img src="<?= getImageUrl('assets/images/africa.png') ?>" alt="Morocco Desert" class="w-12 h-12 rounded-lg object-cover">
                                 <div class="flex-1">
                                     <h4 class="font-medium text-gray-900">Morocco Desert Experience</h4>
                                     <p class="text-sm text-gray-600">Morocco</p>
@@ -210,7 +212,7 @@ include './header.php';
                         <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
                             <div class="flex items-start justify-between">
                                 <div class="flex items-start space-x-4">
-                                    <img src="../assets/images/africa.png" alt="Kenya Safari" class="w-20 h-20 rounded-lg object-cover">
+                                    <img src="<?= getImageUrl('assets/images/africa.png') ?>" alt="Kenya Safari" class="w-20 h-20 rounded-lg object-cover">
                                     <div>
                                         <h3 class="text-lg font-semibold text-gray-900">Kenya Safari Adventure</h3>
                                         <p class="text-gray-600">Kenya</p>
@@ -264,8 +266,8 @@ include './header.php';
 </div>
 
 <!-- JavaScript -->
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/dashboard-modules.js"></script>
+<script src="<?= getImageUrl('assets/js/main.js') ?>"></script>
+<script src="<?= getImageUrl('assets/js/dashboard-modules.js') ?>"></script>
 <script>
 // User-specific functions
 function handleUserAction(action) {

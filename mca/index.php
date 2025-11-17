@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 session_start();
 require_once '../config/database.php';
 require_once '../auth/check_auth.php';

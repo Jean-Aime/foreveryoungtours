@@ -6,22 +6,135 @@ require_once '../config/database.php';
 require_once '../auth/check_auth.php';
 checkAuth('super_admin');
 
-// Handle Add/Edit/Delete
+// Include theme generation functions
+require_once '../includes/theme-generator.php';
+
+// Handle Add/Edit/Delete with automatic theme generation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
-    
+
     if ($action === 'add') {
-        $stmt = $pdo->prepare("INSERT INTO countries (region_id, name, slug, country_code, description, image_url, currency, language, best_time_to_visit, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $_POST['image_url'], $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status']]);
-        $success = "Country added successfully!";
+        try {
+            // Insert country into database
+            $stmt = $pdo->prepare("INSERT INTO countries (region_id, name, slug, country_code, description, image_url, currency, language, best_time_to_visit, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $_POST['image_url'], $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status']]);
+
+            $country_id = $pdo->lastInsertId();
+
+            // Generate folder name from slug
+            $folder_name = generateFolderName($_POST['slug']);
+
+            // Automatically generate Rwanda/South Africa theme for new country
+            $theme_result = generateCountryTheme([
+                'id' => $country_id,
+                'name' => $_POST['name'],
+                'slug' => $_POST['slug'],
+                'country_code' => $_POST['country_code'],
+                'folder' => $folder_name,
+                'currency' => $_POST['currency'],
+                'description' => $_POST['description']
+            ]);
+
+            // Update subdomain handler
+            updateSubdomainHandler($_POST['country_code'], $_POST['slug'], $folder_name);
+
+            $success = "Country added successfully! Rwanda theme automatically cloned and subdomain configured.";
+
+        } catch (Exception $e) {
+            $error = "Error adding country: " . $e->getMessage();
+        }
+
     } elseif ($action === 'edit') {
-        $stmt = $pdo->prepare("UPDATE countries SET region_id = ?, name = ?, slug = ?, country_code = ?, description = ?, image_url = ?, currency = ?, language = ?, best_time_to_visit = ?, status = ? WHERE id = ?");
-        $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $_POST['image_url'], $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status'], $_POST['id']]);
-        $success = "Country updated successfully!";
+        try {
+            // Get old status before update
+            $stmt = $pdo->prepare("SELECT status FROM countries WHERE id = ?");
+            $stmt->execute([$_POST['id']]);
+            $old_country = $stmt->fetch();
+            $old_status = $old_country['status'];
+
+            // Update country
+            $stmt = $pdo->prepare("UPDATE countries SET region_id = ?, name = ?, slug = ?, country_code = ?, description = ?, image_url = ?, currency = ?, language = ?, best_time_to_visit = ?, status = ? WHERE id = ?");
+            $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $_POST['image_url'], $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status'], $_POST['id']]);
+
+            // If country is being activated (inactive -> active), generate theme
+            if ($old_status === 'inactive' && $_POST['status'] === 'active') {
+                $folder_name = generateFolderName($_POST['slug']);
+
+                // Check if theme already exists
+                $theme_dir = __DIR__ . '/../countries/' . $folder_name;
+                if (!file_exists($theme_dir . '/index.php')) {
+                    // Generate theme if it doesn't exist
+                    $theme_result = generateCountryTheme([
+                        'id' => $_POST['id'],
+                        'name' => $_POST['name'],
+                        'slug' => $_POST['slug'],
+                        'country_code' => $_POST['country_code'],
+                        'folder' => $folder_name,
+                        'currency' => $_POST['currency'],
+                        'description' => $_POST['description']
+                    ]);
+
+                    // Update subdomain handler
+                    updateSubdomainHandler($_POST['country_code'], $_POST['slug'], $folder_name);
+
+                    $success = "Country activated successfully! Rwanda theme automatically cloned.";
+                } else {
+                    $success = "Country activated successfully! (Theme already exists)";
+                }
+            } else {
+                $success = "Country updated successfully!";
+            }
+
+        } catch (Exception $e) {
+            $error = "Error updating country: " . $e->getMessage();
+        }
+
     } elseif ($action === 'delete') {
         $stmt = $pdo->prepare("UPDATE countries SET status = 'inactive' WHERE id = ?");
         $stmt->execute([$_POST['id']]);
         $success = "Country deactivated successfully!";
+
+    } elseif ($action === 'activate') {
+        try {
+            // Get country data
+            $stmt = $pdo->prepare("SELECT * FROM countries WHERE id = ?");
+            $stmt->execute([$_POST['id']]);
+            $country = $stmt->fetch();
+
+            if ($country) {
+                // Activate country
+                $stmt = $pdo->prepare("UPDATE countries SET status = 'active' WHERE id = ?");
+                $stmt->execute([$_POST['id']]);
+
+                // Generate folder name
+                $folder_name = generateFolderName($country['slug']);
+
+                // Check if theme exists
+                $theme_dir = __DIR__ . '/../countries/' . $folder_name;
+                if (!file_exists($theme_dir . '/index.php')) {
+                    // Generate Rwanda theme
+                    $theme_result = generateCountryTheme([
+                        'id' => $country['id'],
+                        'name' => $country['name'],
+                        'slug' => $country['slug'],
+                        'country_code' => $country['country_code'],
+                        'folder' => $folder_name,
+                        'currency' => $country['currency'],
+                        'description' => $country['description']
+                    ]);
+
+                    // Update subdomain handler
+                    updateSubdomainHandler($country['country_code'], $country['slug'], $folder_name);
+
+                    $success = "Country activated successfully! Rwanda theme automatically cloned.";
+                } else {
+                    $success = "Country activated successfully! (Theme already exists)";
+                }
+            }
+
+        } catch (Exception $e) {
+            $error = "Error activating country: " . $e->getMessage();
+        }
     }
 }
 
@@ -43,7 +156,15 @@ require_once 'includes/admin-sidebar.php';
     <h1 class="text-3xl font-bold text-slate-900 mb-6">Manage Countries</h1>
     
     <?php if (isset($success)): ?>
-    <div class="alert alert-success"><?php echo $success; ?></div>
+    <div class="alert alert-success mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+        <i class="fas fa-check-circle"></i> <?php echo $success; ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if (isset($error)): ?>
+    <div class="alert alert-danger mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+    </div>
     <?php endif; ?>
     
     <div class="card mb-4">
@@ -82,15 +203,26 @@ require_once 'includes/admin-sidebar.php';
                         </td>
                         <td>
                             <button class="btn btn-sm btn-warning" onclick='editCountry(<?php echo json_encode($country); ?>)'>
-                                <i class="fas fa-edit"></i>
+                                <i class="fas fa-edit"></i> Edit
                             </button>
-                            <form method="POST" style="display:inline;" onsubmit="return confirm('Deactivate this country?');">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id" value="<?php echo $country['id']; ?>">
-                                <button type="submit" class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
+
+                            <?php if ($country['status'] === 'active'): ?>
+                                <form method="POST" style="display:inline;" onsubmit="return confirm('Deactivate this country?');">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="id" value="<?php echo $country['id']; ?>">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-ban"></i> Deactivate
+                                    </button>
+                                </form>
+                            <?php else: ?>
+                                <form method="POST" style="display:inline;" onsubmit="return confirm('Activate this country? Rwanda theme will be automatically cloned.');">
+                                    <input type="hidden" name="action" value="activate">
+                                    <input type="hidden" name="id" value="<?php echo $country['id']; ?>">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="fas fa-check-circle"></i> Activate
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

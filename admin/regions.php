@@ -1,5 +1,9 @@
 <?php
+
+require_once 'config.php';
 require_once '../config/database.php';
+require_once '../includes/theme-generator.php';
+
 $db = new Database();
 $conn = $db->getConnection();
 
@@ -13,9 +17,35 @@ if ($_POST) {
                 $stmt->execute([$_POST['name'], $slug, $_POST['description'], $_POST['image_url'], isset($_POST['featured']) ? 1 : 0]);
                 break;
             case 'add_country':
-                $slug = strtolower(str_replace(' ', '-', $_POST['name']));
-                $stmt = $conn->prepare("INSERT INTO countries (region_id, name, slug, country_code, description, tourism_description, image_url, best_time_to_visit, currency, language, featured, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
-                $stmt->execute([$_POST['region_id'], $_POST['name'], $slug, $_POST['country_code'], $_POST['description'], $_POST['tourism_description'], $_POST['image_url'], $_POST['best_time_to_visit'], $_POST['currency'], $_POST['language'], isset($_POST['featured']) ? 1 : 0]);
+                try {
+                    $slug = 'visit-' . strtolower($_POST['country_code']);
+
+                    // Insert country into database
+                    $stmt = $conn->prepare("INSERT INTO countries (region_id, name, slug, country_code, description, tourism_description, image_url, best_time_to_visit, currency, language, featured, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active')");
+                    $stmt->execute([$_POST['region_id'], $_POST['name'], $slug, $_POST['country_code'], $_POST['description'], $_POST['tourism_description'], $_POST['image_url'], $_POST['best_time_to_visit'], $_POST['currency'], $_POST['language'], isset($_POST['featured']) ? 1 : 0]);
+
+                    $country_id = $conn->lastInsertId();
+
+                    // Generate folder name from slug
+                    $folder_name = generateFolderName($slug);
+
+                    // Automatically generate Rwanda theme for new country
+                    $theme_result = generateCountryTheme([
+                        'id' => $country_id,
+                        'name' => $_POST['name'],
+                        'slug' => $slug,
+                        'country_code' => $_POST['country_code'],
+                        'folder' => $folder_name,
+                        'currency' => $_POST['currency'],
+                        'description' => $_POST['description']
+                    ]);
+
+                    // Update subdomain handler
+                    updateSubdomainHandler($_POST['country_code'], $slug, $folder_name);
+
+                } catch (Exception $e) {
+                    error_log("Error adding country: " . $e->getMessage());
+                }
                 break;
         }
     }

@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Tours & Packages Management";
 $page_subtitle = "Manage Tour Offerings";
 session_start();
@@ -264,10 +266,52 @@ if ($_POST) {
                 header('Location: tours.php?added=1');
                 exit;
                 break;
+            case 'deactivate':
+                try {
+                    $stmt = $pdo->prepare("UPDATE tours SET status = 'inactive' WHERE id = ?");
+                    $result = $stmt->execute([$_POST['tour_id']]);
+                    
+                    if ($result && $stmt->rowCount() > 0) {
+                        header('Location: tours.php?deactivated=1');
+                    } else {
+                        header('Location: tours.php?error=deactivate_failed');
+                    }
+                } catch (Exception $e) {
+                    error_log("Deactivate tour error: " . $e->getMessage());
+                    header('Location: tours.php?error=deactivate_error');
+                }
+                exit;
+                break;
+                
             case 'delete':
-                $stmt = $pdo->prepare("UPDATE tours SET status = 'inactive' WHERE id = ?");
-                $stmt->execute([$_POST['tour_id']]);
-                header('Location: tours.php?deleted=1');
+                try {
+                    // First, delete related records to avoid foreign key constraints
+                    $pdo->beginTransaction();
+                    
+                    // Delete tour bookings (if any)
+                    $stmt = $pdo->prepare("DELETE FROM bookings WHERE tour_id = ?");
+                    $stmt->execute([$_POST['tour_id']]);
+                    
+                    // Delete tour reviews (if any)
+                    $stmt = $pdo->prepare("DELETE FROM reviews WHERE tour_id = ?");
+                    $stmt->execute([$_POST['tour_id']]);
+                    
+                    // Delete the tour itself
+                    $stmt = $pdo->prepare("DELETE FROM tours WHERE id = ?");
+                    $result = $stmt->execute([$_POST['tour_id']]);
+                    
+                    if ($result && $stmt->rowCount() > 0) {
+                        $pdo->commit();
+                        header('Location: tours.php?deleted=1');
+                    } else {
+                        $pdo->rollback();
+                        header('Location: tours.php?error=delete_failed');
+                    }
+                } catch (Exception $e) {
+                    $pdo->rollback();
+                    error_log("Delete tour error: " . $e->getMessage());
+                    header('Location: tours.php?error=delete_error');
+                }
                 exit;
                 break;
         }
@@ -343,9 +387,39 @@ require_once 'includes/admin-sidebar.php';
             </div>
             <?php endif; ?>
             
+            <?php if (isset($_GET['deactivated'])): ?>
+            <div class="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 rounded mb-6">
+                <i class="fas fa-pause-circle mr-2"></i>Tour deactivated successfully! (Status set to inactive)
+            </div>
+            <?php endif; ?>
+            
             <?php if (isset($_GET['deleted'])): ?>
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                Tour deleted successfully!
+                <i class="fas fa-trash mr-2"></i>Tour permanently deleted successfully!
+            </div>
+            <?php endif; ?>
+            
+            <?php if (isset($_GET['error'])): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <?php 
+                switch($_GET['error']) {
+                    case 'deactivate_failed':
+                        echo 'Failed to deactivate tour. Tour may not exist.';
+                        break;
+                    case 'deactivate_error':
+                        echo 'An error occurred while deactivating the tour. Please try again.';
+                        break;
+                    case 'delete_failed':
+                        echo 'Failed to delete tour. Tour may not exist.';
+                        break;
+                    case 'delete_error':
+                        echo 'An error occurred while deleting the tour. Please try again.';
+                        break;
+                    default:
+                        echo 'An unexpected error occurred.';
+                }
+                ?>
             </div>
             <?php endif; ?>
 
@@ -396,10 +470,9 @@ require_once 'includes/admin-sidebar.php';
                                             $display_image = '../' . $display_image;
                                         }
                                         ?>
-                                        <img src="<?php echo htmlspecialchars($display_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-16 h-16 object-cover rounded-lg mr-4" onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                                        <img src="<?php echo htmlspecialchars($display_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-16 h-16 object-cover rounded-lg mr-4" onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                                         <div>
                                             <h4 class="font-bold text-slate-900"><?php echo htmlspecialchars($tour['name']); ?></h4>
-                                            <p class="text-sm text-slate-600"><?php echo htmlspecialchars(substr($tour['description'], 0, 80)); ?>...</p>
                                         </div>
                                     </div>
                                 </td>
@@ -419,7 +492,7 @@ require_once 'includes/admin-sidebar.php';
                                             'city' => 'bg-purple-100 text-purple-800',
                                             'sports' => 'bg-orange-100 text-orange-800',
                                             'agro' => 'bg-yellow-100 text-yellow-800',
-                                            'conference' => 'bg-gray-100 text-gray-800',
+                                            'conference' => 'bg-indigo-100 text-indigo-800',
                                             default => 'bg-slate-100 text-slate-800'
                                         };
                                     ?>">
@@ -451,10 +524,21 @@ require_once 'includes/admin-sidebar.php';
                                         <button onclick="editTour(<?php echo $tour['id']; ?>)" class="btn-secondary px-3 py-1 rounded text-sm">
                                             <i class="fas fa-edit mr-1"></i>Edit
                                         </button>
-                                        <form method="POST" class="inline" onsubmit="return confirm('Delete this tour?')">
+                                        
+                                        <!-- Deactivate Button -->
+                                        <form method="POST" class="inline" onsubmit="return confirm('Deactivate tour: <?php echo addslashes($tour['name']); ?>?\n\nThis will set the tour status to inactive but keep all data.')">
+                                            <input type="hidden" name="action" value="deactivate">
+                                            <input type="hidden" name="tour_id" value="<?php echo $tour['id']; ?>">
+                                            <button type="submit" class="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600 text-sm transition-colors duration-200">
+                                                <i class="fas fa-pause mr-1"></i>Deactivate
+                                            </button>
+                                        </form>
+                                        
+                                        <!-- Delete Button -->
+                                        <form method="POST" class="inline" onsubmit="return confirm('⚠️ PERMANENTLY DELETE tour: <?php echo addslashes($tour['name']); ?>?\n\n🚨 WARNING: This will completely remove the tour and all related data (bookings, reviews, etc.) from the database.\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?')">
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="tour_id" value="<?php echo $tour['id']; ?>">
-                                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">
+                                            <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm transition-colors duration-200">
                                                 <i class="fas fa-trash mr-1"></i>Delete
                                             </button>
                                         </form>
@@ -613,7 +697,7 @@ require_once 'includes/admin-sidebar.php';
                                 }
                                 ?>
                                 <div class="relative">
-                                    <img src="<?php echo htmlspecialchars($image_src); ?>" alt="Tour image" class="w-full h-16 object-cover rounded" onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                                    <img src="<?php echo htmlspecialchars($image_src); ?>" alt="Tour image" class="w-full h-16 object-cover rounded" onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                                     <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
                                         <?php echo basename($image); ?>
                                     </div>

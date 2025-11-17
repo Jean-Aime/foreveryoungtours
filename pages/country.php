@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Country Details";
 $css_path = '../assets/css/modern-styles.css';
 // $base_path will be auto-detected in header.php based on server port

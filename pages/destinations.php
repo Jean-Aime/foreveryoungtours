@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Discover Luxury Group Travel Across the World";
 $page_description = "Explore the world's most breathtaking destinations with iForYoungTours";
 $css_path = '../assets/css/modern-styles.css';
@@ -106,7 +108,5 @@ include '../includes/header.php';
         <?php endif; ?>
     </div>
 </section>
-
-
 
 <?php include '../includes/footer.php'; ?>

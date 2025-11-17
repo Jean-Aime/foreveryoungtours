@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Resources - iForYoungTours | Guides, Tips & Essential Information";
 $page_description = "Comprehensive travel resources for African adventures. Visa information, safety guides, packing lists, and expert tips for your journey.";
 // $base_path will be auto-detected in header.php based on server port
@@ -227,7 +229,7 @@ include '../includes/header.php';
 </section>
 
 <!-- JavaScript -->
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/pages.js"></script>
+<script src="<?= getImageUrl('assets/js/main.js') ?>"></script>
+<script src="<?= getImageUrl('assets/js/pages.js') ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

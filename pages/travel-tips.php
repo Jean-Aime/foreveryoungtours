@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Tips - Forever Young Tours | Insider Knowledge. Global Advantage.";
 $page_description = "Leverage our network's experience to travel with confidence. From flight timing and insurance coverage to local currency insights and cultural etiquette.";
 $css_path = "../assets/css/modern-styles.css";
