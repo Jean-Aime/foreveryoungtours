@@ -1,14 +1,40 @@
 <?php
+// Set the base path for includes
+$base_path = dirname(dirname(dirname(__DIR__)));
 
-require_once 'config.php';
+// Database configuration is included by subdomain-handler.php
+// Do not include it here to prevent duplicate inclusion
+
+// Start the session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Debug: Check if database connection is available
+if (!function_exists('getDB')) {
+    error_log("Database connection not available. Check if subdomain-handler.php included the database config.");
+    die("Configuration error. Please contact the administrator.");
+}
+
+// Set default values if not set by subdomain handler
+if (!defined('COUNTRY_SUBDOMAIN') || !COUNTRY_SUBDOMAIN) {
+    // If not loaded via subdomain, get country data directly
+    $stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c 
+                          LEFT JOIN regions r ON c.region_id = r.id 
+                          WHERE c.slug = 'rwanda' AND c.status = 'active'");
+    $stmt->execute();
+    $country = $stmt->fetch();
+    
+    if ($country) {
+        $_SESSION['subdomain_country_code'] = $country['country_code'];
+        $_SESSION['subdomain_country_name'] = $country['name'];
+        $_SESSION['subdomain_country_slug'] = $country['slug'];
+    }
+}
+
+// Set page metadata
 $page_title = "Discover Rwanda | Luxury Group Travel, Primate Safaris, Culture | Forever Young Tours";
 $meta_description = "Premium Rwanda travel. Gorillas, chimps, volcanoes, canopy walks, culture. Curated 6–10 day programs, premium lodges, seamless logistics. Request dates via WhatsApp or email.";
-require_once __DIR__ . '/../../config/database.php';
-
-// Get Rwanda data
-$stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = 'visit-rw' AND c.status = 'active'");
-$stmt->execute();
-$country = $stmt->fetch();
 
 // Handle case where country is not found
 if (!$country) {
@@ -18,11 +44,13 @@ if (!$country) {
 }
 
 // Get featured tours
-$stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC LIMIT 4");
-$stmt->execute([$country['id']]);
-$tours = $stmt->fetchAll();
-
-$base_path = '../../';
+if (isset($country['id'])) {
+    $stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC LIMIT 4");
+    $stmt->execute([$country['id']]);
+    $tours = $stmt->fetchAll();
+} else {
+    $tours = [];
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
