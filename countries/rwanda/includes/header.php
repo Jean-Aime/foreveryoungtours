@@ -1,22 +1,23 @@
 <?php
-// Auto-detect base path based on server configuration
-if (!isset($base_path)) {
-    // Check if running on PHP built-in server (port 8000) or XAMPP
-    $server_port = $_SERVER['SERVER_PORT'] ?? 80;
-    $script_name = $_SERVER['SCRIPT_NAME'] ?? '';
+// Get the base URL based on the current environment
+$is_subdomain = (defined('COUNTRY_SUBDOMAIN') && COUNTRY_SUBDOMAIN);
+$base_url = $is_subdomain ? '/' : '/countries/' . ($_SESSION['subdomain_country_slug'] ?? 'rwanda') . '/';
 
-    // If port is 8000 (PHP built-in server), use root path
-    if ($server_port == 8000) {
-        $base_path = '/';
-    }
-    // If script name contains 'foreveryoungtours', we're in XAMPP
-    elseif (strpos($script_name, 'foreveryoungtours') !== false) {
-        $base_path = '/foreveryoungtours/';
-    }
-    // Default to root
-    else {
-        $base_path = '/';
-    }
+// Set default base path
+$base_path = dirname(dirname(dirname(__DIR__)));
+
+// Function to generate URLs that work in both subdomain and subdirectory modes
+function url($path = '') {
+    global $base_url;
+    $path = ltrim($path, '/');
+    return $base_url . $path;
+}
+
+// Function to generate asset URLs
+function asset($path) {
+    global $base_url;
+    $path = ltrim($path, '/');
+    return $base_url . 'assets/' . $path;
 }
 ?>
 <!DOCTYPE html>
@@ -43,10 +44,10 @@ if (!isset($base_path)) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- Modern Styles -->
-    <link rel="stylesheet" href="assets/css/modern-styles.css">
-    <link rel="stylesheet" href="assets/css/responsive-utilities.css">
-    <link rel="stylesheet" href="assets/css/client-dashboard.css">
-    <link rel="stylesheet" href="assets/css/country-styles.css">
+    <link rel="stylesheet" href="<?php echo asset('css/modern-styles.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/responsive-utilities.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/client-dashboard.css'); ?>">
+    <link rel="stylesheet" href="<?php echo asset('css/country-styles.css'); ?>">
 </head>
 <body>
     <!-- Nextcloud-Style Navigation -->
@@ -55,13 +56,15 @@ if (!isset($base_path)) {
             <div class="flex justify-between items-center h-16">
                 <!-- Logo Section -->
                 <div class="flex items-center space-x-3">
-                    <img src="assets/images/logo.png" alt="iForYoungTours Logo" class="w-10 h-10">
+                    <a href="<?php echo url(''); ?>">
+                        <img src="<?php echo asset('images/logo.png'); ?>" alt="iForYoungTours Logo" class="w-10 h-10">
+                    </a>
 
                 </div>
 
                 <!-- Desktop Navigation -->
                 <div class="hidden lg:flex items-center space-x-1">
-                    <a href="/index.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
+                    <a href="<?php echo url(''); ?>" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
 
                     <!-- Solution Dropdown -->
                     <div class="relative dropdown-container">
