@@ -1,0 +1,153 @@
+/* Client Dashboard Styles - Gold, White, Green Theme */
+
+:root {
+    --primary-gold: #DAA520;
+    --secondary-gold: #F1C40F;
+    --dark-gold: #B8860B;
+    --primary-green: #228B22;
+    --dark-green: #006400;
+    --white: #ffffff;
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f8fafc;
+    color: var(--text-dark);
+}
+
+/* Sidebar Styles */
+.sidebar-link {
+    color: var(--text-dark);
+    transition: all 0.3s;
+}
+
+.sidebar-link:hover {
+    background: #fef3c7;
+    color: var(--primary-gold);
+}
+
+.sidebar-link.active {
+    background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+    color: #000;
+    font-weight: 600;
+}
+
+/* Card Styles */
+.nextcloud-card {
+    background: var(--white);
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s;
+}
+
+.nextcloud-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(218, 165, 32, 0.15);
+}
+
+/* Button Styles */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+    color: #000 !important;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(218, 165, 32, 0.3);
+}
+
+.btn-secondary {
+    background: var(--white);
+    border: 2px solid var(--primary-gold);
+    color: var(--text-dark) !important;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #fef3c7;
+    color: var(--dark-gold);
+}
+
+/* Text Colors */
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary-gold), var(--primary-green));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.text-golden-600 {
+    color: var(--primary-gold);
+}
+
+.text-golden-700 {
+    color: var(--dark-gold);
+}
+
+/* Image Overlay Text - Keep White with Shadow */
+.image-overlay-text {
+    color: #fff !important;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Feature Icons - Keep White SVG */
+.feature-icon svg {
+    color: #fff !important;
+}
+
+/* Status Badges */
+.badge {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-danger {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Icon Backgrounds */
+.icon-bg-blue {
+    background: #dbeafe;
+}
+
+.icon-bg-green {
+    background: #d1fae5;
+}
+
+.icon-bg-purple {
+    background: #e9d5ff;
+}
+
+.icon-bg-gold {
+    background: #fef3c7;
+}
+
+/* Accent Colors */
+.accent-green {
+    color: var(--primary-green);
+}
+
+.bg-accent-green {
+    background: var(--primary-green);
+}
+
+.border-accent-green {
+    border-color: var(--primary-green);
+}

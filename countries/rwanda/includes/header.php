@@ -212,7 +212,6 @@ function asset($path) {
                         </div>
                     </div>
 
-                    
                     <!-- Resources Dropdown -->
                     <div class="relative dropdown-container">
                         <a href="/pages/resources.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all flex items-center space-x-1" onmouseover="showDropdown('resourcesDropdown')" onmouseout="hideDropdown('resourcesDropdown')">
@@ -366,9 +365,7 @@ function asset($path) {
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('hidden');
         }
-        
 
-        
         let dropdownTimeout;
         
         function showDropdown(dropdownId) {

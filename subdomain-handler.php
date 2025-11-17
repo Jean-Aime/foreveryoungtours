@@ -28,7 +28,11 @@ if (preg_match('/^visit-([a-z]{2,3})\./', $host, $matches)) {
         'ZW' => 'ZWE',  // Zimbabwe
         'GH' => 'GHA',  // Ghana
         'NG' => 'NGA',  // Nigeria
-        'ET' => 'ETH'   // Ethiopia
+        'ET' => 'ETH',  // Ethiopia
+        'SN' => 'SEN',  // Senegal
+        'TN' => 'TUN',  // Tunisia
+        'CM' => 'CMR',  // Cameroon
+        'CD' => 'COD'   // DR Congo
     ];
     
     // Use mapping if it's a 2-letter code, otherwise use as-is
@@ -72,10 +76,68 @@ if ($country_code) {
         $_SESSION['subdomain_country_name'] = ucfirst($country_folder);
         $_SESSION['subdomain_country_slug'] = $country_folder;
         
-        // Set a constant with the application root path
-        if (!defined('APP_ROOT')) {
-            // Use the absolute path to the project directory
-            define('APP_ROOT', 'C:/xampp/htdocs/foreveryoungtours');
+        define('COUNTRY_SUBDOMAIN', true);
+        define('CURRENT_COUNTRY_ID', $country['id']);
+        define('CURRENT_COUNTRY_CODE', $country_code);
+        define('CURRENT_COUNTRY_NAME', $country['name']);
+        define('CURRENT_COUNTRY_SLUG', $country['slug']);
+        
+        // Load country-specific page
+        // Map database slug to actual folder name
+        $folder_mapping = [
+            'visit-rw' => 'rwanda',
+            'visit-ke' => 'kenya',
+            'visit-tz' => 'tanzania',
+            'visit-ug' => 'uganda',
+            'visit-za' => 'south-africa',
+            'visit-eg' => 'egypt',
+            'visit-ma' => 'morocco',
+            'visit-bw' => 'botswana',
+            'visit-na' => 'namibia',
+            'visit-zw' => 'zimbabwe',
+            'visit-gh' => 'ghana',
+            'visit-ng' => 'nigeria',
+            'visit-et' => 'ethiopia',
+            'visit-sn' => 'senegal',
+            'visit-tn' => 'tunisia',
+            'visit-cm' => 'cameroon',
+            'visit-cd' => 'democratic-republic-of-congo'
+        ];
+        
+        $folder_name = $folder_mapping[$country['slug']] ?? $country['slug'];
+
+        // Handle specific page requests
+        $request_uri = $_SERVER['REQUEST_URI'];
+        $parsed_uri = parse_url($request_uri);
+        $path = $parsed_uri['path'];
+
+        // Check if it's a page request (e.g., /pages/tour-detail)
+        if (preg_match('/^\/pages\/(.+)$/', $path, $matches)) {
+            $page_name = $matches[1];
+            $country_page_file = "countries/{$folder_name}/pages/{$page_name}.php";
+
+            // If the specific page exists in the country folder, use it
+            if (file_exists($country_page_file)) {
+                require_once $country_page_file;
+                exit;
+            }
+
+            // Fallback to main pages directory
+            $main_page_file = "pages/{$page_name}.php";
+            if (file_exists($main_page_file)) {
+                require_once $main_page_file;
+                exit;
+            }
+        }
+
+        // Default to country homepage
+        $country_page = "countries/{$folder_name}/index.php";
+
+        if (file_exists($country_page)) {
+            require_once $country_page;
+        } else {
+            // Fallback to main homepage with country filter if country page doesn't exist
+            require_once 'index.php';
         }
         
         // Debug: Log the paths for verification

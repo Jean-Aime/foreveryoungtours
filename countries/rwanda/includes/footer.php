@@ -5,7 +5,7 @@
                 <!-- Column 1: Logo & Description -->
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <img src="<?php echo asset('images/logo.png'); ?>" alt="Forever Young Tours Logo" class="w-12 h-12" loading="lazy">
+                        <img src="<?= getImageUrl('assets/images/logo.png') ?>" alt="Forever Young Tours Logo" class="w-12 h-12" onerror="this.src='/foreveryoungtours/assets/images/logo.png'" loading="lazy">
                         <div>
                             <h3 class="text-xl font-bold text-gray-900">Forever Young Tours</h3>
                             <p class="text-sm text-gray-600">Travel Bold. Stay Forever Young.</p>

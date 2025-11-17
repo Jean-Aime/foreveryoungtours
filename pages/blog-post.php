@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Story";
 $page_description = "Read amazing travel experiences and adventures from fellow African explorers.";
 // $base_path will be auto-detected in header.php based on server port
@@ -333,7 +335,6 @@ include '../includes/header.php';
                     </div>
                 </div>
                 <?php endif; ?>
-                
 
             </aside>
         </div>

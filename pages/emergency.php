@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Emergency Support - Forever Young Tours | 24/7 Travel Assistance";
 $page_description = "24/7 multilingual response desk. Priority medical, embassy, and travel insurance coordination. Real-time alert integration for destination safety updates.";
 $css_path = "../assets/css/modern-styles.css";

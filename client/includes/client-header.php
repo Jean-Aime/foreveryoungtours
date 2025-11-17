@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 if (!isset($_SESSION)) {
     session_start();
 }
@@ -56,7 +58,7 @@ if ($server_port == 8000) {
         <div class="w-64 bg-white shadow-lg fixed h-full overflow-y-auto">
             <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-yellow-50 to-orange-50">
                 <div class="flex items-center mb-2">
-                    <img src="../assets/images/logo.png" alt="Logo" class="w-10 h-10 mr-3">
+                    <img src="<?= getImageUrl('assets/images/logo.png') ?>" alt="Logo" class="w-10 h-10 mr-3">
                     <div>
                         <h2 class="text-lg font-bold text-slate-900">Travel Hub</h2>
                         <p class="text-xs text-slate-600">Client Portal</p>

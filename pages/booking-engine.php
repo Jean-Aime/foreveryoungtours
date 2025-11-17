@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Booking Engine - iForYoungTours";
 $css_path = "../assets/css/modern-styles.css";
 include '../includes/header.php';

@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Partners - Forever Young Tours | Building Global Bridges Through Travel";
 $page_description = "Strategic alliances with airlines, resorts, cultural institutions, and ministries of tourism. Partnership page showcases collaborative programs and corporate sponsorship opportunities within FYT's Global Network.";
 $css_path = "../assets/css/modern-styles.css";
@@ -359,7 +361,7 @@ include '../includes/header.php';
 </section>
 
 <!-- JavaScript -->
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/pages.js"></script>
+<script src="<?= getImageUrl('assets/js/main.js') ?>"></script>
+<script src="<?= getImageUrl('assets/js/pages.js') ?>"></script>
 
 <?php include '../includes/footer.php'; ?>

@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 session_start();
 require_once '../config/database.php';
 
@@ -442,7 +444,7 @@ include 'includes/client-header.php';
     </div>
 </div>
 
-<script src="../assets/js/multi-step-booking.js"></script>
+<script src="<?= getImageUrl('assets/js/multi-step-booking.js') ?>"></script>
 <script>
 function applyFilters() {
     const category = document.getElementById('categoryFilter').value;

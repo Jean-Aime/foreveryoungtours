@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Travel Club Membership - Forever Young Tours | Join the FYT Travel Club. Live the Legacy.";
 $page_description = "Annual membership unlocking member-only experiences, early-bird tour access, partner discounts, and invitation-only FYT Retreats. Receive your FYT Passport for lifetime milestones.";
 $css_path = "../assets/css/modern-styles.css";

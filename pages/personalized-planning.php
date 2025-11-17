@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Personalized Planning - Forever Young Tours | Your Journey. Your Way.";
 $page_description = "One-to-one planning with FYT Advisors. Customize experiences by interest—agro-tourism, cultural immersion, sports tourism, or wellness. Powered by EspoCRM and FYT Planner Portal.";
 $css_path = "../assets/css/modern-styles.css";

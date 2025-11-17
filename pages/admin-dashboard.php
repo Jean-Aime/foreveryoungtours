@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Admin Dashboard - iForYoungTours | Management Hub";
 $page_description = "Comprehensive admin dashboard for managing tours, bookings, users, and business analytics.";
 // $base_path will be auto-detected in header.php based on server port
@@ -220,8 +222,8 @@ include './header.php';
 </div>
 
 <!-- JavaScript -->
-<script src="../assets/js/main.js"></script>
-<script src="../assets/js/dashboard-modules.js"></script>
+<script src="<?= getImageUrl('assets/js/main.js') ?>"></script>
+<script src="<?= getImageUrl('assets/js/dashboard-modules.js') ?>"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script>
 // Admin-specific functions

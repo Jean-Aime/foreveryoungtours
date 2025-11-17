@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "My Bookings - iForYoungTours";
 $page_description = "View and manage your African tour bookings";
 $css_path = "../assets/css/modern-styles.css";
@@ -87,7 +89,7 @@ include './header.php';
                             <img src="<?php echo htmlspecialchars($image); ?>" 
                                  alt="<?php echo htmlspecialchars($booking['tour_name']); ?>" 
                                  class="w-full h-48 md:h-full object-cover"
-                                 onerror="this.src='../assets/images/default-tour.jpg'; this.onerror=null;">
+                                 onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                         </div>
                         <div class="md:w-2/3 p-6">
                             <div class="flex justify-between items-start mb-4">

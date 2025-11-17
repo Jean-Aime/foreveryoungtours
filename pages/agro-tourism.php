@@ -1,4 +1,6 @@
 <?php
+
+require_once 'config.php';
 $page_title = "Agro Tourism Experience - iForYoungTours";
 $page_description = "Explore sustainable farming practices and rural communities while enjoying farm-to-table experiences.";
 $base_path = "../";
