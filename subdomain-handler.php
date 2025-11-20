@@ -10,6 +10,28 @@ if (session_status() === PHP_SESSION_NONE) {
 $host = $_SERVER['HTTP_HOST'];
 $country_code = '';
 
+// Check for continent subdomains first
+if (preg_match('/^(africa|asia|europe|america|oceania)\./', $host, $matches)) {
+    $continent = strtolower($matches[1]);
+    
+    // Set continent context
+    $_SESSION['continent_filter'] = ucfirst($continent);
+    define('CURRENT_CONTINENT', ucfirst($continent));
+    
+    // Handle admin access - redirect to main admin
+    $request_uri = $_SERVER['REQUEST_URI'];
+    if (strpos($request_uri, '/admin/') === 0) {
+        header('Location: /admin/');
+        exit;
+    }
+    
+    $continent_file = "continents/{$continent}/index.php";
+    if (file_exists($continent_file)) {
+        require_once $continent_file;
+        exit;
+    }
+}
+
 // Extract subdomain (2 or 3 letter codes)
 if (preg_match('/^visit-([a-z]{2,3})\./', $host, $matches)) {
     $extracted_code = strtoupper($matches[1]);
@@ -110,6 +132,12 @@ if ($country_code) {
         $request_uri = $_SERVER['REQUEST_URI'];
         $parsed_uri = parse_url($request_uri);
         $path = $parsed_uri['path'];
+
+        // Handle admin access - redirect to main admin
+        if (strpos($path, '/admin/') === 0) {
+            header('Location: /admin/');
+            exit;
+        }
 
         // Check if it's a page request (e.g., /pages/tour-detail)
         if (preg_match('/^\/pages\/(.+)$/', $path, $matches)) {

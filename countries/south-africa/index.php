@@ -1,12 +1,12 @@
 <?php
-
+session_start();
 require_once 'config.php';
-$page_title = "Discover South Africa | Luxury Group Travel & Safari Adventures | Forever Young Tours";
-$meta_description = "Premium South Africa travel. Big 5 safaris, wine regions, Cape Town adventures. Curated luxury experiences.";
+$page_title = "Discover Rwanda | Luxury Group Travel, Primate Safaris, Culture | Forever Young Tours";
+$meta_description = "Premium Rwanda travel. Gorillas, chimps, volcanoes, canopy walks, culture. Curated 6–10 day programs, premium lodges, seamless logistics. Request dates via WhatsApp or email.";
 require_once __DIR__ . '/../../config/database.php';
 
-// Get South Africa data
-$stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = 'visit-za' AND c.status = 'active'");
+// Get Rwanda data
+$stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = 'visit-rw' AND c.status = 'active'");
 $stmt->execute();
 $country = $stmt->fetch();
 
@@ -17,10 +17,13 @@ if (!$country) {
     exit;
 }
 
-// Get featured tours
-$stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC LIMIT 4");
+// Get all tours for this country
+$stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC, created_at DESC");
 $stmt->execute([$country['id']]);
-$tours = $stmt->fetchAll();
+$all_tours = $stmt->fetchAll();
+
+// Get featured tours for display
+$tours = array_slice($all_tours, 0, 4);
 
 $base_path = '../../';
 ?>
@@ -32,21 +35,21 @@ $base_path = '../../';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title><?= $page_title ?></title>
     <meta name="description" content="<?= $meta_description ?>">
-    <link rel="canonical" href="https://visit-za.iforeveryoungtours.com/">
+    <link rel="canonical" href="https://visit-rw.iforeveryoungtours.com/">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://visit-za.iforeveryoungtours.com/">
+    <meta property="og:url" content="https://visit-rw.iforeveryoungtours.com/">
     <meta property="og:title" content="<?= $page_title ?>">
     <meta property="og:description" content="<?= $meta_description ?>">
-    <meta property="og:image" content="<?= getImageUrl('assets/images/south africa.jpg') ?>">
+    <meta property="og:image" content="<?= getImageUrl('assets/images/Rwanda.jpg') ?>">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://visit-za.iforeveryoungtours.com/">
+    <meta property="twitter:url" content="https://visit-rw.iforeveryoungtours.com/">
     <meta property="twitter:title" content="<?= $page_title ?>">
     <meta property="twitter:description" content="<?= $meta_description ?>">
-    <meta property="twitter:image" content="<?= getImageUrl('assets/images/south africa.jpg') ?>">
+    <meta property="twitter:image" content="<?= getImageUrl('assets/images/Rwanda.jpg') ?>">
     
     <!-- Mobile Optimization -->
     <meta name="theme-color" content="#F59E0B">
@@ -75,9 +78,9 @@ $base_path = '../../';
     {
       "@context": "https://schema.org",
       "@type": "TouristDestination",
-      "name": "South Africa",
-      "description": "Premium South Africa travel with gorilla, chimp, and golden monkey encounters. Curated itineraries, premium lodges, and on-ground FYT operations.",
-      "url": "https://visit-za.iforeveryoungtours.com/",
+      "name": "Rwanda",
+      "description": "Premium Rwanda travel with gorilla, chimp, and golden monkey encounters. Curated itineraries, premium lodges, and on-ground FYT operations.",
+      "url": "https://visit-rw.iforeveryoungtours.com/",
       "touristType": ["Luxury Group", "Adventure", "Cultural", "MICE"],
       "provider": {
         "@type": "TravelAgency",
@@ -86,16 +89,16 @@ $base_path = '../../';
         "email": "info@iforeveryoungtours.com",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "South Africa Operations Center",
-          "addressLocality": "South Africa",
-          "addressCountry": "ZA"
+          "streetAddress": "Norrsken House Kigali",
+          "addressLocality": "Kigali",
+          "addressCountry": "RW"
         }
       },
       "hasPart": [
         {
           "@type": "TouristTrip",
-          "name": "6 Days South Africa Premium Primate Safari",
-          "itinerary": "South Africa • Nyungwe • Volcanoes • South Africa",
+          "name": "6 Days Rwanda Premium Primate Safari",
+          "itinerary": "Kigali • Nyungwe • Volcanoes • Kigali",
           "offers": {
             "@type": "Offer",
             "price": "4600",
@@ -113,7 +116,7 @@ $base_path = '../../';
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
     <!-- Parallax Background -->
     <div class="absolute inset-0 z-0" data-parallax>
-        <img src="<?= getImageUrl('assets/images/south africa-gorilla-hero.png') ?>" alt="South Africa Gorillas" class="w-full h-full object-cover scale-110">
+        <img src="<?= getImageUrl('countries/rwanda/assets/images/hero-rwanda.jpg') ?>" alt="Rwanda Gorillas" class="w-full h-full object-cover scale-110" onerror="this.src='<?= getImageUrl('countries/rwanda/assets/images/rwanda-gorilla-hero.png') ?>'; this.onerror=function(){this.src='<?= getImageUrl('assets/images/africa.png') ?>';}">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-amber-900/70"></div>
         
         <!-- Animated Overlay Pattern -->
@@ -139,13 +142,13 @@ $base_path = '../../';
             <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight animate-fade-in">
                 <span class="block mb-2 text-2xl sm:text-3xl md:text-4xl font-light text-amber-300">Discover</span>
                 <span class="block bg-gradient-to-r from-amber-200 via-amber-400 to-orange-400 bg-clip-text text-transparent drop-shadow-2xl">
-                    South Africa
+                    Rwanda
                 </span>
             </h1>
             
             <!-- Description -->
             <p class="text-lg sm:text-xl md:text-2xl text-gray-200 mb-12 leading-relaxed max-w-4xl mx-auto animate-fade-in-up font-light">
-                Safaris. Wine. Cape Town. Premium by design.
+                Gorillas. Volcanoes. Culture. Premium by design.
             </p>
             
             <!-- Quick Stats -->
@@ -156,7 +159,7 @@ $base_path = '../../';
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                         </svg>
                     </div>
-                    <div class="text-xl sm:text-2xl font-black text-white mb-1">South Africa</div>
+                    <div class="text-xl sm:text-2xl font-black text-white mb-1">Kigali</div>
                     <div class="text-xs sm:text-sm text-amber-300 font-semibold">Capital City</div>
                 </div>
                 
@@ -166,7 +169,7 @@ $base_path = '../../';
                             <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
                         </svg>
                     </div>
-                    <div class="text-xl sm:text-2xl font-black text-white mb-1">60M</div>
+                    <div class="text-xl sm:text-2xl font-black text-white mb-1">13.5M</div>
                     <div class="text-xs sm:text-sm text-emerald-300 font-semibold">Population</div>
                 </div>
                 
@@ -187,7 +190,7 @@ $base_path = '../../';
                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"></path>
                         </svg>
                     </div>
-                    <div class="text-xl sm:text-2xl font-black text-white mb-1">ZAR</div>
+                    <div class="text-xl sm:text-2xl font-black text-white mb-1">RWF</div>
                     <div class="text-xs sm:text-sm text-purple-300 font-semibold">Currency</div>
                 </div>
             </div>
@@ -204,7 +207,7 @@ $base_path = '../../';
                     <div class="absolute inset-0 bg-gradient-to-r from-orange-500 to-amber-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </button>
                 
-                <a href="https://wa.me/17374439646?text=South Africa%20Inquiry" class="group relative bg-white text-gray-900 px-10 py-4 rounded-full font-bold overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
+                <a href="https://wa.me/17374439646?text=Rwanda%20Inquiry" class="group relative bg-white text-gray-900 px-10 py-4 rounded-full font-bold overflow-hidden shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105">
                     <span class="relative z-10 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clip-rule="evenodd"></path>
@@ -229,7 +232,7 @@ $base_path = '../../';
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
                     </svg>
-                    South Africa Operations Center
+                    Norrsken House Kigali
                 </span>
                 <span class="flex items-center gap-2">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -261,7 +264,7 @@ $base_path = '../../';
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-16">
             <span class="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold mb-4">Why Choose Us</span>
-            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Premium South Africa Experience</h2>
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Premium Rwanda Experience</h2>
             <p class="text-gray-600 text-lg max-w-2xl mx-auto">Curated adventures with unmatched expertise and on-ground support</p>
         </div>
         <div class="grid md:grid-cols-4 gap-8">
@@ -284,7 +287,7 @@ $base_path = '../../';
                     <i class="fas fa-check-circle text-white text-3xl"></i>
                 </div>
                 <h3 class="font-bold text-xl mb-3 text-gray-900">Seamless Ops</h3>
-                <p class="text-gray-600 leading-relaxed">FYT on-ground team in South Africa. Zero friction transfers and 24/7 support.</p>
+                <p class="text-gray-600 leading-relaxed">FYT on-ground team in Kigali. Zero friction transfers and 24/7 support.</p>
             </div>
             <div class="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100">
                 <div class="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/50">
@@ -303,13 +306,13 @@ $base_path = '../../';
         <div class="text-center mb-16">
             <span class="inline-block px-4 py-2 bg-amber-100 text-amber-800 rounded-full text-sm font-semibold mb-4">Popular Tours</span>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Featured Itineraries</h2>
-            <p class="text-gray-600 text-lg">Curated South Africa experiences designed for unforgettable moments</p>
+            <p class="text-gray-600 text-lg">Curated Rwanda experiences designed for unforgettable moments</p>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
             <?php foreach (array_slice($tours, 0, 3) as $tour): ?>
             <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="relative overflow-hidden">
-                    <img src="<?= getImageUrl($tour['image_url'] ?: $tour['cover_image'], 'assets/images/africa.png') ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='<?= getImageUrl('assets/images/africa.png') ?>'; this.onerror=null;">
+                    <img src="<?= getImageUrl($tour['image_url'] ?: $tour['cover_image'], 'countries/rwanda/assets/images/hero-rwanda.jpg') ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='<?= getImageUrl('countries/rwanda/assets/images/rwanda-gorilla-hero.png') ?>'; this.onerror=function(){this.src='<?= getImageUrl('assets/images/africa.png') ?>';}">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute top-4 right-4">
                         <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">Featured</span>
@@ -326,12 +329,24 @@ $base_path = '../../';
                         <span class="text-gray-500 text-sm">per person</span>
                     </div>
                     <div class="flex gap-3">
-                        <a href="../../pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
-                        <button onclick="openBookingModal(<?= $tour['id'] ?>, '<?= htmlspecialchars($tour['name']) ?>', <?= $tour['price'] ?>)" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Book Now</button>
+                        <a href="http://visit-rw.foreveryoungtours.local/pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
+                        <button onclick="openRequestModal('<?= addslashes($tour['name']) ?>')" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Ask Dates</button>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+        
+        <!-- View All Tours Button -->
+        <div class="text-center mt-12">
+            <a href="http://visit-rw.foreveryoungtours.local/pages/packages.php" 
+               class="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-4 rounded-xl font-bold hover:shadow-lg transition-all border-2 border-amber-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4-4m4 4l-4 4"></path>
+                </svg>
+                View All Rwanda Tours
+            </a>
+        </div>
         </div>
     </div>
 </section>
@@ -339,7 +354,7 @@ $base_path = '../../';
 <!-- EXPERIENCES MATRIX -->
 <section class="py-20 bg-gray-50">
     <div class="w-full">
-        <h2 class="text-4xl font-bold text-center mb-12">South Africa Experiences</h2>
+        <h2 class="text-4xl font-bold text-center mb-12">Rwanda Experiences</h2>
         
         <!-- First Row - Left to Right -->
         <div class="relative overflow-hidden mb-0">
@@ -373,7 +388,7 @@ $base_path = '../../';
                 $experiences_row2 = [
                     ['category' => 'Nature', 'title' => 'Mukungwa River Canoeing', 'image' => 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800'],
                     ['category' => 'Agro-Tourism', 'title' => 'Tea Plantation Immersion', 'image' => 'https://images.unsplash.com/photo-1563789031959-4c02bcb41319?w=800'],
-                    ['category' => 'Culture', 'title' => 'South Africa Craft & Culinary', 'image' => 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
+                    ['category' => 'Culture', 'title' => 'Kigali Craft & Culinary', 'image' => 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800'],
                     ['category' => 'Conservation', 'title' => 'Ellen DeGeneres Campus', 'image' => 'https://images.unsplash.com/photo-1497206365907-f5e630693df0?w=800']
                 ];
                 $all_row2 = array_merge($experiences_row2, $experiences_row2, $experiences_row2);
@@ -434,7 +449,7 @@ $base_path = '../../';
                     Get Custom Quote
                 </span>
             </button>
-            <a href="https://wa.me/17374439646?text=South Africa%20Pricing%20Request" class="group border-2 border-white text-white px-10 py-4 rounded-full font-bold hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+            <a href="https://wa.me/17374439646?text=Rwanda%20Pricing%20Request" class="group border-2 border-white text-white px-10 py-4 rounded-full font-bold hover:bg-white/10 backdrop-blur-sm transition-all duration-300 hover:scale-105">
                 <span class="flex items-center gap-2">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
@@ -470,7 +485,7 @@ $base_path = '../../';
 <div id="requestModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-8 py-6 flex justify-between items-center">
-            <h2 class="text-3xl font-bold">Request South Africa Dates</h2>
+            <h2 class="text-3xl font-bold">Request Dates</h2>
             <button onclick="closeRequestModal()" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -479,7 +494,7 @@ $base_path = '../../';
         </div>
         <div class="p-8">
             <form action="../../pages/inquiry-form.php" method="POST">
-                <input type="hidden" name="tour_name" id="modal_tour_name" value="South Africa Dates Request">
+                <input type="hidden" name="tour_name" id="modal_tour_name" value="Rwanda Dates Request">
                 <div class="grid md:grid-cols-2 gap-4 mb-4">
                     <input type="text" name="client_name" placeholder="Full Name" required class="border rounded-lg px-4 py-3">
                     <input type="email" name="email" placeholder="Email" required class="border rounded-lg px-4 py-3">
@@ -499,18 +514,13 @@ $base_path = '../../';
                 <textarea name="notes" placeholder="Additional Notes" rows="4" class="w-full border rounded-lg px-4 py-3 mb-4"></textarea>
                 <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-4 rounded-lg font-bold hover:shadow-xl">Check Availability Now</button>
             </form>
-            <div class="text-center mt-6">
-                <p class="text-gray-600 mb-3">Prefer WhatsApp? Get answers in minutes.</p>
-                <a href="https://wa.me/17374439646?text=South Africa%20Dates%20Request" class="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600">
-                    <i class="fab fa-whatsapp text-xl"></i> Open WhatsApp
-                </a>
-            </div>
+
         </div>
     </div>
 </div>
 
 <script>
-function openRequestModal(tourName = 'South Africa Dates Request') {
+function openRequestModal(tourName = 'Rwanda Dates Request') {
     document.getElementById('modal_tour_name').value = tourName;
     document.getElementById('requestModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -533,7 +543,7 @@ document.getElementById('requestModal')?.addEventListener('click', function(e) {
         <div class="text-center mb-16">
             <span class="inline-block px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold mb-4">FAQ</span>
             <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p class="text-gray-600 text-lg">Everything you need to know about South Africa travel</p>
+            <p class="text-gray-600 text-lg">Everything you need to know about Rwanda travel</p>
         </div>
         <div class="space-y-4">
             <?php 
@@ -541,9 +551,9 @@ document.getElementById('requestModal')?.addEventListener('click', function(e) {
                 ['q' => 'How far in advance should I book gorilla permits?', 'a' => 'Early booking is optimal. Gorilla permits are limited and in high demand. We recommend booking 3-6 months in advance, especially for peak seasons (June-September, December-February). We allocate permits immediately upon inquiry confirmation.'],
                 ['q' => 'What fitness level is required?', 'a' => 'Moderate fitness is recommended. Gorilla trekking involves hiking through mountainous terrain at altitude. Treks can last 1-6 hours depending on gorilla location. We work with park authorities to match groups to your fitness level where possible.'],
                 ['q' => "What's included in FYT primate programs?", 'a' => 'Our programs include premium lodge accommodation, all gorilla/chimp permits, full board meals, private 4×4 safari vehicle, professional English-speaking guide, park fees, bottled water, and all government taxes.'],
-                ['q' => 'Can I combine Akagera Big Five with gorillas?', 'a' => 'Absolutely! We recommend 8-10 day circuits that combine Volcanoes National Park (gorillas), Nyungwe Forest (chimps & canopy walk), and Akagera National Park (Big Five safari). This gives you the complete South Africa wildlife experience.'],
+                ['q' => 'Can I combine Akagera Big Five with gorillas?', 'a' => 'Absolutely! We recommend 8-10 day circuits that combine Volcanoes National Park (gorillas), Nyungwe Forest (chimps & canopy walk), and Akagera National Park (Big Five safari). This gives you the complete Rwanda wildlife experience.'],
                 ['q' => 'Do you handle dietary needs?', 'a' => 'Yes, we accommodate all dietary requirements including vegetarian, vegan, gluten-free, halal, and kosher meals. Please advise us of any dietary restrictions or allergies at the time of booking.'],
-                ['q' => 'Do you support private departures?', 'a' => 'Yes. All our South Africa programs can be customized for private departures with flexible dates. We tailor itineraries to your preferences, pace, and interests. Contact us for a personalized quote.']
+                ['q' => 'Do you support private departures?', 'a' => 'Yes. All our Rwanda programs can be customized for private departures with flexible dates. We tailor itineraries to your preferences, pace, and interests. Contact us for a personalized quote.']
             ];
             foreach ($faqs as $index => $faq): ?>
             <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow">
@@ -586,7 +596,7 @@ function toggleFaq(index) {
             <p class="text-sm text-white/90">We're here to help!</p>
         </div>
         <div class="p-6">
-            <p class="text-gray-700 mb-4 text-sm">Get instant answers about South Africa tours, pricing, and availability.</p>
+            <p class="text-gray-700 mb-4 text-sm">Get instant answers about Rwanda tours, pricing, and availability.</p>
             <div class="space-y-2 mb-4 text-sm">
                 <div class="flex items-center gap-2 text-gray-600">
                     <i class="fas fa-check-circle text-green-500 text-xs"></i>
@@ -601,7 +611,7 @@ function toggleFaq(index) {
                     <span>Quick Response</span>
                 </div>
             </div>
-            <a href="https://wa.me/17374439646?text=Hi!%20I%20need%20help%20with%20South Africa%20travel" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-xl font-bold transition text-sm">
+            <a href="https://wa.me/17374439646?text=Hi!%20I%20need%20help%20with%20Rwanda%20travel" class="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-xl font-bold transition text-sm">
                 <i class="fab fa-whatsapp mr-2"></i>Start Chat
             </a>
             <p class="text-center text-gray-500 text-xs mt-3">+1 (737) 443-9646</p>

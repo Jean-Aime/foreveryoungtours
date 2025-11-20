@@ -1,4 +1,9 @@
 <?php
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 /**
  * Main Configuration File for Forever Young Tours
  * 
@@ -21,16 +26,17 @@ function detectBaseUrl() {
             // Local development
             return 'http://localhost/foreveryoungtours';
         } else {
-            // Live server - adjust this to your live domain
-            return 'https://foreveryoungtours.com';
+            // Live server - extract main domain from subdomain
+            $main_domain = preg_replace('/^visit-[a-z]{2,3}\./', '', $host);
+            return $protocol . '://' . $main_domain;
         }
     } else {
         // Main domain
-        if (strpos($host, 'localhost') !== false) {
+        if (strpos($host, 'localhost') !== false || strpos($host, 'xampp') !== false) {
             // Local development
             return 'http://localhost/foreveryoungtours';
         } else {
-            // Live server - adjust this to your live domain
+            // Live server
             return $protocol . '://' . $host;
         }
     }
@@ -75,7 +81,33 @@ function getImageUrl($imagePath, $fallback = 'assets/images/default-tour.jpg') {
         return getAbsoluteUrl($fallback);
     }
     
-    return getAbsoluteUrl($imagePath);
+    // Handle different path formats that might be in the database
+    $cleanPath = $imagePath;
+    
+    // If it's just a filename, assume it's in uploads/tours/
+    if (!strpos($cleanPath, '/') && !strpos($cleanPath, '\\')) {
+        $cleanPath = 'uploads/tours/' . $cleanPath;
+    }
+    
+    // If it starts with uploads/ but not with BASE_URL, it's correct
+    if (strpos($cleanPath, 'uploads/') === 0) {
+        return getAbsoluteUrl($cleanPath);
+    }
+    
+    // If it contains uploads/tours/ anywhere, extract that part
+    if (strpos($cleanPath, 'uploads/tours/') !== false) {
+        $pos = strpos($cleanPath, 'uploads/tours/');
+        $cleanPath = substr($cleanPath, $pos);
+        return getAbsoluteUrl($cleanPath);
+    }
+    
+    // If it looks like a tour image filename pattern (ID_type_timestamp_random.ext)
+    if (preg_match('/^\d+_(cover|main|gallery)_\d+_\d+\.(jpg|jpeg|png|gif)$/i', $cleanPath)) {
+        return getAbsoluteUrl('uploads/tours/' . $cleanPath);
+    }
+    
+    // Default: try as-is first, then fallback
+    return getAbsoluteUrl($cleanPath);
 }
 
 // Legacy function names for backward compatibility

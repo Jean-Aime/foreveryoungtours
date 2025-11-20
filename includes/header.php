@@ -98,7 +98,6 @@ if (!isset($base_path)) {
 
                 <!-- Desktop Navigation -->
                 <div class="hidden xl:flex items-center space-x-1">
-                    <a href="<?php echo $base_path; ?>home" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Home</a>
 
                     <!-- Solution Dropdown -->
                     <div class="relative dropdown-container">
@@ -118,7 +117,7 @@ if (!isset($base_path)) {
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="dropdown-title-large">Destination</div>
+                                            <div class="dropdown-title-large">Destinations</div>
                                             <div class="dropdown-desc-large">Explore African destinations</div>
                                         </div>
                                     </a>
@@ -133,41 +132,19 @@ if (!isset($base_path)) {
                                             <div class="dropdown-desc-large">Complete booking system</div>
                                         </div>
                                     </a>
-                                    <a href="<?php echo $base_path; ?>pages/packing-guide" class="dropdown-item-large">
+                                    <a href="<?php echo $base_path; ?>pages/personalized-planning.php" class="dropdown-item-large">
                                         <div class="dropdown-icon-large bg-purple-500">
                                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 11-4 0 2 2 0 014 0m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="dropdown-title-large">Packing Guide</div>
-                                            <div class="dropdown-desc-large">Essential packing tips</div>
-                                        </div>
-                                    </a>
-                                    <a href="<?php echo $base_path; ?>pages/travel-tips" class="dropdown-item-large">
-                                        <div class="dropdown-icon-large bg-yellow-500">
-                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="dropdown-title-large">Travel Tips</div>
-                                            <div class="dropdown-desc-large">Expert travel advice</div>
+                                            <div class="dropdown-title-large">Custom Planning</div>
+                                            <div class="dropdown-desc-large">Personalized itineraries</div>
                                         </div>
                                     </a>
                                 </div>
                                 <div class="dropdown-column">
-                                    <a href="<?php echo $base_path; ?>emergency" class="dropdown-item-large">
-                                        <div class="dropdown-icon-large bg-red-500">
-                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="dropdown-title-large">Emergency</div>
-                                            <div class="dropdown-desc-large">24/7 emergency support</div>
-                                        </div>
-                                    </a>
                                     <a href="<?php echo $base_path; ?>pages/vip-support.php" class="dropdown-item-large">
                                         <div class="dropdown-icon-large bg-indigo-500">
                                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
@@ -179,32 +156,25 @@ if (!isset($base_path)) {
                                             <div class="dropdown-desc-large">Premium concierge service</div>
                                         </div>
                                     </a>
-                                    <a href="<?php echo $base_path; ?>pages/personalized-planning.php" class="dropdown-item-large">
-                                        <div class="dropdown-icon-large bg-pink-500">
+                                    <a href="<?php echo $base_path; ?>emergency" class="dropdown-item-large">
+                                        <div class="dropdown-icon-large bg-red-500">
                                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 11-4 0 2 2 0 014 0m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                                                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                             </svg>
                                         </div>
                                         <div>
-                                            <div class="dropdown-title-large">Personalized Planning</div>
-                                            <div class="dropdown-desc-large">Custom itinerary design</div>
+                                            <div class="dropdown-title-large">Emergency</div>
+                                            <div class="dropdown-desc-large">24/7 emergency support</div>
                                         </div>
                                     </a>
-                                    <a href="<?php echo $base_path; ?>pages/store" class="dropdown-item-large">
-                                        <div class="dropdown-icon-large bg-orange-500">
-                                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="dropdown-title-large">Store</div>
-                                            <div class="dropdown-desc-large">Essential travel gear & items</div>
-                                        </div>
-                                    </a>
+
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Tour & Travel Button -->
+                    <a href="<?php echo $base_path; ?>pages/packages.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Tour & Travel</a>
 
                     <!-- Community Dropdown -->
                     <div class="relative dropdown-container">
@@ -342,6 +312,8 @@ if (!isset($base_path)) {
                         </div>
                     </div>
                     
+                    <a href="<?php echo $base_path; ?>pages/store.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Store</a>
+                    
                     <a href="<?php echo $base_path; ?>pages/contact.php" class="px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-all">Contact Us</a>
                 </div>
                 
@@ -390,7 +362,6 @@ if (!isset($base_path)) {
             <div id="mobileMenu" class="xl:hidden bg-white border-t border-slate-200 shadow-lg" style="display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999; max-height: 80vh; overflow-y: auto;">
                 <div class="px-4 py-6 space-y-2">
                     <!-- Main Navigation -->
-                    <a href="<?php echo $base_path; ?>home" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Home</a>
                     
                     <!-- Solution -->
                     <div class="space-y-1">
@@ -398,8 +369,7 @@ if (!isset($base_path)) {
                         <div class="pl-4 space-y-1">
                             <a href="<?php echo $base_path; ?>pages/destinations" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Destinations</a>
                             <a href="<?php echo $base_path; ?>pages/booking-engine" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Booking Engine</a>
-                            <a href="<?php echo $base_path; ?>pages/packing-guide" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Packing Guide</a>
-                            <a href="<?php echo $base_path; ?>pages/travel-tips" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Travel Tips</a>
+
                             <a href="<?php echo $base_path; ?>pages/emergency" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Emergency</a>
                             <a href="<?php echo $base_path; ?>pages/vip-support" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">VIP Support</a>
                             <a href="<?php echo $base_path; ?>pages/personalized-planning" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Personalized Planning</a>
@@ -429,6 +399,10 @@ if (!isset($base_path)) {
                             <a href="<?php echo $base_path; ?>pages/visa-documents" class="block px-4 py-2 text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg text-sm transition-colors">Visa & Documents</a>
                         </div>
                     </div>
+                    
+                    <a href="<?php echo $base_path; ?>pages/packages.php" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Tour & Travel</a>
+                    
+                    <a href="<?php echo $base_path; ?>pages/store.php" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Store</a>
                     
                     <a href="<?php echo $base_path; ?>pages/contact" class="block px-4 py-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg font-medium transition-colors">Contact Us</a>
                 </div>

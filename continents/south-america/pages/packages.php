@@ -1,7 +1,6 @@
 <?php
-
-require_once 'config.php';
-require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../../config.php';
+require_once __DIR__ . '/../../../config/database.php';
 
 // Get continent/region data from folder structure
 $continent_folder = basename(dirname(dirname(__FILE__)));
@@ -15,16 +14,36 @@ if (!$region) {
 }
 
 $page_title = "Tours in " . $region['name'] . " - iForYoungTours";
+$page_description = "Explore expertly curated " . $region['name'] . " travel packages. From safaris to cultural experiences, find your perfect adventure.";
+
+// Get filter parameters
+$country_filter = $_GET['country'] ?? '';
+$category_filter = $_GET['category'] ?? '';
+
+// Build WHERE clause
+$where_conditions = ["t.status = 'active'", "c.region_id = ?"];
+$params = [$region['id']];
+
+if ($country_filter) {
+    $where_conditions[] = "c.slug = ?";
+    $params[] = $country_filter;
+}
+if ($category_filter) {
+    $where_conditions[] = "t.category = ?";
+    $params[] = $category_filter;
+}
+
+$where_clause = implode(' AND ', $where_conditions);
 
 // Get all tours for countries in this continent/region
 $stmt = $pdo->prepare("
     SELECT t.*, c.name as country_name, c.slug as country_slug, c.currency
     FROM tours t
     JOIN countries c ON t.country_id = c.id
-    WHERE c.region_id = ? AND t.status = 'active'
+    WHERE $where_clause
     ORDER BY c.name, t.featured DESC, t.popularity_score DESC
 ");
-$stmt->execute([$region['id']]);
+$stmt->execute($params);
 $tours = $stmt->fetchAll();
 
 // Get all countries in this region for filtering
@@ -32,94 +51,623 @@ $stmt = $pdo->prepare("SELECT * FROM countries WHERE region_id = ? AND status = 
 $stmt->execute([$region['id']]);
 $countries = $stmt->fetchAll();
 
-$base_path = '../../';
-$css_path = '../assets/css/modern-styles.css';
-include '../includes/header.php';
+include '../includes/continent-header.php';
 ?>
 
 <!-- Hero Section -->
-<section class="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white py-20">
-    <div class="absolute inset-0 bg-[url('../../assets/images/pattern.svg')] opacity-10"></div>
-    <div class="container mx-auto px-4 relative z-10">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">
-                Explore Tours in <?php echo htmlspecialchars($region['name']); ?>
+<section class="pt-24 pb-12 bg-gradient-to-r from-blue-50 to-red-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+                <?php echo htmlspecialchars($region['name']); ?> <span class="text-gradient">Travel Packages</span>
             </h1>
-            <p class="text-xl text-slate-300 mb-8">
-                Discover amazing destinations across <?php echo count($countries); ?> countries
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                Discover expertly curated travel experiences across <?php echo htmlspecialchars($region['name']); ?>. From luxury safaris to cultural immersions, find your perfect adventure.
             </p>
+        </div>
+        
+        <!-- Search Bar -->
+        <div class="max-w-4xl mx-auto">
+            <div class="search-input rounded-2xl p-6 shadow-lg">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-1">
+                        <input type="text" id="package-search" placeholder="Search destinations, activities, or keywords..." 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    </div>
+                    <button onclick="performSearch()" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
+                        Search Packages
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Tours Section -->
-<section class="py-16 bg-slate-50">
-    <div class="container mx-auto px-4">
-        <!-- Country Filter -->
-        <?php if (count($countries) > 1): ?>
-        <div class="mb-8">
-            <div class="flex flex-wrap gap-2">
-                <button onclick="filterByCountry('all')" class="country-filter-btn active px-4 py-2 rounded-lg bg-golden-500 text-white font-semibold">
-                    All Countries
-                </button>
-                <?php foreach ($countries as $country): ?>
-                <button onclick="filterByCountry('<?php echo $country['slug']; ?>')" class="country-filter-btn px-4 py-2 rounded-lg bg-white text-slate-700 font-semibold hover:bg-golden-100">
-                    <?php echo htmlspecialchars($country['name']); ?>
-                </button>
-                <?php endforeach; ?>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Tours Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <?php if (empty($tours)): ?>
-            <div class="col-span-full text-center py-12">
-                <i class="fas fa-map-marked-alt text-6xl text-slate-300 mb-4"></i>
-                <p class="text-xl text-slate-600">No tours available yet for <?php echo htmlspecialchars($region['name']); ?>.</p>
-                <p class="text-slate-500 mt-2">Check back soon for exciting new tours!</p>
-            </div>
-            <?php else: ?>
-            <?php foreach ($tours as $tour): ?>
-            <div class="tour-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300" data-country="<?php echo $tour['country_slug']; ?>">
-                <div class="relative h-64">
-                    <?php if ($tour['featured']): ?>
-                    <div class="absolute top-4 left-4 bg-golden-500 text-white px-3 py-1 rounded-full text-sm font-semibold z-10">
-                        Featured
-                    </div>
-                    <?php endif; ?>
-                    <img src="<?php echo $base_path . 'assets/images/tours/' . ($tour['image'] ?? 'default-tour.jpg'); ?>"
-                         alt="<?php echo htmlspecialchars($tour['name']); ?>"
-                         class="w-full h-full object-cover">
-                </div>
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-sm text-golden-600 font-semibold"><?php echo htmlspecialchars($tour['country_name']); ?></span>
-                        <span class="text-sm text-slate-500"><?php echo $tour['duration_days']; ?> days</span>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-800 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h3>
-                    <p class="text-slate-600 mb-4 line-clamp-2"><?php echo htmlspecialchars($tour['description'] ?? ''); ?></p>
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <span class="text-2xl font-bold text-golden-600"><?php echo $tour['currency'] ?? '$'; ?><?php echo number_format($tour['price'], 0); ?></span>
-                            <span class="text-sm text-slate-500">/person</span>
+<!-- Main Content -->
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Filters Sidebar -->
+            <div class="lg:w-1/4">
+                <div class="filter-sidebar rounded-2xl p-6 sticky top-24">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Filter Packages</h3>
+                    
+                    <!-- Experience Type -->
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-gray-900 mb-4">Experience Type</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="experience-filter mr-3" value="safari" 
+                                       onchange="applyFilters()">
+                                <span class="text-gray-700">Safari & Wildlife</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="experience-filter mr-3" value="cultural" 
+                                       onchange="applyFilters()">
+                                <span class="text-gray-700">Cultural Heritage</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="experience-filter mr-3" value="beach" 
+                                       onchange="applyFilters()">
+                                <span class="text-gray-700">Beach & Relaxation</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="experience-filter mr-3" value="adventure" 
+                                       onchange="applyFilters()">
+                                <span class="text-gray-700">Adventure & Sports</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="experience-filter mr-3" value="luxury" 
+                                       onchange="applyFilters()">
+                                <span class="text-gray-700">Luxury Experiences</span>
+                            </label>
                         </div>
                     </div>
-                    <div class="flex gap-2">
-                        <a href="tour-detail.php?id=<?php echo $tour['id']; ?>" class="flex-1 bg-slate-200 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-colors text-center">
-                            View Details
-                        </a>
-                        <button onclick="openBookingModal(<?php echo $tour['id']; ?>, '<?php echo htmlspecialchars($tour['name'], ENT_QUOTES); ?>', <?php echo $tour['price']; ?>)" class="flex-1 bg-golden-500 text-white py-3 rounded-lg font-semibold hover:bg-golden-600 transition-colors">
-                            Book Now
+                    
+                    <!-- Countries -->
+                    <?php if (count($countries) > 1): ?>
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-gray-900 mb-4">Countries</h4>
+                        <div class="space-y-3">
+                            <?php foreach ($countries as $country): ?>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="country-filter mr-3" value="<?php echo $country['slug']; ?>" 
+                                       onchange="applyAllFilters()">
+                                <span class="text-gray-700"><?php echo htmlspecialchars($country['name']); ?></span>
+                            </label>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <!-- Tour Types -->
+                    <div class="mb-8">
+                        <h4 class="font-semibold text-gray-900 mb-4">Tour Types</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="safari" 
+                                       onchange="applyAllFilters()">
+                                <span class="text-gray-700">Safari Tours</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="cultural" 
+                                       onchange="applyAllFilters()">
+                                <span class="text-gray-700">Cultural Tours</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="adventure" 
+                                       onchange="applyAllFilters()">
+                                <span class="text-gray-700">Adventure Tours</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="city" 
+                                       onchange="applyAllFilters()">
+                                <span class="text-gray-700">City Breaks</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="tour-type-filter mr-3" value="luxury" 
+                                       onchange="applyAllFilters()">
+                                <span class="text-gray-700">Luxury Tours</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button onclick="clearAllFilters()" class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors">
+                        Clear All Filters
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Packages Grid -->
+            <div class="lg:w-3/4">
+                <!-- Sort and View Options -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-700">Sort by:</span>
+                        <select id="sort-select" onchange="applySorting()" class="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500">
+                            <option value="popularity">Popularity</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="duration">Duration</option>
+                            <option value="rating">Rating</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleView('grid')" id="grid-view" class="p-2 rounded-lg bg-blue-500 text-white">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                            </svg>
+                        </button>
+                        <button onclick="toggleView('list')" id="list-view" class="p-2 rounded-lg bg-gray-200 text-gray-700">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
+                
+                <!-- Filter Info & Results Count -->
+                <div class="mb-6">
+                    <?php if ($country_filter || $category_filter): ?>
+                    <div class="mb-4 flex flex-wrap items-center gap-2">
+                        <?php if ($country_filter): ?>
+                        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">
+                            Country: <?php echo htmlspecialchars(array_filter($countries, fn($c) => $c['slug'] === $country_filter)[0]['name'] ?? $country_filter); ?>
+                            <button onclick="clearCountryFilter()" class="ml-2 text-emerald-600 hover:text-emerald-800">×</button>
+                        </span>
+                        <?php endif; ?>
+                        <?php if ($category_filter): ?>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            Category: <?php echo ucfirst($category_filter); ?>
+                            <button onclick="clearCategoryFilter()" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+                        </span>
+                        <?php endif; ?>
+                        <button onclick="clearAllFilters()" class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-red-200 transition-colors">
+                            Clear All Filters
+                        </button>
+                    </div>
+                    <?php endif; ?>
+                    <p class="text-gray-600">
+                        Showing <span id="results-count"><?php echo count($tours); ?></span> packages
+                        <?php if ($country_filter || $category_filter): ?>
+                        with current filters
+                        <?php endif; ?>
+                    </p>
+                </div>
+                
+                <!-- Filter Info & Results Count -->
+                <div class="mb-6">
+                    <?php if ($country_filter || $category_filter): ?>
+                    <div class="mb-4 flex flex-wrap items-center gap-2">
+                        <?php if ($country_filter): ?>
+                        <span class="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium">
+                            Country: <?php echo htmlspecialchars(array_filter($countries, fn($c) => $c['slug'] === $country_filter)[0]['name'] ?? $country_filter); ?>
+                            <button onclick="clearCountryFilter()" class="ml-2 text-emerald-600 hover:text-emerald-800">×</button>
+                        </span>
+                        <?php endif; ?>
+                        <?php if ($category_filter): ?>
+                        <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                            Category: <?php echo ucfirst($category_filter); ?>
+                            <button onclick="clearCategoryFilter()" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+                        </span>
+                        <?php endif; ?>
+                        <button onclick="clearAllFilters()" class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium hover:bg-red-200 transition-colors">
+                            Clear All Filters
+                        </button>
+                    </div>
+                    <?php endif; ?>
+                    <p class="text-gray-600">
+                        Showing <span id="results-count"><?php echo count($tours); ?></span> packages
+                        <?php if ($country_filter || $category_filter): ?>
+                        with current filters
+                        <?php endif; ?>
+                    </p>
+                </div>
+
+                <!-- Packages Grid -->
+                <div id="packages-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    <?php if (empty($tours)): ?>
+                    <div class="col-span-full text-center py-12">
+                        <div class="text-slate-400 mb-4">
+                            <i class="fas fa-search text-6xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-600 mb-2">No tours found</h3>
+                        <p class="text-slate-500 mb-4">Try adjusting your filters or browse all destinations</p>
+                        <button onclick="clearAllFilters()" class="btn-primary px-6 py-3 rounded-lg">
+                            View All Tours
+                        </button>
+                    </div>
+                    <?php else: ?>
+                    <?php foreach ($tours as $tour): ?>
+                    <div class="package-card rounded-2xl overflow-hidden fade-in-up" 
+                         data-price="<?php echo $tour['price']; ?>" 
+                         data-duration="<?php echo $tour['duration_days']; ?>" 
+                         data-destination="<?php echo strtolower($tour['destination'] ?? ''); ?>"
+                         data-category="<?php echo strtolower($tour['category'] ?? ''); ?>"
+                         data-experience="<?php echo strtolower($tour['experience_type'] ?? ''); ?>"
+                         data-country="<?php echo $tour['country_slug']; ?>">
+                        <div class="relative">
+                            <?php 
+                            // Featured image handling for subdomain structure
+                            $base_url = 'http://localhost/foreveryoungtours';
+                            $image_src = $base_url . '/assets/images/default-tour.jpg';
+                            
+                            if (!empty($tour['cover_image'])) {
+                                $image_src = $tour['cover_image'];
+                                if (strpos($image_src, 'uploads/') === 0) {
+                                    $image_src = $base_url . '/' . $image_src;
+                                }
+                            } elseif (!empty($tour['image_url'])) {
+                                $image_src = $tour['image_url'];
+                                if (strpos($image_src, 'uploads/') === 0) {
+                                    $image_src = $base_url . '/' . $image_src;
+                                }
+                            }
+                            
+                            $image_src = htmlspecialchars_decode($image_src);
+                            ?>
+                            <img src="<?php echo htmlspecialchars($image_src); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-40 object-cover" onerror="this.src='http://localhost/foreveryoungtours/assets/images/default-tour.jpg'; this.onerror=null;" loading="lazy">
+                            <div class="absolute top-4 right-4 bg-golden-500 text-black px-3 py-1 rounded-full text-sm font-semibold">
+                                From $<?php echo number_format($tour['price']); ?>
+                            </div>
+                            <?php if ($tour['featured']): ?>
+                            <div class="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                Featured
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="p-4">
+                            <div class="mb-2">
+                                <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded text-xs font-medium">
+                                    <?php echo htmlspecialchars($region['name'] . ' - ' . $tour['country_name']); ?>
+                                </span>
+                                <span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs font-medium ml-2">
+                                    <?php echo ucfirst($tour['category']); ?>
+                                </span>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h3>
+                            <p class="text-gray-600 mb-3 text-sm"><?php echo htmlspecialchars(substr($tour['description'], 0, 80)) . '...'; ?></p>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-sm text-gray-500"><?php echo $tour['duration_days']; ?> days</span>
+                                <div class="flex items-center">
+                                    <div class="flex text-yellow-400">
+                                        ★★★★☆
+                                    </div>
+                                    <span class="text-sm text-gray-500 ml-2">(<?php echo rand(50, 200); ?>)</span>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="../../../pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-slate-200 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-colors text-center">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Load More Button -->
+                <div class="text-center mt-12">
+                    <button onclick="loadMorePackages()" class="btn-primary text-white px-8 py-4 rounded-lg font-semibold">
+                        Load More Packages
+                    </button>
+                </div>
             </div>
-            <?php endforeach; ?>
-            <?php endif; ?>
         </div>
     </div>
 </section>
+
+<!-- Custom Tour CTA Section -->
+<section class="py-20 bg-gradient-to-br from-cream via-light-gray to-off-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-br from-golden-500 via-primary-green to-golden-600 rounded-3xl p-12 md:p-16 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-96 h-96 bg-white opacity-10 rounded-full -mr-48 -mt-48"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full -ml-32 -mb-32"></div>
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full">
+                <div class="absolute top-10 right-20 w-32 h-32 border-4 border-white opacity-10 rounded-full"></div>
+                <div class="absolute bottom-20 left-32 w-24 h-24 border-4 border-white opacity-10 rounded-full"></div>
+            </div>
+            
+            <div class="relative z-10 text-center max-w-4xl mx-auto">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white rounded-2xl mb-6 shadow-lg">
+                    <svg class="w-10 h-10 text-golden-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                    Can't find what you're looking for?
+                </h2>
+                
+                <p class="text-lg md:text-xl text-slate-800 mb-8 leading-relaxed">
+                    Let us create a personalized itinerary tailored to your dreams. Our travel experts will craft the perfect <?php echo htmlspecialchars($region['name']); ?> adventure just for you.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+                    <div class="flex items-center text-slate-900">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-semibold">Custom Itineraries</span>
+                    </div>
+                    <div class="flex items-center text-slate-900">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-semibold">Expert Guidance</span>
+                    </div>
+                    <div class="flex items-center text-slate-900">
+                        <svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span class="font-semibold">24/7 Support</span>
+                    </div>
+                </div>
+                
+                <button onclick="openInquiryModal()" class="inline-flex items-center bg-slate-900 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:bg-slate-800 transition-all transform hover:scale-105 hover:shadow-2xl">
+                    <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Request Custom Tour
+                </button>
+                
+                <p class="text-slate-800 mt-6 text-sm font-medium">
+                    ✨ Free consultation • No obligation • Response within 24 hours
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Custom Checkbox Styling -->
+<style>
+/* Reset checkbox styling to default browser appearance */
+.experience-filter,
+.country-filter,
+.tour-type-filter {
+    appearance: checkbox !important;
+    -webkit-appearance: checkbox !important;
+    -moz-appearance: checkbox !important;
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 12px !important;
+    cursor: pointer !important;
+    background: white !important;
+    border: 2px solid #d1d5db !important;
+    border-radius: 3px !important;
+    position: relative !important;
+}
+
+.experience-filter:checked,
+.country-filter:checked,
+.tour-type-filter:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+
+.experience-filter:checked::before,
+.country-filter:checked::before,
+.tour-type-filter:checked::before {
+    content: '✓' !important;
+    position: absolute !important;
+    top: -2px !important;
+    left: 1px !important;
+    color: white !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+}
+
+/* Ensure labels are clickable */
+label {
+    cursor: pointer !important;
+    user-select: none !important;
+}
+</style>
+
+<!-- JavaScript -->
+<script>
+    // Initialize filters on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ensure all checkboxes start unchecked
+        const allFilters = document.querySelectorAll('.experience-filter, .country-filter, .tour-type-filter');
+        allFilters.forEach(filter => {
+            filter.checked = false;
+        });
+        
+        // Show all tours initially
+        const packageCards = document.querySelectorAll('.package-card');
+        packageCards.forEach(card => {
+            card.style.display = 'block';
+        });
+        
+        // Update initial count
+        const resultsCount = document.getElementById('results-count');
+        if (resultsCount) {
+            resultsCount.textContent = packageCards.length;
+        }
+    });
+    
+    function clearAllFilters() {
+        // Clear all filter checkboxes
+        const experienceFilters = document.querySelectorAll('.experience-filter');
+        const countryFilters = document.querySelectorAll('.country-filter');
+        const tourTypeFilters = document.querySelectorAll('.tour-type-filter');
+        
+        experienceFilters.forEach(filter => filter.checked = false);
+        countryFilters.forEach(filter => filter.checked = false);
+        tourTypeFilters.forEach(filter => filter.checked = false);
+        
+        // Clear URL parameters and reload
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('category');
+        currentUrl.searchParams.delete('country');
+        window.location.href = currentUrl.toString();
+    }
+    
+    function clearCategoryFilter() {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('category');
+        window.location.href = currentUrl.toString();
+    }
+    
+    function clearCountryFilter() {
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.delete('country');
+        window.location.href = currentUrl.toString();
+    }
+    
+    function performSearch() {
+        const searchTerm = document.getElementById('package-search').value;
+        if (searchTerm) {
+            window.location.href = '../../../pages/packages.php?search=' + encodeURIComponent(searchTerm);
+        }
+    }
+    
+    function loadMorePackages() {
+        alert('Load more functionality - coming soon!');
+    }
+    
+    function applySorting() {
+        const sortBy = document.getElementById('sort-select').value;
+        const currentUrl = new URL(window.location);
+        currentUrl.searchParams.set('sort', sortBy);
+        window.location.href = currentUrl.toString();
+    }
+    
+    function applyFilters() {
+        applyAllFilters();
+    }
+    
+    function toggleView(viewType) {
+        // Toggle view functionality
+        const gridView = document.getElementById('grid-view');
+        const listView = document.getElementById('list-view');
+        const packagesGrid = document.getElementById('packages-grid');
+        
+        if (viewType === 'grid') {
+            gridView.classList.add('bg-blue-500', 'text-white');
+            gridView.classList.remove('bg-gray-200', 'text-gray-700');
+            listView.classList.add('bg-gray-200', 'text-gray-700');
+            listView.classList.remove('bg-blue-500', 'text-white');
+            packagesGrid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8';
+        } else {
+            listView.classList.add('bg-blue-500', 'text-white');
+            listView.classList.remove('bg-gray-200', 'text-gray-700');
+            gridView.classList.add('bg-gray-200', 'text-gray-700');
+            gridView.classList.remove('bg-blue-500', 'text-white');
+            packagesGrid.className = 'grid grid-cols-1 gap-6';
+        }
+    }
+    
+    function applyAllFilters() {
+        // Add visual feedback - briefly highlight the filter area
+        const filterSidebar = document.querySelector('.filter-sidebar');
+        if (filterSidebar) {
+            filterSidebar.style.backgroundColor = '#f8fafc';
+            setTimeout(() => {
+                filterSidebar.style.backgroundColor = '';
+            }, 200);
+        }
+        
+        // Get all checked filters
+        const experienceFilters = document.querySelectorAll('.experience-filter:checked');
+        const countryFilters = document.querySelectorAll('.country-filter:checked');
+        const tourTypeFilters = document.querySelectorAll('.tour-type-filter:checked');
+        
+        const selectedExperiences = Array.from(experienceFilters).map(filter => filter.value);
+        const selectedCountries = Array.from(countryFilters).map(filter => filter.value);
+        const selectedTourTypes = Array.from(tourTypeFilters).map(filter => filter.value);
+        
+        // Get all package cards
+        const packageCards = document.querySelectorAll('.package-card');
+        let visibleCount = 0;
+        
+        packageCards.forEach(card => {
+            let shouldShow = true;
+            
+            // Get card data
+            const cardExperience = card.dataset.experience || '';
+            const cardCategory = card.dataset.category || '';
+            const cardDescription = card.querySelector('p')?.textContent.toLowerCase() || '';
+            const cardTitle = card.querySelector('h3')?.textContent.toLowerCase() || '';
+            const cardCountry = card.dataset.country || '';
+            const cardRegion = card.querySelector('.bg-slate-100')?.textContent.toLowerCase() || '';
+            
+            // Check experience filters
+            if (selectedExperiences.length > 0) {
+                const matchesExperience = selectedExperiences.some(exp => {
+                    return cardExperience.includes(exp) || 
+                           cardCategory.includes(exp) || 
+                           cardDescription.includes(exp) ||
+                           cardTitle.includes(exp) ||
+                           (exp === 'safari' && (cardDescription.includes('safari') || cardDescription.includes('wildlife') || cardTitle.includes('safari') || cardTitle.includes('wildlife'))) ||
+                           (exp === 'cultural' && (cardDescription.includes('cultural') || cardDescription.includes('heritage') || cardTitle.includes('cultural') || cardTitle.includes('heritage'))) ||
+                           (exp === 'beach' && (cardDescription.includes('beach') || cardDescription.includes('coast') || cardTitle.includes('beach') || cardTitle.includes('coast'))) ||
+                           (exp === 'adventure' && (cardDescription.includes('adventure') || cardDescription.includes('hiking') || cardTitle.includes('adventure') || cardTitle.includes('hiking'))) ||
+                           (exp === 'luxury' && (cardDescription.includes('luxury') || cardDescription.includes('premium') || cardTitle.includes('luxury') || cardTitle.includes('premium')));
+                });
+                
+                if (!matchesExperience) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Check country filters
+            if (selectedCountries.length > 0 && shouldShow) {
+                const matchesCountry = selectedCountries.some(country => {
+                    return cardCountry === country;
+                });
+                
+                if (!matchesCountry) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Check tour type filters
+            if (selectedTourTypes.length > 0 && shouldShow) {
+                const matchesTourType = selectedTourTypes.some(type => {
+                    return cardCategory.includes(type) || 
+                           cardDescription.includes(type) ||
+                           cardTitle.includes(type) ||
+                           (type === 'safari' && (cardDescription.includes('safari') || cardTitle.includes('safari'))) ||
+                           (type === 'cultural' && (cardDescription.includes('cultural') || cardTitle.includes('cultural'))) ||
+                           (type === 'adventure' && (cardDescription.includes('adventure') || cardTitle.includes('adventure'))) ||
+                           (type === 'city' && (cardDescription.includes('city') || cardTitle.includes('city'))) ||
+                           (type === 'luxury' && (cardDescription.includes('luxury') || cardTitle.includes('luxury')));
+                });
+                
+                if (!matchesTourType) {
+                    shouldShow = false;
+                }
+            }
+            
+            // Show/hide the card
+            if (shouldShow) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Update results count
+        const resultsCount = document.getElementById('results-count');
+        if (resultsCount) {
+            resultsCount.textContent = visibleCount;
+        }
+        
+        // Show/hide no results message
+        const noResultsMessage = document.querySelector('.col-span-full');
+        if (visibleCount === 0 && noResultsMessage) {
+            noResultsMessage.style.display = 'block';
+        } else if (noResultsMessage) {
+            noResultsMessage.style.display = 'none';
+        }
+    }
+</script>
+<script src="../../../assets/js/booking.js"></script>
 
 <!-- Booking Modal -->
 <?php include 'enhanced-booking-modal.php'; ?>
@@ -127,31 +675,5 @@ include '../includes/header.php';
 <!-- Inquiry Modal -->
 <?php include 'inquiry-modal.php'; ?>
 
-<script src="<?php echo $base_path; ?>assets/js/booking.js"></script>
+<?php include '../../../includes/footer.php'; ?>
 
-<script>
-// Country filter functionality
-function filterByCountry(countrySlug) {
-    const tourCards = document.querySelectorAll('.tour-card');
-    const filterBtns = document.querySelectorAll('.country-filter-btn');
-
-    // Update button states
-    filterBtns.forEach(btn => {
-        btn.classList.remove('active', 'bg-golden-500', 'text-white');
-        btn.classList.add('bg-white', 'text-slate-700');
-    });
-    event.target.classList.add('active', 'bg-golden-500', 'text-white');
-    event.target.classList.remove('bg-white', 'text-slate-700');
-
-    // Filter tours
-    tourCards.forEach(card => {
-        if (countrySlug === 'all' || card.dataset.country === countrySlug) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
-</script>
-
-<?php include '../includes/footer.php'; ?>

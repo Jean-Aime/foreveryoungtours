@@ -1,10 +1,17 @@
 <?php
+session_start();
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
 
 require_once 'config/database.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Please login to book a tour', 'redirect' => 'auth/login.php']);
+    exit;
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
@@ -24,13 +31,14 @@ try {
         }
     }
     
-    // Insert booking
+    // Insert booking with user ID
     $stmt = $pdo->prepare("
-        INSERT INTO bookings (tour_id, customer_name, customer_email, customer_phone, travel_date, participants, total_price, notes, status, payment_status, created_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', NOW())
+        INSERT INTO bookings (user_id, tour_id, customer_name, customer_email, customer_phone, travel_date, participants, total_price, notes, status, payment_status, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', NOW())
     ");
     
     $result = $stmt->execute([
+        $_SESSION['user_id'],
         $_POST['tour_id'],
         $_POST['customer_name'],
         $_POST['customer_email'],

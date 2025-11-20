@@ -5,7 +5,7 @@
                 <!-- Column 1: Logo & Description -->
                 <div>
                     <div class="flex items-center space-x-3 mb-4">
-                        <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="Forever Young Tours Logo" class="w-12 h-12">
+                        <img src="http://localhost/foreveryoungtours/assets/images/logo.png" alt="Forever Young Tours Logo" class="w-12 h-12">
                         <div>
                             <h3 class="text-xl font-bold text-gray-900">Forever Young Tours</h3>
                             <p class="text-sm text-gray-600">Travel Bold. Stay Forever Young.</p>
@@ -40,7 +40,7 @@
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-4">Resources</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="<?php echo isset($base_path) ? $base_path : '/foreveryoungtours/'; ?>pages/resources.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Resources</a></li>
+                            <li><a href="<?php echo isset($base_path) ? $base_path : '/foreveryoungtours/'; ?>emergency" class="text-gray-600 hover:text-yellow-600 transition-colors">Emergency</a></li>
                             <li><a href="<?php echo isset($base_path) ? $base_path : '/foreveryoungtours/'; ?>pages/resources.php#visa" class="text-gray-600 hover:text-yellow-600 transition-colors">VISA Information</a></li>
                             <li><a href="<?php echo isset($base_path) ? $base_path : '/foreveryoungtours/'; ?>pages/resources.php#safety" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Safety</a></li>
                             <li><a href="<?php echo isset($base_path) ? $base_path : '/foreveryoungtours/'; ?>pages/faq.php" class="text-gray-600 hover:text-yellow-600 transition-colors">FAQ</a></li>

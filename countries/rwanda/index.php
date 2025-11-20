@@ -1,56 +1,33 @@
 <?php
-// Set the base path for includes
-$base_path = dirname(dirname(dirname(__DIR__)));
+session_start();
+require_once 'config.php';
+require_once '../../config/database.php';
 
-// Database configuration is included by subdomain-handler.php
-// Do not include it here to prevent duplicate inclusion
+// Get country data
+$country_slug = 'visit-rw'; // Use the correct slug
+$stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = ? AND c.status = 'active'");
+$stmt->execute([$country_slug]);
+$country = $stmt->fetch();
 
-// Start the session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Debug: Check if database connection is available
-if (!function_exists('getDB')) {
-    error_log("Database connection not available. Check if subdomain-handler.php included the database config.");
-    die("Configuration error. Please contact the administrator.");
-}
-
-// Set default values if not set by subdomain handler
-if (!defined('COUNTRY_SUBDOMAIN') || !COUNTRY_SUBDOMAIN) {
-    // If not loaded via subdomain, get country data directly
-    $stmt = $pdo->prepare("SELECT c.*, r.name as continent_name FROM countries c 
-                          LEFT JOIN regions r ON c.region_id = r.id 
-                          WHERE c.slug = 'rwanda' AND c.status = 'active'");
-    $stmt->execute();
-    $country = $stmt->fetch();
-    
-    if ($country) {
-        $_SESSION['subdomain_country_code'] = $country['country_code'];
-        $_SESSION['subdomain_country_name'] = $country['name'];
-        $_SESSION['subdomain_country_slug'] = $country['slug'];
-    }
-}
-
-// Set page metadata
 $page_title = "Discover Rwanda | Luxury Group Travel, Primate Safaris, Culture | Forever Young Tours";
 $meta_description = "Premium Rwanda travel. Gorillas, chimps, volcanoes, canopy walks, culture. Curated 6–10 day programs, premium lodges, seamless logistics. Request dates via WhatsApp or email.";
 
 // Handle case where country is not found
 if (!$country) {
     // Redirect to main site or show error
-    header('Location: ../../index.php');
+    header('Location: http://localhost/ForeverYoungTours/index.php');
     exit;
 }
 
-// Get featured tours
-if (isset($country['id'])) {
-    $stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC LIMIT 4");
-    $stmt->execute([$country['id']]);
-    $tours = $stmt->fetchAll();
-} else {
-    $tours = [];
-}
+// Get all tours for this country
+$stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC, created_at DESC");
+$stmt->execute([$country['id']]);
+$all_tours = $stmt->fetchAll();
+
+// Get featured tours for display
+$tours = array_slice($all_tours, 0, 4);
+
+$base_path = '../../';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -337,7 +314,8 @@ if (isset($country['id'])) {
             <?php foreach (array_slice($tours, 0, 3) as $tour): ?>
             <div class="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
                 <div class="relative overflow-hidden">
-                    <img src="<?= getImageUrl($tour['image_url'] ?: $tour['cover_image'], 'countries/rwanda/assets/images/hero-rwanda.jpg') ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='<?= getImageUrl('countries/rwanda/assets/images/rwanda-gorilla-hero.png') ?>'; this.onerror=function(){this.src='<?= getImageUrl('assets/images/africa.png') ?>';}">
+                    <?php $t_img = $tour['cover_image'] ?: $tour['image_url']; $t_src = $t_img ? 'http://localhost/ForeverYoungTours/' . $t_img : 'http://localhost/ForeverYoungTours/assets/images/default-tour.jpg'; ?>
+                    <img src="<?= $t_src ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='http://localhost/ForeverYoungTours/assets/images/default-tour.jpg';">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     <div class="absolute top-4 right-4">
                         <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">Featured</span>
@@ -354,12 +332,24 @@ if (isset($country['id'])) {
                         <span class="text-gray-500 text-sm">per person</span>
                     </div>
                     <div class="flex gap-3">
-                        <a href="../../pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
-                        <button onclick="openBookingModal(<?= $tour['id'] ?>, '<?= htmlspecialchars($tour['name']) ?>', <?= $tour['price'] ?>)" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Book Now</button>
+                        <a href="http://visit-rw.foreveryoungtours.local/pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
+                        <button onclick="openRequestModal('<?= addslashes($tour['name']) ?>')" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Ask Dates</button>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+        
+        <!-- View All Tours Button -->
+        <div class="text-center mt-12">
+            <a href="http://visit-rw.foreveryoungtours.local/pages/packages.php" 
+               class="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-4 rounded-xl font-bold hover:shadow-lg transition-all border-2 border-amber-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4-4m4 4l-4 4"></path>
+                </svg>
+                View All Rwanda Tours
+            </a>
+        </div>
         </div>
     </div>
 </section>
@@ -498,7 +488,7 @@ if (isset($country['id'])) {
 <div id="requestModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-8 py-6 flex justify-between items-center">
-            <h2 class="text-3xl font-bold">Request Rwanda Dates</h2>
+            <h2 class="text-3xl font-bold">Request Dates</h2>
             <button onclick="closeRequestModal()" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -527,12 +517,7 @@ if (isset($country['id'])) {
                 <textarea name="notes" placeholder="Additional Notes" rows="4" class="w-full border rounded-lg px-4 py-3 mb-4"></textarea>
                 <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-4 rounded-lg font-bold hover:shadow-xl">Check Availability Now</button>
             </form>
-            <div class="text-center mt-6">
-                <p class="text-gray-600 mb-3">Prefer WhatsApp? Get answers in minutes.</p>
-                <a href="https://wa.me/17374439646?text=Rwanda%20Dates%20Request" class="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600">
-                    <i class="fab fa-whatsapp text-xl"></i> Open WhatsApp
-                </a>
-            </div>
+
         </div>
     </div>
 </div>
@@ -814,3 +799,4 @@ document.addEventListener('DOMContentLoaded', function() {
 </html>
 
 <?php include 'includes/footer.php'; ?>
+

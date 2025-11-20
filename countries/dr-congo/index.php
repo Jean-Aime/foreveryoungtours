@@ -1,5 +1,5 @@
 <?php
-
+session_start();
 require_once 'config.php';
 $page_title = "Discover Rwanda | Luxury Group Travel, Primate Safaris, Culture | Forever Young Tours";
 $meta_description = "Premium Rwanda travel. Gorillas, chimps, volcanoes, canopy walks, culture. Curated 6–10 day programs, premium lodges, seamless logistics. Request dates via WhatsApp or email.";
@@ -17,10 +17,13 @@ if (!$country) {
     exit;
 }
 
-// Get featured tours
-$stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC LIMIT 4");
+// Get all tours for this country
+$stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'active' ORDER BY featured DESC, created_at DESC");
 $stmt->execute([$country['id']]);
-$tours = $stmt->fetchAll();
+$all_tours = $stmt->fetchAll();
+
+// Get featured tours for display
+$tours = array_slice($all_tours, 0, 4);
 
 $base_path = '../../';
 ?>
@@ -326,12 +329,24 @@ $base_path = '../../';
                         <span class="text-gray-500 text-sm">per person</span>
                     </div>
                     <div class="flex gap-3">
-                        <a href="../../pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
-                        <button onclick="openBookingModal(<?= $tour['id'] ?>, '<?= htmlspecialchars($tour['name']) ?>', <?= $tour['price'] ?>)" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Book Now</button>
+                        <a href="http://visit-rw.foreveryoungtours.local/pages/tour-detail.php?id=<?= $tour['id'] ?>" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3 rounded-xl text-center font-bold hover:shadow-lg hover:shadow-amber-500/50 transition-all">View Details</a>
+                        <button onclick="openRequestModal('<?= addslashes($tour['name']) ?>')" class="flex-1 border-2 border-amber-500 text-amber-600 py-3 rounded-xl text-center font-bold hover:bg-amber-50 transition-all">Ask Dates</button>
                     </div>
                 </div>
             </div>
             <?php endforeach; ?>
+        </div>
+        
+        <!-- View All Tours Button -->
+        <div class="text-center mt-12">
+            <a href="http://visit-rw.foreveryoungtours.local/pages/packages.php" 
+               class="inline-flex items-center gap-2 bg-white text-amber-600 px-8 py-4 rounded-xl font-bold hover:shadow-lg transition-all border-2 border-amber-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4-4m4 4l-4 4"></path>
+                </svg>
+                View All Rwanda Tours
+            </a>
+        </div>
         </div>
     </div>
 </section>
@@ -470,7 +485,7 @@ $base_path = '../../';
 <div id="requestModal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div class="sticky top-0 bg-white border-b px-8 py-6 flex justify-between items-center">
-            <h2 class="text-3xl font-bold">Request Rwanda Dates</h2>
+            <h2 class="text-3xl font-bold">Request Dates</h2>
             <button onclick="closeRequestModal()" class="text-gray-500 hover:text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -499,12 +514,7 @@ $base_path = '../../';
                 <textarea name="notes" placeholder="Additional Notes" rows="4" class="w-full border rounded-lg px-4 py-3 mb-4"></textarea>
                 <button type="submit" class="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-4 rounded-lg font-bold hover:shadow-xl">Check Availability Now</button>
             </form>
-            <div class="text-center mt-6">
-                <p class="text-gray-600 mb-3">Prefer WhatsApp? Get answers in minutes.</p>
-                <a href="https://wa.me/17374439646?text=Rwanda%20Dates%20Request" class="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-lg font-bold hover:bg-green-600">
-                    <i class="fab fa-whatsapp text-xl"></i> Open WhatsApp
-                </a>
-            </div>
+
         </div>
     </div>
 </div>

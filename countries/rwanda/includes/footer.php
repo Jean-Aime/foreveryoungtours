@@ -29,11 +29,11 @@
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-4">Tour Categories</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="<?php echo url('packages?category=adventure'); ?>" class="text-gray-600 hover:text-yellow-600 transition-colors">Adventure Tours</a></li>
-                            <li><a href="<?php echo url('packages?category=luxury'); ?>" class="text-gray-600 hover:text-yellow-600 transition-colors">Luxury Travel</a></li>
-                            <li><a href="<?php echo url('packages?category=cultural'); ?>" class="text-gray-600 hover:text-yellow-600 transition-colors">Cultural Tours</a></li>
-                            <li><a href="<?php echo url('packages?category=wildlife'); ?>" class="text-gray-600 hover:text-yellow-600 transition-colors">Wildlife Safari</a></li>
-                            <li><a href="<?php echo url('packages?category=agro'); ?>" class="text-gray-600 hover:text-yellow-600 transition-colors">Agro-Tourism</a></li>
+                            <li><a href="pages/packages.php?category=adventure" class="text-gray-600 hover:text-yellow-600 transition-colors">Adventure Tours</a></li>
+                            <li><a href="pages/packages.php?category=luxury" class="text-gray-600 hover:text-yellow-600 transition-colors">Luxury Travel</a></li>
+                            <li><a href="pages/packages.php?category=cultural" class="text-gray-600 hover:text-yellow-600 transition-colors">Cultural Tours</a></li>
+                            <li><a href="pages/packages.php?category=wildlife" class="text-gray-600 hover:text-yellow-600 transition-colors">Wildlife Safari</a></li>
+                            <li><a href="pages/packages.php?category=agro" class="text-gray-600 hover:text-yellow-600 transition-colors">Agro-Tourism</a></li>
                             <li><a href="<?php echo url('store'); ?>" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Store</a></li>
                         </ul>
                     </div>
