@@ -1,115 +1,85 @@
-<?php
-echo "<h1>Subdomain Image Path Test</h1>";
-echo "<pre>";
-
-// Simulate being in countries/rwanda/pages/ context (3 levels deep)
-echo "=== SIMULATING SUBDOMAIN CONTEXT ===\n";
-echo "Context: countries/rwanda/pages/tour-detail.php\n";
-echo "Relative path depth: 3 levels (../../../)\n\n";
-
-// Get tour data
-require_once 'config/database.php';
-$tour_id = $_GET['id'] ?? 28;
-
-$stmt = $pdo->prepare("SELECT name, image_url, cover_image FROM tours WHERE id = ?");
-$stmt->execute([$tour_id]);
-$tour = $stmt->fetch();
-
-if (!$tour) {
-    echo "❌ Tour not found\n";
-    exit;
-}
-
-echo "=== TOUR DATA ===\n";
-echo "Name: " . $tour['name'] . "\n";
-echo "Image URL: " . ($tour['image_url'] ?: 'NULL') . "\n";
-echo "Cover Image: " . ($tour['cover_image'] ?: 'NULL') . "\n\n";
-
-// Test image paths from subdomain context
-function fixImagePathSubdomain($imagePath) {
-    if (empty($imagePath)) {
-        return '../../../assets/images/default-tour.jpg';
-    }
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Subdomain Image Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-box { border: 1px solid #ccc; margin: 10px 0; padding: 10px; }
+        .success { border-color: green; background: #f0fff0; }
+        .error { border-color: red; background: #fff0f0; }
+        img { max-width: 200px; height: auto; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Subdomain Image Test</h1>
     
-    // If it's an upload path, prepend the correct relative path
-    if (strpos($imagePath, 'uploads/') === 0) {
-        return '../../../' . $imagePath;
-    }
+    <?php
+    session_start();
+    require_once __DIR__ . '/config.php';
     
-    // If it's already a relative path starting with ../
-    if (strpos($imagePath, '../') === 0) {
-        return $imagePath;
-    }
+    echo "<p><strong>Current Host:</strong> " . $_SERVER['HTTP_HOST'] . "</p>";
+    echo "<p><strong>BASE_URL:</strong> " . BASE_URL . "</p>";
+    echo "<p><strong>Is Subdomain:</strong> " . (preg_match('/^visit-([a-z]{2,3})\./', $_SERVER['HTTP_HOST']) ? 'YES' : 'NO') . "</p>";
+    ?>
     
-    // If it's an assets path
-    if (strpos($imagePath, 'assets/') === 0) {
-        return '../../../' . $imagePath;
-    }
+    <h2>Image Path Tests for Subdomains</h2>
     
-    // If it's an external URL, return as-is
-    if (strpos($imagePath, 'http') === 0) {
-        return $imagePath;
-    }
+    <div class="test-box">
+        <p><strong>Main Domain Image (should work):</strong></p>
+        <img src="<?= BASE_URL ?>/assets/images/default-tour.jpg" alt="Main Domain Image" 
+             onload="this.parentElement.className='test-box success'" 
+             onerror="this.parentElement.className='test-box error'; this.alt='FAILED';">
+        <p>URL: <?= BASE_URL ?>/assets/images/default-tour.jpg</p>
+    </div>
     
-    // Default case - assume it needs the full relative path
-    return '../../../' . $imagePath;
-}
-
-// Test from main directory context (simulate subdomain paths)
-function testImageFromMainDir($relativePath) {
-    // Convert subdomain relative path to main directory path
-    $mainPath = str_replace('../../../', '', $relativePath);
-    return file_exists($mainPath);
-}
-
-echo "=== IMAGE PATH TESTING (SUBDOMAIN CONTEXT) ===\n";
-
-// Test cover image
-if ($tour['cover_image']) {
-    $cover_path = fixImagePathSubdomain($tour['cover_image']);
-    echo "Cover image path: $cover_path\n";
-    echo "Cover image exists: " . (testImageFromMainDir($cover_path) ? "✅ YES" : "❌ NO") . "\n";
+    <div class="test-box">
+        <p><strong>Using getImageUrl Function:</strong></p>
+        <img src="<?= getImageUrl('assets/images/africa.png') ?>" alt="Function Test" 
+             onload="this.parentElement.className='test-box success'" 
+             onerror="this.parentElement.className='test-box error'; this.alt='FAILED';">
+        <p>URL: <?= getImageUrl('assets/images/africa.png') ?></p>
+    </div>
     
-    // Show actual file path for verification
-    $actual_path = str_replace('../../../', '', $cover_path);
-    echo "Actual file path: $actual_path\n";
-    echo "File size: " . (file_exists($actual_path) ? filesize($actual_path) . " bytes" : "N/A") . "\n\n";
-}
-
-// Test main image
-if ($tour['image_url']) {
-    $image_path = fixImagePathSubdomain($tour['image_url']);
-    echo "Main image path: $image_path\n";
-    echo "Main image exists: " . (testImageFromMainDir($image_path) ? "✅ YES" : "❌ NO") . "\n";
+    <div class="test-box">
+        <p><strong>Uploads Directory Test:</strong></p>
+        <img src="<?= getImageUrl('uploads/tours/28_cover_1763207330_5662.jpeg') ?>" alt="Upload Test" 
+             onload="this.parentElement.className='test-box success'" 
+             onerror="this.parentElement.className='test-box error'; this.src='https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=400';">
+        <p>URL: <?= getImageUrl('uploads/tours/28_cover_1763207330_5662.jpeg') ?></p>
+    </div>
     
-    // Show actual file path for verification
-    $actual_path = str_replace('../../../', '', $image_path);
-    echo "Actual file path: $actual_path\n";
-    echo "File size: " . (file_exists($actual_path) ? filesize($actual_path) . " bytes" : "N/A") . "\n\n";
-}
-
-echo "=== URL GENERATION TEST ===\n";
-$bg_image = fixImagePathSubdomain($tour['cover_image'] ?: $tour['image_url']);
-echo "Background image for CSS: $bg_image\n";
-echo "Background image exists: " . (testImageFromMainDir($bg_image) ? "✅ YES" : "❌ NO") . "\n\n";
-
-echo "=== DIRECT FILE VERIFICATION ===\n";
-echo "Direct check - uploads/tours/28_cover_1763207330_5662.jpeg: " . (file_exists('uploads/tours/28_cover_1763207330_5662.jpeg') ? "✅ EXISTS" : "❌ MISSING") . "\n";
-echo "Direct check - assets/images/africa.png: " . (file_exists('assets/images/africa.png') ? "✅ EXISTS" : "❌ MISSING") . "\n";
-
-echo "</pre>";
-
-// Show actual images if they exist
-echo "<h2>Image Preview</h2>";
-
-if ($tour['cover_image'] && file_exists($tour['cover_image'])) {
-    echo "<p><strong>Cover Image:</strong></p>";
-    echo "<img src='" . htmlspecialchars($tour['cover_image']) . "' style='max-width: 300px; height: auto;' alt='Cover Image'>";
-}
-
-if ($tour['image_url'] && file_exists(str_replace('../../', '', $tour['image_url']))) {
-    echo "<p><strong>Main Image:</strong></p>";
-    $main_img_path = str_replace('../../', '', $tour['image_url']);
-    echo "<img src='" . htmlspecialchars($main_img_path) . "' style='max-width: 300px; height: auto;' alt='Main Image'>";
-}
-?>
+    <div class="test-box">
+        <p><strong>Fallback Image (Unsplash):</strong></p>
+        <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=400" alt="Fallback" 
+             onload="this.parentElement.className='test-box success'" 
+             onerror="this.parentElement.className='test-box error'; this.alt='FAILED';">
+        <p>This should always work (external)</p>
+    </div>
+    
+    <h2>Configuration Debug</h2>
+    <pre><?php
+    echo "SERVER INFO:\n";
+    echo "HTTP_HOST: " . ($_SERVER['HTTP_HOST'] ?? 'NOT SET') . "\n";
+    echo "REQUEST_URI: " . ($_SERVER['REQUEST_URI'] ?? 'NOT SET') . "\n";
+    echo "HTTPS: " . ($_SERVER['HTTPS'] ?? 'NOT SET') . "\n";
+    echo "\nPATH INFO:\n";
+    echo "BASE_URL: " . BASE_URL . "\n";
+    echo "Document Root: " . ($_SERVER['DOCUMENT_ROOT'] ?? 'NOT SET') . "\n";
+    echo "Script Name: " . ($_SERVER['SCRIPT_NAME'] ?? 'NOT SET') . "\n";
+    ?></pre>
+    
+    <h2>Instructions for Subdomains</h2>
+    <ul>
+        <li>Subdomains should point to the main domain for images</li>
+        <li>All images are stored on the main domain</li>
+        <li>Green boxes = Images loaded successfully</li>
+        <li>Red boxes = Images failed to load</li>
+    </ul>
+    
+    <p><strong>Test URLs:</strong></p>
+    <ul>
+        <li><a href="http://visit-rw.foreveryoungtours.local/test-subdomain-images.php">Rwanda Subdomain (Local)</a></li>
+        <li><a href="http://localhost/foreveryoungtours/test-subdomain-images.php">Main Domain (Local)</a></li>
+    </ul>
+</body>
+</html>

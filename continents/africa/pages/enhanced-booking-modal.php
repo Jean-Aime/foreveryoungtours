@@ -626,7 +626,14 @@ document.getElementById('bookingForm').addEventListener('submit', function(e) {
             showToast('Booking request submitted successfully! We will contact you soon.', 'success');
             closeBookingModal();
         } else {
-            showToast('Error: ' + data.message, 'error');
+            if (data.redirect) {
+                showToast('Please login to continue booking', 'error');
+                setTimeout(() => {
+                    window.location.href = '../' + data.redirect;
+                }, 2000);
+            } else {
+                showToast('Error: ' + data.message, 'error');
+            }
         }
     })
     .catch(error => {
@@ -649,10 +656,10 @@ function showLoginRequiredModal() {
                 <h3 class="text-2xl font-bold text-slate-900 mb-2">Login Required</h3>
                 <p class="text-slate-600 mb-6">Please login or create an account to book this tour</p>
                 <div class="flex gap-3">
-                    <button onclick="window.open('/auth/login.php', '_blank'); this.closest('.fixed').remove();" class="flex-1 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-lg hover:bg-yellow-600 transition-all">
+                    <button onclick="window.location.href='../auth/login.php'; this.closest('.fixed').remove();" class="flex-1 px-6 py-3 bg-yellow-500 text-black font-semibold rounded-lg hover:bg-yellow-600 transition-all">
                         Login
                     </button>
-                    <button onclick="window.open('/auth/register.php', '_blank'); this.closest('.fixed').remove();" class="flex-1 px-6 py-3 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-800 transition-all">
+                    <button onclick="window.location.href='../auth/register.php'; this.closest('.fixed').remove();" class="flex-1 px-6 py-3 bg-slate-700 text-white font-semibold rounded-lg hover:bg-slate-800 transition-all">
                         Register
                     </button>
                 </div>

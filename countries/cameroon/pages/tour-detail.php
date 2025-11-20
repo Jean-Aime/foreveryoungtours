@@ -124,7 +124,8 @@ $css_path = '../../../assets/css/modern-styles.css';
                 </p>
                 
                 <div class="flex flex-wrap gap-4">
-                    <button class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                    <button onclick="if(typeof openBookingModal === 'function') { openBookingModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', <?php echo $tour['price']; ?>, ''); } else { alert('Booking system loading... Please refresh the page.'); }" 
+                            class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
                         Book from $<?php echo number_format($tour['price']); ?>
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -307,6 +308,42 @@ $css_path = '../../../assets/css/modern-styles.css';
                     <?php endif; ?>
                 </div>
 
+                <!-- Departures & Calendar -->
+                <div class="bg-white rounded-xl p-8 mb-8 shadow-sm border">
+                    <h2 class="text-2xl font-bold mb-6">Available Departures</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 text-gray-900">Upcoming Dates</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <span class="font-medium">March 15, 2025</span>
+                                    <span class="text-green-600 text-sm font-semibold">Available</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <span class="font-medium">April 12, 2025</span>
+                                    <span class="text-green-600 text-sm font-semibold">Available</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <span class="font-medium">May 20, 2025</span>
+                                    <span class="text-orange-600 text-sm font-semibold">Limited</span>
+                                </div>
+                                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <span class="font-medium">June 18, 2025</span>
+                                    <span class="text-green-600 text-sm font-semibold">Available</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4 text-gray-900">Request Custom Dates</h3>
+                            <p class="text-gray-600 mb-4">Don't see your preferred dates? We can arrange private departures for groups of 2 or more.</p>
+                            <button onclick="openInquiryModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?> - Custom Dates')" 
+                                    class="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                                Request Custom Dates
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Requirements -->
                 <?php if ($tour['requirements']): ?>
                 <div class="bg-white rounded-xl p-8 shadow-sm border">
@@ -339,13 +376,25 @@ $css_path = '../../../assets/css/modern-styles.css';
                         </div>
                     </div>
 
-                    <button class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">
+                    <button onclick="if(typeof openBookingModal === 'function') { openBookingModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', <?php echo $tour['price']; ?>, ''); } else { alert('Booking system loading... Please refresh the page.'); }" 
+                            class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">
                         Book This Tour
                     </button>
                     
-                    <button class="block w-full py-4 rounded-lg font-bold text-lg mb-4 text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
+                    <button onclick="openInquiryModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>')" 
+                            class="block w-full py-4 rounded-lg font-bold text-lg mb-3 text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
                         Custom Inquiry
                     </button>
+                    
+                    <?php 
+                    // Generate country subdomain URL based on country slug
+                    $country_subdomain = str_replace('visit-', '', $tour['country_slug']);
+                    $packages_url = "http://visit-{$country_subdomain}.foreveryoungtours.local/pages/packages.php";
+                    ?>
+                    <a href="<?php echo $packages_url; ?>" 
+                       class="block w-full py-3 rounded-lg font-semibold text-center border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors mb-3">
+                        View All Tours
+                    </a>
 
                     <div class="text-center">
                         <p class="text-sm text-slate-500 mb-2">Need help? Contact our experts</p>
@@ -387,6 +436,8 @@ $css_path = '../../../assets/css/modern-styles.css';
     <?php endif; ?>
 </div>
 
+<?php include 'enhanced-booking-modal.php'; ?>
+<?php include 'inquiry-modal.php'; ?>
 <?php include '../../../includes/footer.php'; ?>
 
 </body>

@@ -2780,6 +2780,20 @@ html {
 .hero-video {
     transform: scale(1.05);
     animation: heroVideoMove 20s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.hero-video.loaded {
+    opacity: 1;
+}
+
+.hero-video::-webkit-media-controls {
+    display: none !important;
+}
+
+.hero-video::-webkit-media-controls-enclosure {
+    display: none !important;
 }
 
 .hero-overlay {

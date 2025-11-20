@@ -66,25 +66,24 @@ include 'includes/header.php';
     <!-- New Hero Section -->
     <section class="relative h-screen overflow-hidden hero-section">
         <!-- Background Video -->
-        <video id="heroVideo" autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover hero-video" poster="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920">
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-giraffes-walking-in-the-savanna-3618-large.mp4" type="video/mp4">
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-man-climbing-up-a-mountain-1120-large.mp4" type="video/mp4">
-            <source src="https://assets.mixkit.co/videos/preview/mixkit-wild-zebras-in-the-savanna-3736-large.mp4" type="video/mp4">
+        <video id="heroVideo" muted loop playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover hero-video" poster="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920">
+            <source src="assets/videos/here-video.mp4" type="video/mp4">
         </video>
         
-        <!-- Fallback Background Image -->
-        <div id="videoFallback" class="absolute inset-0 w-full h-full bg-cover bg-center hidden" style="background-image: url('https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=1920');"></div>
-        
         <script>
-        // Show fallback if video fails to load
-        document.getElementById('heroVideo').addEventListener('error', function() {
-            document.getElementById('videoFallback').classList.remove('hidden');
-            this.style.display = 'none';
-        });
+        // Immediate video play attempt
+        const heroVideo = document.getElementById('heroVideo');
+        if (heroVideo) {
+            heroVideo.muted = true;
+            heroVideo.play();
+        }
         </script>
         
+        <!-- Fallback Background Image -->
+        
+        
         <!-- Gold to Black Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-yellow-600/20 via-black/60 to-black/80 hero-overlay"></div>
+        <div id="heroOverlay" class="absolute inset-0 bg-gradient-to-b from-yellow-600/20 via-black/60 to-black/80 hero-overlay transition-all duration-500"></div>
         
         <!-- Content -->
         <div class="relative h-full flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -452,6 +451,25 @@ include 'includes/header.php';
     </section>
 
     <script>
+    // Force video play on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const video = document.getElementById('heroVideo');
+        if (video) {
+            video.muted = true;
+            video.play();
+        }
+    });
+    
+    // Hero scroll effect
+    window.addEventListener('scroll', function() {
+        const overlay = document.getElementById('heroOverlay');
+        if (window.scrollY > 50) {
+            overlay.style.background = 'linear-gradient(to bottom, rgba(59, 130, 246, 0.3), rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9))';
+        } else {
+            overlay.style.background = 'linear-gradient(to bottom, rgba(202, 138, 4, 0.2), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8))';
+        }
+    });
+    
     let currentDate = new Date();
     const tourDates = <?php 
     $stmt = $pdo->query("SELECT DISTINCT scheduled_date as date FROM tour_schedules WHERE scheduled_date >= CURDATE() AND status = 'active' ORDER BY scheduled_date LIMIT 90");
@@ -542,24 +560,45 @@ include 'includes/header.php';
     
     renderCalendar();
     
-    // Video Hero Section - Ensure video plays
+    // Initialize video on page load
+    initializeHeroVideo();
+    
+    function initializeHeroVideo() {
+        const video = document.getElementById('heroVideo');
+        if (video && video.paused) {
+            video.play();
+        }
+    }
+    
+    // Force video to play
     const video = document.getElementById('heroVideo');
     const fallback = document.getElementById('videoFallback');
     
     if (video) {
-        video.addEventListener('loadeddata', function() {
+        video.muted = true;
+        video.autoplay = true;
+        video.loop = true;
+        video.playsInline = true;
+        
+        // Force play immediately
+        video.play().then(() => {
+            video.classList.add('loaded');
             fallback.style.display = 'none';
-            video.style.display = 'block';
-        });
-        
-        video.addEventListener('error', function() {
-            video.style.display = 'none';
+        }).catch(() => {
             fallback.style.display = 'block';
         });
         
-        video.play().catch(function() {
-            video.style.display = 'none';
-            fallback.style.display = 'block';
+        // Try again on any user interaction
+        document.addEventListener('click', () => video.play(), { once: true });
+        
+        // Hero scroll color change
+        window.addEventListener('scroll', function() {
+            const overlay = document.getElementById('heroOverlay');
+            if (window.scrollY > 50) {
+                overlay.classList.add('scrolled');
+            } else {
+                overlay.classList.remove('scrolled');
+            }
         });
     }
     

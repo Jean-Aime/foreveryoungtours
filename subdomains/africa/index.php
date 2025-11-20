@@ -43,6 +43,7 @@
 </head>
 <body class="font-sans">
 <?php
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../config/database.php';
 
 // Get continent data from current directory
@@ -224,14 +225,14 @@ $css_path = '../assets/css/modern-styles.css';
                 <?php if (!empty($featured_tours)): ?>
                 <?php 
                 $hero_tour = $featured_tours[0];
-                $hero_image = $hero_tour['cover_image'] ?: $hero_tour['image_url'] ?: '../../assets/images/default-tour.jpg';
+                $hero_image = $hero_tour['image_url'] ?: $hero_tour['cover_image'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80';
                 ?>
                 <div class="group relative bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2">
                     <div class="absolute top-4 right-4 z-10">
                         <span class="px-4 py-2 bg-yellow-500 text-white text-xs font-bold rounded-full shadow-lg">FEATURED</span>
                     </div>
                     <div class="relative h-64 overflow-hidden">
-                        <img src="<?php echo htmlspecialchars($hero_image); ?>" alt="<?php echo htmlspecialchars($hero_tour['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                        <img src="<?= getImageUrl($hero_image) ?>" alt="<?php echo htmlspecialchars($hero_tour['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='<?= getImageUrl('assets/images/africa.png') ?>'; this.onerror=function(){this.src='https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80';};">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                     </div>
                     <div class="p-6">
@@ -247,7 +248,7 @@ $css_path = '../assets/css/modern-styles.css';
                                 <p class="text-sm text-slate-500">Starting from</p>
                                 <p class="text-3xl font-bold text-yellow-600">$<?php echo number_format($hero_tour['price']); ?></p>
                             </div>
-                            <a href="/pages/tour-detail.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
+                            <a href="<?= BASE_URL ?>/pages/tour-detail.php?id=<?php echo $hero_tour['id']; ?>" class="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-colors">
                                 View Details
                             </a>
                         </div>
@@ -294,11 +295,19 @@ $css_path = '../assets/css/modern-styles.css';
                 'zimbabwe' => 'zw'
             ];
             $country_code = $country_codes[$country['slug']] ?? strtolower(substr($country['country_code'], 0, 2));
-            $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
+            // Detect environment based on current host
+            $current_host = $_SERVER['HTTP_HOST'];
+            if (strpos($current_host, 'iforeveryoungtours.com') !== false) {
+                // Production environment
+                $country_url = "https://visit-{$country_code}.iforeveryoungtours.com";
+            } else {
+                // Local environment
+                $country_url = "http://visit-{$country_code}.foreveryoungtours.local";
+            }
             ?>
             <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2" onclick="window.open('<?php echo $country_url; ?>', '_blank')">
                 <div class="relative h-64 sm:h-72 overflow-hidden">
-                    <img src="<?php echo htmlspecialchars($country['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'); ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    <img src="<?= getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800') ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                     <div class="absolute top-4 right-4">
                         <span class="px-3 py-1 bg-yellow-600 text-white text-xs font-bold rounded-full shadow-lg">EXPLORE</span>
@@ -324,19 +333,43 @@ $css_path = '../assets/css/modern-styles.css';
 <section id="tours" class="py-20 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Top <?php echo htmlspecialchars($continent['name']); ?> Tours</h2>
-            <p class="text-xl text-gray-600">Discover our most popular experiences from <?php echo htmlspecialchars($continent['name']); ?></p>
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Top Africa Tours</h2>
+            <p class="text-xl text-gray-600">Discover our most popular experiences from Africa</p>
         </div>
         
-        <?php if (!empty($featured_tours)): ?>
+        <?php 
+        // Get only countries that have tours for this continent
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT c.*, COUNT(t.id) as tour_count 
+            FROM countries c 
+            INNER JOIN tours t ON c.id = t.country_id 
+            WHERE c.region_id = ? AND c.status = 'active' AND t.status = 'active'
+            GROUP BY c.id 
+            ORDER BY tour_count DESC 
+            LIMIT 3
+        ");
+        $stmt->execute([$continent['id']]);
+        $countries_with_tours = $stmt->fetchAll();
+        ?>
+        
+        <?php if (!empty($countries_with_tours)): ?>
         <div id="toursCarousel" class="relative">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <?php 
-                $visible_tours = array_slice($featured_tours, 0, 3);
-                foreach ($visible_tours as $tour): 
+                <?php foreach ($countries_with_tours as $country): ?>
+                <?php
+                // Get one featured tour from this country
+                $stmt = $pdo->prepare("
+                    SELECT * FROM tours 
+                    WHERE country_id = ? AND status = 'active' 
+                    ORDER BY featured DESC, popularity_score DESC 
+                    LIMIT 1
+                ");
+                $stmt->execute([$country['id']]);
+                $tour = $stmt->fetch();
                 ?>
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='../../pages/tour-detail.php?id=<?php echo $tour['id']; ?>'">
-                    <img src="<?php echo htmlspecialchars($tour['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80'); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-56 object-cover">
+                <?php if ($tour): ?>
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer" onclick="window.location.href='<?= BASE_URL ?>/pages/tour-detail.php?id=<?php echo $tour['id']; ?>'">
+                    <img src="<?= getImageUrl($tour['image_url'] ?: $tour['cover_image'], 'assets/images/default-tour.jpg') ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-56 object-cover" onerror="this.src='<?= getImageUrl('assets/images/africa.png') ?>'; this.onerror=function(){this.src='https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80';};">
                     <div class="p-6">
                         <h3 class="text-xl font-bold text-gray-900 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h3>
                         <p class="text-gray-600 mb-4 line-clamp-2"><?php echo htmlspecialchars(substr($tour['description'] ?: 'Discover amazing experiences', 0, 100)) . '...'; ?></p>
@@ -345,13 +378,14 @@ $css_path = '../assets/css/modern-styles.css';
                             <span class="text-gray-500"><?php echo htmlspecialchars($tour['duration']); ?></span>
                         </div>
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-500"><?php echo htmlspecialchars($tour['country_name'] ?: 'Multiple Countries'); ?></span>
+                            <span class="text-sm text-gray-500"><?php echo htmlspecialchars($country['name']); ?></span>
                             <button class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-semibold hover:shadow-xl transition-all">
                                 View Tour →
                             </button>
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
                 <?php endforeach; ?>
             </div>
         </div>
@@ -420,7 +454,7 @@ $css_path = '../assets/css/modern-styles.css';
         <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">Ready to Explore Africa?</h2>
         <p class="text-xl text-white/90 mb-8">Join thousands of travelers discovering the magic of Africa</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="http://foreveryoungtours.local/pages/packages.php" class="bg-white text-yellow-700 px-10 py-4 text-lg font-bold rounded-full hover:shadow-2xl transition-all hover:scale-105">
+            <a href="<?= BASE_URL ?>/pages/packages.php" class="bg-white text-yellow-700 px-10 py-4 text-lg font-bold rounded-full hover:shadow-2xl transition-all hover:scale-105">
                 Browse All Tours
             </a>
             <a href="https://wa.me/17374439646?text=Hi!%20I%20want%20to%20explore%20Africa" class="bg-white/10 backdrop-blur-sm text-white border-2 border-white px-10 py-4 text-lg font-bold rounded-full hover:bg-white/20 transition-all hover:scale-105">

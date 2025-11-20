@@ -13,9 +13,18 @@ $advisor_id = $_GET['advisor_id'] ?? '';
 $date_from = $_GET['date_from'] ?? '';
 $date_to = $_GET['date_to'] ?? '';
 
-// Build query
+// Build query with subdomain filtering
 $where = [];
 $params = [];
+
+// Add subdomain filtering
+if (defined('CURRENT_COUNTRY_ID')) {
+    $where[] = "t.country_id = ?";
+    $params[] = CURRENT_COUNTRY_ID;
+} elseif (isset($_SESSION['continent_filter'])) {
+    $where[] = "r.name = ?";
+    $params[] = $_SESSION['continent_filter'];
+}
 
 if ($status) {
     $where[] = "b.status = ?";
@@ -40,13 +49,15 @@ if ($date_to) {
 
 $whereClause = $where ? 'WHERE ' . implode(' AND ', $where) : '';
 
-// Get bookings (confirmed bookings only)
-$sql = "SELECT b.*, t.name as tour_name, t.destination,
+// Get bookings with country filtering
+$sql = "SELECT b.*, t.name as tour_name, t.destination, c.name as country_name,
                CONCAT(a.first_name, ' ', a.last_name) as advisor_name,
                CONCAT(m.first_name, ' ', m.last_name) as mca_name,
                'booking' as source
         FROM bookings b
         LEFT JOIN tours t ON b.tour_id = t.id
+        LEFT JOIN countries c ON t.country_id = c.id
+        LEFT JOIN regions r ON c.region_id = r.id
         LEFT JOIN users a ON b.advisor_id = a.id
         LEFT JOIN users m ON a.mca_id = m.id
         $whereClause

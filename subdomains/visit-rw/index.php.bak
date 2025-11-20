@@ -3,6 +3,7 @@ session_start();
 
 // Subdomain structure - adjust path based on your setup
 $base_dir = dirname(dirname(__DIR__)); // Go up to main directory
+require_once $base_dir . '/config.php';
 require_once $base_dir . '/config/database.php';
 
 $country_slug = 'visit-rw';
@@ -13,7 +14,7 @@ $stmt->execute([$country_slug]);
 $country = $stmt->fetch();
 
 if (!$country) {
-    header('Location: http://foreveryoungtours.local/pages/destinations.php');
+    header('Location: ' . BASE_URL . '/pages/destinations.php');
     exit();
 }
 
@@ -45,9 +46,10 @@ include $base_dir . '/includes/header.php';
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden" id="hero">
     <!-- Parallax Background -->
     <div class="absolute inset-0 z-0" data-parallax>
-        <img src="<?php echo htmlspecialchars($country['hero_image'] ?? $country['image_url'] ?? 'https://images.unsplash.com/photo-1609198092357-8e51c4b1d9f9?auto=format&fit=crop&w=2072&q=80'); ?>" 
+        <img src="<?= getImageUrl($country['hero_image'] ?? $country['image_url'], 'https://images.unsplash.com/photo-1609198092357-8e51c4b1d9f9?auto=format&fit=crop&w=2072&q=80') ?>" 
              alt="<?php echo htmlspecialchars($country['name']); ?>" 
-             class="w-full h-full object-cover scale-110">
+             class="w-full h-full object-cover scale-110"
+             onerror="this.src='https://images.unsplash.com/photo-1609198092357-8e51c4b1d9f9?auto=format&fit=crop&w=2072&q=80';">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-amber-900/70"></div>
         
         <!-- Animated Overlay Pattern -->
@@ -229,9 +231,10 @@ include $base_dir . '/includes/header.php';
             </div>
             
             <div class="relative">
-                <img src="<?php echo htmlspecialchars($country['image_url'] ?? 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=800&q=80'); ?>" 
+                <img src="<?= getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=800&q=80') ?>" 
                      alt="<?php echo htmlspecialchars($country['name']); ?>" 
-                     class="rounded-2xl shadow-2xl">
+                     class="rounded-2xl shadow-2xl"
+                     onerror="this.src='https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=800&q=80';">
             </div>
         </div>
     </div>
@@ -275,11 +278,12 @@ include $base_dir . '/includes/header.php';
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php foreach ($tours as $tour): ?>
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 group cursor-pointer" 
-                 onclick="window.location.href='tour-details.php?slug=<?php echo htmlspecialchars($tour['slug']); ?>'">
+                 onclick="window.location.href='<?= BASE_URL ?>/pages/tour-detail.php?id=<?php echo $tour['id']; ?>'">
                 <div class="relative overflow-hidden">
-                    <img src="<?php echo htmlspecialchars($tour['image_url'] ?? 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=800&q=80'); ?>" 
+                    <img src="<?= getImageUrl($tour['image_url'], 'https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=800&q=80') ?>" 
                          alt="<?php echo htmlspecialchars($tour['name']); ?>" 
-                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500">
+                         class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                         onerror="this.src='https://images.unsplash.com/photo-1523805009345-7448845a9e53?auto=format&fit=crop&w=800&q=80';">
                     
                     <?php if ($tour['featured']): ?>
                     <div class="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1">
@@ -340,12 +344,12 @@ include $base_dir . '/includes/header.php';
                             <?php endif; ?>
                             <div class="text-xs text-gray-500">per person</div>
                         </div>
-                        <button class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-full font-semibold hover:shadow-xl transition-all flex items-center gap-2">
-                            Book Now
+                        <a href="<?= BASE_URL ?>/pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-3 rounded-full font-semibold hover:shadow-xl transition-all flex items-center gap-2">
+                            View Details
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                             </svg>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -358,7 +362,7 @@ include $base_dir . '/includes/header.php';
             </svg>
             <h3 class="text-2xl font-bold text-gray-900 mb-4">Tours Coming Soon</h3>
             <p class="text-gray-600 mb-8">We're working on adding amazing tours to <?php echo htmlspecialchars($country['name']); ?>. Check back soon!</p>
-            <a href="http://foreveryoungtours.local/pages/contact.php" class="inline-block bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-all">
+            <a href="<?= BASE_URL ?>/pages/contact.php" class="inline-block bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 rounded-full font-semibold hover:shadow-xl transition-all">
                 Contact Us for Custom Tours
             </a>
         </div>
@@ -372,7 +376,7 @@ include $base_dir . '/includes/header.php';
         <h2 class="text-4xl font-bold text-white mb-6">Ready to Explore <?php echo htmlspecialchars($country['name']); ?>?</h2>
         <p class="text-xl text-white/90 mb-8">Book your dream tour today or contact us for a custom itinerary</p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="http://foreveryoungtours.local/pages/contact.php" class="bg-white text-yellow-600 px-8 py-4 text-lg font-semibold rounded-full hover:shadow-2xl transition-all">
+            <a href="<?= BASE_URL ?>/pages/contact.php" class="bg-white text-yellow-600 px-8 py-4 text-lg font-semibold rounded-full hover:shadow-2xl transition-all">
                 Get in Touch
             </a>
             <a href="#tours" class="bg-white/10 backdrop-blur-sm text-white border-2 border-white px-8 py-4 text-lg font-semibold rounded-full hover:bg-white/20 transition-all">

@@ -318,16 +318,31 @@ if ($_POST) {
     }
 }
 
-// Filter by country if specified
+// Filter by country if specified or by subdomain context
 $country_filter = $_GET['country_id'] ?? '';
-$where_clause = $country_filter ? "WHERE t.country_id = :country_id" : "WHERE 1=1";
+$where_conditions = [];
+$params = [];
+
+// Add subdomain filtering
+if (defined('CURRENT_COUNTRY_ID')) {
+    $where_conditions[] = "t.country_id = ?";
+    $params[] = CURRENT_COUNTRY_ID;
+} elseif (isset($_SESSION['continent_filter'])) {
+    $where_conditions[] = "r.name = ?";
+    $params[] = $_SESSION['continent_filter'];
+}
+
+// Add manual country filter
+if ($country_filter) {
+    $where_conditions[] = "t.country_id = ?";
+    $params[] = $country_filter;
+}
+
+$where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "WHERE 1=1";
 
 // Get tours with country and region info
 $stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id $where_clause ORDER BY r.name, c.name, t.created_at DESC");
-if ($country_filter) {
-    $stmt->bindParam(':country_id', $country_filter);
-}
-$stmt->execute();
+$stmt->execute($params);
 $tours = $stmt->fetchAll();
 
 // Get all countries for dropdown
