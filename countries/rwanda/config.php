@@ -1,14 +1,8 @@
 <?php
 /**
- * Configuration File for Country Directory
- * 
- * This file includes the main config from the root directory
- * and ensures BASE_URL works correctly for files in this country folder
+ * Country Configuration File
+ * Includes main config and ensures proper BASE_URL handling
  */
 
-// Include the main config file from root
-require_once '../../config.php';
-
-// All functions and constants are now available from the main config.php
-// No additional configuration needed - everything is handled by the main config.php
+require_once __DIR__ . '/../../config.php';
 ?>

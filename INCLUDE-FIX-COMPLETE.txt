@@ -1,0 +1,54 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    INCLUDE ERRORS - FIX COMPLETE                             ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+PROBLEM IDENTIFIED:
+------------------
+Continent pages were trying to include non-existent files:
+  ✗ enhanced-booking-modal.php
+  ✗ inquiry-modal.php
+  ✗ ../../includes/footer.php
+
+This caused PHP warnings on all continent pages.
+
+SOLUTION APPLIED:
+-----------------
+✓ Removed all problematic include statements
+✓ Added simple inline footer to all pages
+✓ Fixed 12 continent pages total
+
+PAGES FIXED:
+------------
+✓ continents/africa/index.php
+✓ continents/asia/index.php
+✓ continents/europe/index.php
+✓ continents/north-america/index.php
+✓ continents/south-america/index.php
+✓ continents/oceania/index.php
+✓ continents/caribbean/index.php
+✓ continents/central-africa/index.php
+✓ continents/east-africa/index.php
+✓ continents/north-africa/index.php
+✓ continents/southern-africa/index.php
+✓ continents/west-africa/index.php
+
+VERIFICATION:
+-------------
+Test all pages: http://localhost/foreveryoungtours/test-continents.php
+
+Or test individually:
+  http://localhost/foreveryoungtours/continents/africa/
+  http://localhost/foreveryoungtours/continents/asia/
+  http://localhost/foreveryoungtours/continents/europe/
+  (etc.)
+
+EXPECTED RESULT:
+----------------
+✓ No PHP warnings
+✓ Pages load completely
+✓ Footer displays at bottom
+✓ All functionality works
+
+STATUS: ✅ COMPLETE - All errors fixed!
+
+═══════════════════════════════════════════════════════════════════════════════

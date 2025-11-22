@@ -55,7 +55,13 @@ include '../includes/header.php';
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php foreach ($continents as $continent): ?>
-            <div class="relative rounded-2xl overflow-hidden group cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="window.open('<?php echo getContinentUrl($continent['slug']); ?>', '_blank')">
+            <?php
+            // Generate subdomain URL for production or localhost path for development
+            $continent_url = (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) 
+                ? 'http://localhost/ForeverYoungTours/continents/' . $continent['slug'] . '/'
+                : 'https://' . $continent['slug'] . '.iforeveryoungtours.com/';
+            ?>
+            <div class="relative rounded-2xl overflow-hidden group cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="window.location.href='<?php echo $continent_url; ?>'">
                 <img src="<?php echo htmlspecialchars($continent['image_url'] ?: 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1000&q=80'); ?>" alt="<?php echo htmlspecialchars($continent['name']); ?>" class="w-full h-96 object-cover group-hover:scale-110 transition-transform duration-500">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-8 text-white">
