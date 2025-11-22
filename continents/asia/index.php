@@ -76,11 +76,38 @@ function getTourImage($tour) {
     <title><?php echo $page_title; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', 'Inter', sans-serif; }
+        body { overflow-x: hidden; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Poppins', sans-serif; font-weight: 800; }
+        .nav-overlay { position: fixed; top: 0; left: 0; right: 0; z-index: 50; background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(8px); }
+        @media (max-width: 768px) { .desktop-menu { display: none !important; } .mobile-menu { display: block; } }
+    </style>
 </head>
 <body>
 
 <!-- Navigation -->
-
+<nav class="nav-overlay w-full">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+            <a href="<?= BASE_URL ?>" class="text-2xl font-black text-white hover:text-yellow-300 transition-colors drop-shadow-md">iForYoungTours</a>
+            <div class="desktop-menu flex gap-6">
+                <a href="<?= BASE_URL ?>/pages/packages.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Tours</a>
+                <a href="<?= BASE_URL ?>/pages/destinations.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Destinations</a>
+                <a href="<?= BASE_URL ?>/pages/contact.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Contact</a>
+            </div>
+            <button class="mobile-menu text-white text-3xl focus:outline-none hidden" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        </div>
+        <div class="mobile-nav-links hidden" id="mobileNavLinks">
+            <a href="<?= BASE_URL ?>/pages/packages.php">Tours</a>
+            <a href="<?= BASE_URL ?>/pages/destinations.php">Destinations</a>
+            <a href="<?= BASE_URL ?>/pages/contact.php">Contact</a>
+        </div>
+    </div>
+</nav>
 
 <!-- Hero Section -->
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -264,6 +291,19 @@ function getTourImage($tour) {
 
 <!-- Footer -->
 <?php include '../../includes/footer.php'; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileNavLinks = document.getElementById('mobileNavLinks');
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', function() { mobileNavLinks.classList.toggle('hidden'); });
+        mobileNavLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() { mobileNavLinks.classList.add('hidden'); });
+        });
+    }
+});
+</script>
 
 </body>
 </html>
