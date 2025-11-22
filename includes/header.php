@@ -91,7 +91,7 @@ if (!isset($base_path)) {
             <div class="flex justify-between items-center h-16">
                 <!-- Logo Section -->
                 <div class="flex items-center space-x-3">
-                    <a href="<?php echo $base_path; ?>home" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                    <a href="<?php echo $base_path; ?>/" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
                         <img src="<?php echo $base_path; ?>assets/images/logo.png" alt="Forever Young Tours Logo" class="w-10 h-10">
                     </a>
                 </div>
