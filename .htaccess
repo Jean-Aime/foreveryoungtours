@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteBase /
+
+# Continent subdomain routing
+RewriteCond %{HTTP_HOST} ^([a-z-]+)\.foreveryoungtours\.local$
+RewriteCond %{REQUEST_URI} !^/foreveryoungtours/continents/
+RewriteRule ^(.*)$ /foreveryoungtours/continents/%1/$1 [L]

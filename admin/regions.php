@@ -3,6 +3,7 @@
 require_once 'config.php';
 require_once '../config/database.php';
 require_once '../includes/theme-generator.php';
+require_once 'auto-clone-subdomain.php';
 
 $db = new Database();
 $conn = $db->getConnection();
@@ -15,6 +16,9 @@ if ($_POST) {
                 $slug = strtolower(str_replace(' ', '-', $_POST['name']));
                 $stmt = $conn->prepare("INSERT INTO regions (name, slug, description, image_url, featured, status) VALUES (?, ?, ?, ?, ?, 'active')");
                 $stmt->execute([$_POST['name'], $slug, $_POST['description'], $_POST['image_url'], isset($_POST['featured']) ? 1 : 0]);
+                
+                // Auto-clone continent folder
+                cloneContinentFolder($slug);
                 break;
             case 'add_country':
                 try {
@@ -42,6 +46,9 @@ if ($_POST) {
 
                     // Update subdomain handler
                     updateSubdomainHandler($_POST['country_code'], $slug, $folder_name);
+                    
+                    // Auto-clone country folder
+                    cloneCountryFolder($slug);
 
                 } catch (Exception $e) {
                     error_log("Error adding country: " . $e->getMessage());
