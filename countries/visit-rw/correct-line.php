@@ -1,0 +1,1 @@
+                    <?php $t_img = $tour['cover_image'] ?: $tour['image_url']; $t_src = $t_img ? 'http://localhost/ForeverYoungTours/' . $t_img : 'http://localhost/ForeverYoungTours/assets/images/default-tour.jpg'; ?>
