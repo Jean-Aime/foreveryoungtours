@@ -99,13 +99,13 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
     </div>
     
     <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
-        <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white mb-4 sm:mb-6 leading-tight drop-shadow-lg">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-1 sm:mb-2 leading-tight drop-shadow-lg">
             <?= htmlspecialchars($country['name']) ?>
         </h1>
-        <p class="text-lg sm:text-xl md:text-2xl text-gray-100 mb-6 sm:mb-8 max-w-4xl mx-auto leading-relaxed font-bold drop-shadow-md">
+        <p class="text-base sm:text-lg md:text-xl text-gray-100 mb-3 sm:mb-4 max-w-4xl mx-auto leading-relaxed font-bold drop-shadow-md">
             <?= htmlspecialchars($country['continent_name']) ?>
         </p>
-        <p class="text-base sm:text-lg md:text-xl text-gray-50 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-md px-2">
+        <p class="text-sm sm:text-base md:text-lg text-gray-50 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow-md px-2">
             <?= htmlspecialchars($country['tourism_description'] ?: $country['description'] ?: 'Experience Rwanda\'s remarkable recovery and track mountain gorillas in their natural habitat. Discover stunning landscapes, vibrant culture, and unforgettable wildlife encounters.') ?>
         </p>
         <a href="#tours" class="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-base sm:text-lg font-bold rounded-lg sm:rounded-xl hover:shadow-2xl hover:from-yellow-600 hover:to-orange-600 transition-all transform hover:scale-105">
