@@ -89,26 +89,6 @@ function getTourImage($tour) {
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="nav-overlay w-full">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-            <a href="<?= BASE_URL ?>" class="text-2xl font-black text-white hover:text-yellow-300 transition-colors drop-shadow-md">iForYoungTours</a>
-            <div class="desktop-menu flex gap-6">
-                <a href="<?= BASE_URL ?>/pages/packages.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Tours</a>
-                <a href="<?= BASE_URL ?>/pages/destinations.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Destinations</a>
-                <a href="<?= BASE_URL ?>/pages/contact.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Contact</a>
-            </div>
-            <button class="mobile-menu text-white text-3xl focus:outline-none hidden" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
-        </div>
-        <div class="mobile-nav-links hidden" id="mobileNavLinks">
-            <a href="<?= BASE_URL ?>/pages/packages.php">Tours</a>
-            <a href="<?= BASE_URL ?>/pages/destinations.php">Destinations</a>
-            <a href="<?= BASE_URL ?>/pages/contact.php">Contact</a>
-        </div>
-    </div>
-</nav>
-
 <!-- Hero Section -->
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
@@ -291,19 +271,6 @@ function getTourImage($tour) {
 
 <!-- Footer -->
 <?php include '../../includes/footer.php'; ?>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileNavLinks = document.getElementById('mobileNavLinks');
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', function() { mobileNavLinks.classList.toggle('hidden'); });
-        mobileNavLinks.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() { mobileNavLinks.classList.add('hidden'); });
-        });
-    }
-});
-</script>
 
 </body>
 </html>
