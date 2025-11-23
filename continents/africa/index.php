@@ -139,33 +139,6 @@ function getTourImage($tour) {
     </style>
 <body>
 
-<!-- Navigation -->
-<nav class="nav-overlay w-full">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-            <a href="<?= BASE_URL ?>" class="text-2xl font-black text-white hover:text-yellow-300 transition-colors drop-shadow-md">iForYoungTours</a>
-            
-            <!-- Desktop Menu -->
-            <div class="desktop-menu flex gap-6">
-                <a href="<?= BASE_URL ?>/pages/packages.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Tours</a>
-                <a href="<?= BASE_URL ?>/pages/destinations.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Destinations</a>
-                <a href="<?= BASE_URL ?>/pages/contact.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Contact</a>
-            </div>
-            
-            <!-- Mobile Hamburger Menu Button -->
-            <button class="mobile-menu text-white text-3xl focus:outline-none" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <!-- Mobile Menu Links -->
-        <div class="mobile-nav-links hidden" id="mobileNavLinks">
-            <a href="<?= BASE_URL ?>/pages/packages.php">Tours</a>
-            <a href="<?= BASE_URL ?>/pages/destinations.php">Destinations</a>
-            <a href="<?= BASE_URL ?>/pages/contact.php">Contact</a>
-        </div>
-    </div>
-</nav>
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
         <img src="<?php echo getImageUrl($continent['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=2072&q=80'); ?>" alt="<?php echo htmlspecialchars($continent['name']); ?>" class="w-full h-full object-cover">
@@ -276,10 +249,21 @@ function getTourImage($tour) {
             <?php
             $country_code = strtolower(substr($country['country_code'], 0, 2));
             $country_url = BASE_URL . '/countries/' . $country['slug'];
+            
+            // Map country names to image files in assets/images
+            $country_images = [
+                'Rwanda' => 'Rwanda.jpg',
+                'South Africa' => 'south africa.jpg',
+                'Nigeria' => 'nigeria.jpg',
+            ];
+            
+            $country_image = isset($country_images[$country['name']]) 
+                ? BASE_URL . '/assets/images/' . $country_images[$country['name']]
+                : (getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'));
             ?>
             <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2" onclick="window.location.href='<?php echo $country_url; ?>'">
                 <div class="relative h-72 overflow-hidden">
-                    <img src="<?= getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800') ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <img src="<?= $country_image ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                     <div class="absolute bottom-0 left-0 right-0 p-6">
                         <h3 class="text-2xl font-bold text-white mb-2"><?php echo htmlspecialchars($country['name']); ?></h3>
@@ -347,35 +331,6 @@ function getTourImage($tour) {
 
 <!-- Footer -->
 <?php include '../../includes/footer.php'; ?>
-
-<script>
-// Mobile Menu Toggle
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileNavLinks = document.getElementById('mobileNavLinks');
-    
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', function() {
-            mobileNavLinks.classList.toggle('hidden');
-        });
-        
-        // Close menu when a link is clicked
-        const links = mobileNavLinks.querySelectorAll('a');
-        links.forEach(link => {
-            link.addEventListener('click', function() {
-                mobileNavLinks.classList.add('hidden');
-            });
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(event) {
-            if (!event.target.closest('nav')) {
-                mobileNavLinks.classList.add('hidden');
-            }
-        });
-    }
-});
-</script>
 
 </body>
 </html>

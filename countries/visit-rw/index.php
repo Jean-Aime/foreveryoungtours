@@ -91,34 +91,6 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="nav-overlay w-full">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-            <a href="<?= BASE_URL ?>" class="text-2xl font-black text-white hover:text-yellow-300 transition-colors drop-shadow-md">iForYoungTours</a>
-            
-            <!-- Desktop Menu -->
-            <div class="desktop-menu flex gap-6">
-                <a href="<?= BASE_URL ?>/pages/packages.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Tours</a>
-                <a href="<?= BASE_URL ?>/pages/destinations.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Destinations</a>
-                <a href="<?= BASE_URL ?>/pages/contact.php" class="text-white hover:text-yellow-300 font-bold transition-colors drop-shadow-sm">Contact</a>
-            </div>
-            
-            <!-- Mobile Hamburger Menu Button -->
-            <button class="mobile-menu text-white text-3xl focus:outline-none" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
-        
-        <!-- Mobile Menu Links -->
-        <div class="mobile-nav-links hidden" id="mobileNavLinks">
-            <a href="<?= BASE_URL ?>/pages/packages.php">Tours</a>
-            <a href="<?= BASE_URL ?>/pages/destinations.php">Destinations</a>
-            <a href="<?= BASE_URL ?>/pages/contact.php">Contact</a>
-        </div>
-    </div>
-</nav>
-
 <!-- Hero Section -->
 <section class="relative w-full min-h-screen flex items-center justify-center">
     <div class="absolute inset-0 z-0 w-full h-full">
