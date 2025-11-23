@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'config.php';
+require_once '../../config.php';
 require_once '../../config/database.php';
 
 $country_slug = basename(dirname(__FILE__));
@@ -27,42 +27,39 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
     <title><?= $page_title ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', 'Inter', sans-serif !important; }
+        h1, h2, h3, h4, h5, h6 { font-weight: 800; letter-spacing: -0.5px; }
+        body { overflow-x: hidden; }
+    </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="bg-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center h-16">
-            <a href="<?= BASE_URL ?>" class="text-2xl font-bold text-yellow-600">iForYoungTours</a>
-            <div class="flex gap-6">
-                <a href="<?= BASE_URL ?>/pages/packages.php" class="text-gray-700 hover:text-yellow-600">Tours</a>
-                <a href="<?= BASE_URL ?>/pages/destinations.php" class="text-gray-700 hover:text-yellow-600">Destinations</a>
-                <a href="<?= BASE_URL ?>/pages/contact.php" class="text-gray-700 hover:text-yellow-600">Contact</a>
-            </div>
-        </div>
-    </div>
-</nav>
-
 <!-- Hero Section -->
-<section class="relative min-h-[70vh] flex items-center justify-center overflow-hidden">
-    <div class="absolute inset-0 z-0">
-        <img src="<?= getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=2072&q=80') ?>" alt="<?= htmlspecialchars($country['name']) ?>" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+<section class="relative w-full min-h-screen flex items-center justify-center">
+    <div class="absolute inset-0 z-0 w-full h-full">
+        <img src="https://images.pexels.com/photos/6720883/pexels-photo-6720883.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="<?= htmlspecialchars($country['name']) ?>" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/1920x1080/333333/ffffff?text=Senegal';">
+        <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
     </div>
     
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6">
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-1 sm:mb-2 leading-tight drop-shadow-lg">
             <?= htmlspecialchars($country['name']) ?>
         </h1>
-        <p class="text-xl md:text-2xl text-gray-200 mb-4">
+        <p class="text-base sm:text-lg md:text-xl text-gray-100 mb-3 sm:mb-4 max-w-4xl mx-auto leading-relaxed font-bold drop-shadow-md">
             <?= htmlspecialchars($country['continent_name']) ?>
         </p>
-        <p class="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">
-            <?= htmlspecialchars($country['tourism_description'] ?: $country['description'] ?: 'Discover the wonders of ' . $country['name']) ?>
+        <p class="text-sm sm:text-base md:text-lg text-gray-50 mb-6 sm:mb-8 max-w-2xl mx-auto leading-relaxed drop-shadow-md px-2">
+            <?= htmlspecialchars($country['tourism_description'] ?: $country['description'] ?: 'Discover the vibrant culture and hospitality of ' . $country['name']) ?>
         </p>
-        <a href="#tours" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 text-lg font-semibold rounded-full hover:shadow-2xl transition-all inline-block">
-            Explore Tours
+        <a href="#tours" class="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-base sm:text-lg font-bold rounded-lg sm:rounded-xl hover:shadow-2xl hover:from-yellow-600 hover:to-orange-600 transition-all transform hover:scale-105">
+            <span>Explore Tours</span>
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
         </a>
     </div>
 </section>
@@ -159,11 +156,7 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 </section>
 
 <!-- Footer -->
-<footer class="bg-gray-900 text-white py-12">
-    <div class="max-w-7xl mx-auto px-4 text-center">
-        <p>&copy; 2025 iForYoungTours. All rights reserved.</p>
-    </div>
-</footer>
+<?php require_once '../../includes/footer.php'; ?>
 
 </body>
 </html>
