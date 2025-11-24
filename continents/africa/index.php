@@ -172,7 +172,7 @@ function getTourImage($tour) {
                     🌍 <?php echo htmlspecialchars($continent['name']); ?>'s Leading Travel Platform
                 </div>
                 
-                <h2 class="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                     Your gateway to
                     <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent"><?php echo htmlspecialchars($continent['name']); ?> adventures</span>
                 </h2>
@@ -255,6 +255,8 @@ function getTourImage($tour) {
                 'Rwanda' => 'Rwanda.jpg',
                 'South Africa' => 'south africa.jpg',
                 'Nigeria' => 'nigeria.jpg',
+                'Senegal' => 'senegal.jpg',
+                'Tunisia' => 'tunisia.jpg',
             ];
             
             $country_image = isset($country_images[$country['name']]) 

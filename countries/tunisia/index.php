@@ -41,7 +41,7 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 <!-- Hero Section -->
 <section class="relative w-full min-h-screen flex items-center justify-center">
     <div class="absolute inset-0 z-0 w-full h-full">
-        <img src="https://images.pexels.com/photos/3551054/pexels-photo-3551054.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="<?= htmlspecialchars($country['name']) ?>" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/1920x1080/333333/ffffff?text=Tunisia';">
+        <img src="<?= BASE_URL ?>/assets/images/tunisia.jpg" alt="<?= htmlspecialchars($country['name']) ?>" class="w-full h-full object-cover" onerror="this.src='https://images.pexels.com/photos/3721461/pexels-photo-3721461.jpeg';">
         <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
     </div>
     
