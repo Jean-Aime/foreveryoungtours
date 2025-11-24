@@ -1,132 +1,232 @@
 <?php
-
 require_once 'config.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../config/database.php';
-$db = new Database();
-$conn = $db->getConnection();
+require_once '../auth/check_auth.php';
+checkAuth('advisor');
 
-$advisor_id = $_SESSION['user_id'] ?? 1;
+$advisor_id = $_SESSION['user_id'];
 
-// Get advisor's team (L2 and L3)
-$stmt = $conn->prepare("
+// Get advisor info
+$stmt = $pdo->prepare("SELECT referral_code, advisor_rank, total_sales FROM users WHERE id = ?");
+$stmt->execute([$advisor_id]);
+$advisor = $stmt->fetch();
+
+// Get L2 team (direct recruits)
+$stmt = $pdo->prepare("
     SELECT u.*, 
-           (SELECT COUNT(*) FROM users WHERE upline_id = u.id) as team_count,
-           (SELECT COUNT(*) FROM bookings WHERE referred_by = u.id) as total_bookings,
-           (SELECT SUM(total_price) FROM bookings WHERE referred_by = u.id AND status IN ('confirmed', 'completed')) as total_sales
+           (SELECT COUNT(*) FROM users WHERE upline_id = u.id) as downline_count,
+           (SELECT COUNT(*) FROM bookings WHERE advisor_id = u.id AND status IN ('confirmed','completed')) as total_bookings,
+           (SELECT COALESCE(SUM(total_amount), 0) FROM bookings WHERE advisor_id = u.id AND status IN ('confirmed','completed')) as total_sales
     FROM users u 
-    WHERE u.upline_id = ? OR u.upline_id IN (SELECT id FROM users WHERE upline_id = ?)
-    ORDER BY u.level, u.created_at DESC
+    WHERE u.upline_id = ? AND u.role = 'advisor'
+    ORDER BY u.created_at DESC
 ");
-$stmt->execute([$advisor_id, $advisor_id]);
-$team_members = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$stmt->execute([$advisor_id]);
+$l2_team = $stmt->fetchAll();
 
-// Get team statistics
-$l2_count = count(array_filter($team_members, fn($m) => $m['level'] == 2));
-$l3_count = count(array_filter($team_members, fn($m) => $m['level'] == 3));
-$total_team_sales = array_sum(array_column($team_members, 'total_sales'));
+// Get L3 team (recruits of L2)
+$stmt = $pdo->prepare("
+    SELECT u.*, u2.first_name as recruiter_name,
+           (SELECT COUNT(*) FROM bookings WHERE advisor_id = u.id AND status IN ('confirmed','completed')) as total_bookings,
+           (SELECT COALESCE(SUM(total_amount), 0) FROM bookings WHERE advisor_id = u.id AND status IN ('confirmed','completed')) as total_sales
+    FROM users u
+    JOIN users u2 ON u.upline_id = u2.id
+    WHERE u2.upline_id = ? AND u.role = 'advisor'
+    ORDER BY u.created_at DESC
+");
+$stmt->execute([$advisor_id]);
+$l3_team = $stmt->fetchAll();
+
+$l2_count = count($l2_team);
+$l3_count = count($l3_team);
+$total_team_sales = array_sum(array_column($l2_team, 'total_sales')) + array_sum(array_column($l3_team, 'total_sales'));
+
+// Get commission earnings
+$stmt = $pdo->prepare("SELECT commission_type, SUM(commission_amount) as total FROM commissions WHERE user_id = ? AND status = 'approved' GROUP BY commission_type");
+$stmt->execute([$advisor_id]);
+$commissions = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+
+$page_title = 'My Team';
+$page_subtitle = 'Build and manage your advisor network';
+
+include 'includes/advisor-header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Team - Advisor Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="../assets/css/modern-styles.css" rel="stylesheet">
-</head>
-<body class="bg-cream">
-    <div class="min-h-screen flex">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-sm">
-            <div class="p-6 border-b">
-                <h2 class="text-lg font-bold text-gradient">Advisor Dashboard</h2>
-                <p class="text-sm text-slate-600">Team Management</p>
+
+<!-- Referral Section -->
+<div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-6 text-white mb-8">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold mb-2">Your Referral Code</h2>
+            <p class="text-blue-100 mb-4">Share this code to build your team and earn L2/L3 commissions</p>
+            <div class="flex items-center gap-4">
+                <div class="bg-white/20 px-6 py-3 rounded-lg">
+                    <span class="text-3xl font-bold tracking-wider"><?php echo $advisor['referral_code']; ?></span>
+                </div>
+                <button onclick="copyReferralCode('<?php echo $advisor['referral_code']; ?>')" class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50">
+                    <i class="fas fa-copy mr-2"></i>Copy Code
+                </button>
             </div>
-            <nav class="mt-6">
-                <a href="index.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-home mr-3"></i>Overview
-                </a>
-                <a href="team.php" class="nav-item active block px-6 py-3">
-                    <i class="fas fa-users mr-3"></i>My Team
-                </a>
-                <a href="tours.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-route mr-3"></i>Available Tours
-                </a>
-                <a href="../auth/logout.php" class="nav-item block px-6 py-3 text-red-600">
-                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
-                </a>
-            </nav>
         </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 p-8">
-            <h1 class="text-3xl font-bold text-gradient mb-8">My Team</h1>
-
-            <!-- Team Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="nextcloud-card p-6">
-                    <h3 class="text-lg font-bold mb-2">Level 2 Team</h3>
-                    <p class="text-3xl font-bold text-blue-600"><?php echo $l2_count; ?></p>
-                </div>
-                <div class="nextcloud-card p-6">
-                    <h3 class="text-lg font-bold mb-2">Level 3 Team</h3>
-                    <p class="text-3xl font-bold text-green-600"><?php echo $l3_count; ?></p>
-                </div>
-                <div class="nextcloud-card p-6">
-                    <h3 class="text-lg font-bold mb-2">Team Sales</h3>
-                    <p class="text-3xl font-bold text-golden-600">$<?php echo number_format($total_team_sales); ?></p>
-                </div>
-            </div>
-
-            <!-- Team Members -->
-            <div class="nextcloud-card p-6">
-                <h2 class="text-xl font-bold mb-4">Team Members</h2>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-slate-50">
-                            <tr>
-                                <th class="text-left p-3">Name</th>
-                                <th class="text-left p-3">Level</th>
-                                <th class="text-left p-3">Team Size</th>
-                                <th class="text-left p-3">Bookings</th>
-                                <th class="text-left p-3">Sales</th>
-                                <th class="text-left p-3">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($team_members as $member): ?>
-                            <tr class="border-b">
-                                <td class="p-3">
-                                    <div>
-                                        <p class="font-semibold"><?php echo htmlspecialchars($member['full_name']); ?></p>
-                                        <p class="text-sm text-slate-600"><?php echo htmlspecialchars($member['email']); ?></p>
-                                    </div>
-                                </td>
-                                <td class="p-3">
-                                    <span class="px-2 py-1 rounded text-xs font-medium <?php 
-                                        echo $member['level'] == 2 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'; 
-                                    ?>">
-                                        Level <?php echo $member['level']; ?>
-                                    </span>
-                                </td>
-                                <td class="p-3"><?php echo $member['team_count']; ?></td>
-                                <td class="p-3"><?php echo $member['total_bookings']; ?></td>
-                                <td class="p-3">$<?php echo number_format($member['total_sales'] ?: 0); ?></td>
-                                <td class="p-3">
-                                    <span class="px-2 py-1 rounded text-xs <?php 
-                                        echo $member['status'] == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; 
-                                    ?>">
-                                        <?php echo ucfirst($member['status']); ?>
-                                    </span>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        <div class="text-right">
+            <p class="text-sm text-blue-100 mb-1">Your Rank</p>
+            <span class="bg-yellow-400 text-slate-900 px-4 py-2 rounded-lg font-bold text-lg"><?php echo strtoupper($advisor['advisor_rank']); ?></span>
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<!-- Commission Stats -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <p class="text-sm text-slate-600 mb-1">Direct Sales (L1)</p>
+        <p class="text-2xl font-bold text-green-600">$<?php echo number_format($commissions['direct'] ?? 0); ?></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <p class="text-sm text-slate-600 mb-1">Level 2 Override</p>
+        <p class="text-2xl font-bold text-blue-600">$<?php echo number_format($commissions['level2'] ?? 0); ?></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <p class="text-sm text-slate-600 mb-1">Level 3 Override</p>
+        <p class="text-2xl font-bold text-purple-600">$<?php echo number_format($commissions['level3'] ?? 0); ?></p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <p class="text-sm text-slate-600 mb-1">Total Team Sales</p>
+        <p class="text-2xl font-bold text-slate-900">$<?php echo number_format($total_team_sales); ?></p>
+    </div>
+</div>
+
+<!-- Team Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-900">Level 2 Team</h3>
+            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold"><?php echo $l2_count; ?></span>
+        </div>
+        <p class="text-sm text-slate-600">Direct recruits - Earn 10% override</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-900">Level 3 Team</h3>
+            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-bold"><?php echo $l3_count; ?></span>
+        </div>
+        <p class="text-sm text-slate-600">L2 recruits - Earn 5% override</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-200">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-bold text-slate-900">Total Network</h3>
+            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold"><?php echo $l2_count + $l3_count; ?></span>
+        </div>
+        <p class="text-sm text-slate-600">Complete team size</p>
+    </div>
+</div>
+
+<!-- L2 Team Members -->
+<?php if (!empty($l2_team)): ?>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 mb-8">
+    <div class="p-6 border-b border-slate-200">
+        <h3 class="text-lg font-bold text-slate-900">Level 2 Team (Direct Recruits)</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Advisor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Downline</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Bookings</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Sales</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Your Commission</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                <?php foreach ($l2_team as $member): ?>
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-semibold text-slate-900"><?php echo htmlspecialchars($member['first_name'] . ' ' . $member['last_name']); ?></p>
+                            <p class="text-sm text-slate-600"><?php echo htmlspecialchars($member['email']); ?></p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-700"><?php echo $member['downline_count']; ?></td>
+                    <td class="px-6 py-4 text-sm text-slate-700"><?php echo $member['total_bookings']; ?></td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-900">$<?php echo number_format($member['total_sales']); ?></td>
+                    <td class="px-6 py-4 text-sm font-bold text-blue-600">$<?php echo number_format($member['total_sales'] * 0.10); ?></td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                            <?php echo ucfirst($member['status']); ?>
+                        </span>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
+
+<!-- L3 Team Members -->
+<?php if (!empty($l3_team)): ?>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200">
+    <div class="p-6 border-b border-slate-200">
+        <h3 class="text-lg font-bold text-slate-900">Level 3 Team (Indirect Recruits)</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead class="bg-slate-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Advisor</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Recruited By</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Bookings</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Sales</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Your Commission</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">Status</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200">
+                <?php foreach ($l3_team as $member): ?>
+                <tr class="hover:bg-slate-50">
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-semibold text-slate-900"><?php echo htmlspecialchars($member['first_name'] . ' ' . $member['last_name']); ?></p>
+                            <p class="text-sm text-slate-600"><?php echo htmlspecialchars($member['email']); ?></p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-700"><?php echo htmlspecialchars($member['recruiter_name']); ?></td>
+                    <td class="px-6 py-4 text-sm text-slate-700"><?php echo $member['total_bookings']; ?></td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-900">$<?php echo number_format($member['total_sales']); ?></td>
+                    <td class="px-6 py-4 text-sm font-bold text-purple-600">$<?php echo number_format($member['total_sales'] * 0.05); ?></td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">
+                            <?php echo ucfirst($member['status']); ?>
+                        </span>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
+
+<?php if (empty($l2_team) && empty($l3_team)): ?>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+    <i class="fas fa-users text-6xl text-slate-300 mb-4"></i>
+    <h3 class="text-xl font-bold text-slate-900 mb-2">No Team Members Yet</h3>
+    <p class="text-slate-600 mb-6">Start building your team by sharing your referral code</p>
+    <button onclick="copyReferralCode('<?php echo $advisor['referral_code']; ?>')" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700">
+        <i class="fas fa-copy mr-2"></i>Copy Referral Code
+    </button>
+</div>
+<?php endif; ?>
+
+<script>
+function copyReferralCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        alert('✓ Referral code copied: ' + code);
+    });
+}
+</script>
+
+<?php include 'includes/advisor-footer.php'; ?>

@@ -50,12 +50,23 @@ if ($server_port == 8000) {
         .border-golden-500 { border-color: #DAA520; }
         .bg-golden-50 { background-color: #FDF6E3; }
         .border-golden-200 { border-color: #F4E4BC; }
+        
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0 !important; }
+        }
     </style>
 </head>
 <body class="bg-slate-50">
     <div class="min-h-screen flex">
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn" class="md:hidden fixed top-4 left-4 z-50 bg-white p-3 rounded-lg shadow-lg">
+            <i class="fas fa-bars text-xl"></i>
+        </button>
+        
         <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-lg fixed h-full overflow-y-auto">
+        <div id="sidebar" class="sidebar w-64 bg-white shadow-lg fixed h-full overflow-y-auto z-40 md:translate-x-0">
             <div class="p-6 border-b border-slate-200 bg-gradient-to-r from-yellow-50 to-orange-50">
                 <div class="flex items-center mb-2">
                     <img src="<?= getImageUrl('assets/images/logo.png') ?>" alt="Logo" class="w-10 h-10 mr-3">
@@ -90,6 +101,16 @@ if ($server_port == 8000) {
                 </a>
                 
                 <div class="px-6 mt-6 mb-2">
+                    <p class="text-xs font-semibold text-slate-400 uppercase">Premium Services</p>
+                </div>
+                <a href="<?php echo $base_path; ?>client/visa-services.php" class="sidebar-link <?php echo basename($_SERVER['PHP_SELF']) == 'visa-services.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-passport"></i>Visa Services
+                </a>
+                <a href="<?php echo $base_path; ?>client/vip-services.php" class="sidebar-link <?php echo basename($_SERVER['PHP_SELF']) == 'vip-services.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-star"></i>VIP Services
+                </a>
+                
+                <div class="px-6 mt-6 mb-2">
                     <p class="text-xs font-semibold text-slate-400 uppercase">Resources</p>
                 </div>
                 <a href="<?php echo $base_path; ?>client/my-stories.php" class="sidebar-link <?php echo basename($_SERVER['PHP_SELF']) == 'my-stories.php' ? 'active' : ''; ?>">
@@ -121,9 +142,9 @@ if ($server_port == 8000) {
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 ml-64">
+        <div class="main-content flex-1 md:ml-64">
             <!-- Top Bar -->
-            <div class="bg-white shadow-sm border-b border-slate-200 px-8 py-4 flex justify-between items-center">
+            <div class="bg-white shadow-sm border-b border-slate-200 px-4 md:px-8 py-4 flex justify-between items-center">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-900"><?php echo $page_title ?? 'Dashboard'; ?></h1>
                     <p class="text-sm text-slate-600"><?php echo $page_subtitle ?? 'Welcome back, ' . htmlspecialchars($client_name); ?></p>
@@ -146,4 +167,24 @@ if ($server_port == 8000) {
             </div>
 
             <!-- Page Content -->
-            <div class="p-8">
+            <div class="p-4 md:p-8">
+<script>
+const sidebar = document.getElementById('sidebar');
+const menuBtn = document.getElementById('mobile-menu-btn');
+const menuIcon = menuBtn.querySelector('i');
+
+menuBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    menuIcon.classList.toggle('fa-bars');
+    menuIcon.classList.toggle('fa-times');
+});
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', (e) => {
+    if (window.innerWidth < 768 && !sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+        sidebar.classList.remove('active');
+        menuIcon.classList.add('fa-bars');
+        menuIcon.classList.remove('fa-times');
+    }
+});
+</script>

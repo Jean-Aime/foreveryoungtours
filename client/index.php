@@ -1,7 +1,9 @@
 <?php
 
 require_once 'config.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../config/database.php';
 
 $page_title = 'Dashboard';
@@ -45,6 +47,43 @@ $total_bookings = count($bookings);
 $completed_trips = count(array_filter($bookings, fn($b) => $b['status'] == 'completed'));
 $total_spent = array_sum(array_column(array_filter($bookings, fn($b) => in_array($b['status'], ['confirmed', 'completed'])), 'total_price'));
 $countries_visited = count(array_unique(array_column($bookings, 'country_name')));
+
+// Get monthly spending data (last 6 months)
+$stmt = $pdo->prepare("
+    SELECT DATE_FORMAT(created_at, '%b') as month, SUM(total_price) as total
+    FROM bookings
+    WHERE user_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+    GROUP BY MONTH(created_at)
+    ORDER BY created_at ASC
+");
+$stmt->execute([$client_id]);
+$monthly_data = $stmt->fetchAll();
+
+$months = [];
+$spending = [];
+foreach ($monthly_data as $data) {
+    $months[] = $data['month'];
+    $spending[] = $data['total'];
+}
+
+// Fill missing months with 0
+if (count($months) < 6) {
+    $all_months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    $current_month = (int)date('n');
+    $months = array_slice($all_months, max(0, $current_month - 6), 6);
+    $spending = array_pad($spending, 6, 0);
+}
+
+// Get destination preferences
+$stmt = $pdo->prepare("
+    SELECT t.tour_type, COUNT(*) as count
+    FROM bookings b
+    JOIN tours t ON b.tour_id = t.id
+    WHERE b.user_id = ?
+    GROUP BY t.tour_type
+");
+$stmt->execute([$client_id]);
+$tour_types = $stmt->fetchAll();
 
 include 'includes/client-header.php';
 ?>
@@ -256,12 +295,12 @@ include 'includes/client-header.php';
             tooltip: { trigger: 'axis' },
             xAxis: {
                 type: 'category',
-                data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+                data: <?php echo json_encode($months); ?>
             },
             yAxis: { type: 'value' },
             series: [{
                 name: 'Spending',
-                data: [<?php echo $total_spent * 0.1; ?>, <?php echo $total_spent * 0.15; ?>, <?php echo $total_spent * 0.2; ?>, <?php echo $total_spent * 0.25; ?>, <?php echo $total_spent * 0.2; ?>, <?php echo $total_spent * 0.1; ?>],
+                data: <?php echo json_encode($spending); ?>,
                 type: 'line',
                 smooth: true,
                 itemStyle: { color: '#DAA520' }
@@ -271,16 +310,22 @@ include 'includes/client-header.php';
 
         // Destination Preferences Chart
         const destinationChart = echarts.init(document.getElementById('destinationChart'));
+        const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
         const destinationOption = {
             tooltip: { trigger: 'item' },
             series: [{
                 type: 'pie',
                 radius: '60%',
                 data: [
-                    { value: 40, name: 'Safari Tours', itemStyle: { color: '#3B82F6' } },
-                    { value: 30, name: 'Cultural Tours', itemStyle: { color: '#10B981' } },
-                    { value: 20, name: 'Adventure', itemStyle: { color: '#F59E0B' } },
-                    { value: 10, name: 'City Breaks', itemStyle: { color: '#EF4444' } }
+                    <?php 
+                    if (!empty($tour_types)) {
+                        foreach ($tour_types as $index => $type) {
+                            echo "{ value: {$type['count']}, name: '" . htmlspecialchars($type['tour_type'] ?: 'Other') . "', itemStyle: { color: colors[{$index} % 5] } },";
+                        }
+                    } else {
+                        echo "{ value: 1, name: 'No data yet', itemStyle: { color: '#ccc' } }";
+                    }
+                    ?>
                 ]
             }]
         };

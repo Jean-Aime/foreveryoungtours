@@ -1,217 +1,246 @@
 <?php
-
-require_once 'config.php';
+$page_title = 'Advisor Management';
+$page_subtitle = 'Manage Travel Advisors';
 session_start();
 require_once '../config/database.php';
-$db = new Database();
-$conn = $db->getConnection();
+require_once '../auth/check_auth.php';
+checkAuth('super_admin');
 
-// Handle KYC and status updates
+$success = '';
+$error = '';
+
+// Handle advisor operations
 if ($_POST) {
     if (isset($_POST['action'])) {
-        switch ($_POST['action']) {
-            case 'approve_kyc':
-                $stmt = $conn->prepare("UPDATE users SET status = 'active' WHERE id = ?");
-                $stmt->execute([$_POST['user_id']]);
-                break;
-            case 'reject_kyc':
-                $stmt = $conn->prepare("UPDATE users SET status = 'suspended' WHERE id = ?");
-                $stmt->execute([$_POST['user_id']]);
-                break;
-            case 'create_user':
-                $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-                $stmt = $conn->prepare("INSERT INTO users (username, email, password, full_name, phone, role, status) VALUES (?, ?, ?, ?, ?, ?, 'inactive')");
-                $stmt->execute([$_POST['username'], $_POST['email'], $password, $_POST['full_name'], $_POST['phone'], $_POST['role']]);
-                break;
+        try {
+            switch ($_POST['action']) {
+                case 'approve_kyc':
+                    $stmt = $pdo->prepare("UPDATE users SET status = 'active' WHERE id = ?");
+                    $stmt->execute([$_POST['user_id']]);
+                    $success = 'Advisor approved successfully!';
+                    break;
+                case 'reject_kyc':
+                    $stmt = $pdo->prepare("UPDATE users SET status = 'suspended' WHERE id = ?");
+                    $stmt->execute([$_POST['user_id']]);
+                    $success = 'Advisor rejected!';
+                    break;
+                case 'update_rank':
+                    $stmt = $pdo->prepare("UPDATE users SET advisor_rank = ? WHERE id = ?");
+                    $stmt->execute([$_POST['rank'], $_POST['user_id']]);
+                    $success = 'Advisor rank updated!';
+                    break;
+                case 'toggle_status':
+                    $stmt = $pdo->prepare("UPDATE users SET status = ? WHERE id = ?");
+                    $stmt->execute([$_POST['status'], $_POST['user_id']]);
+                    $success = 'Status updated successfully!';
+                    break;
+            }
+        } catch (PDOException $e) {
+            $error = 'Error: ' . $e->getMessage();
         }
     }
 }
 
-// Get advisors only
-$stmt = $conn->prepare("SELECT * FROM users WHERE role = 'advisor' ORDER BY created_at DESC");
+// Get advisors with their stats
+$stmt = $pdo->prepare("SELECT u.*,
+                              CONCAT(s.first_name, ' ', s.last_name) as sponsor_name,
+                              (SELECT COUNT(*) FROM users WHERE sponsor_id = u.id) as team_count,
+                              (SELECT COUNT(*) FROM bookings WHERE advisor_id = u.id AND status = 'confirmed') as total_bookings,
+                              (SELECT COALESCE(SUM(total_amount), 0) FROM bookings WHERE advisor_id = u.id AND status = 'confirmed') as total_sales
+                       FROM users u
+                       LEFT JOIN users s ON u.sponsor_id = s.id
+                       WHERE u.role = 'advisor'
+                       ORDER BY u.created_at DESC");
 $stmt->execute();
-$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$advisors = $stmt->fetchAll();
 
 // Get statistics
-$pending_kyc = count(array_filter($users, function($u) { return $u['status'] == 'inactive'; }));
-$active_users = count(array_filter($users, function($u) { return $u['status'] == 'active'; }));
-$total_advisors = count($users);
-$kyc_approved = count(array_filter($users, function($u) { return $u['kyc_status'] == 'approved'; }));
+$stats = $pdo->query("SELECT
+    COUNT(*) as total_advisors,
+    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active,
+    SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as pending,
+    SUM(CASE WHEN advisor_rank = 'certified' THEN 1 ELSE 0 END) as certified,
+    SUM(CASE WHEN advisor_rank = 'senior' THEN 1 ELSE 0 END) as senior,
+    SUM(CASE WHEN advisor_rank = 'executive' THEN 1 ELSE 0 END) as executive
+    FROM users WHERE role = 'advisor'")->fetch();
+
+require_once 'includes/admin-header.php';
+require_once 'includes/admin-sidebar.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advisor Management - Super Admin</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../assets/css/modern-styles.css" rel="stylesheet">
-</head>
-<body class="bg-cream">
-    <div class="min-h-screen flex">
-        <!-- Sidebar -->
-        <div class="w-64 bg-white shadow-sm">
-            <div class="p-6 border-b">
-                <h2 class="text-lg font-bold text-gradient">Super Admin</h2>
-                <p class="text-sm text-slate-600">Advisor Management</p>
-            </div>
-            <nav class="mt-6">
-                <a href="index.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-home mr-3"></i>Overview
-                </a>
-                <a href="destinations.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-map-marker-alt mr-3"></i>Destinations
-                </a>
-                <a href="tours.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-route mr-3"></i>Tours & Packages
-                </a>
-                <a href="bookings.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-calendar-check mr-3"></i>Bookings
-                </a>
-                <a href="advisor-management.php" class="nav-item active block px-6 py-3">
-                    <i class="fas fa-user-tie mr-3"></i>Advisor Management
-                </a>
-                <a href="mca-management.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-users-cog mr-3"></i>MCA Management
-                </a>
-                <a href="reports.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-chart-bar mr-3"></i>Reports & Analytics
-                </a>
-                <a href="settings.php" class="nav-item block px-6 py-3">
-                    <i class="fas fa-cog mr-3"></i>System Settings
-                </a>
-                <a href="../auth/logout.php" class="nav-item block px-6 py-3 text-red-600">
-                    <i class="fas fa-sign-out-alt mr-3"></i>Logout
-                </a>
-            </nav>
+
+<!-- Main Content -->
+<main class="flex-1 overflow-auto ml-64 w-[calc(100%-16rem)] min-h-screen bg-cream">
+    <div class="p-6 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Advisor Management</h1>
+            <p class="text-slate-600">Manage travel advisors, ranks, and KYC approvals</p>
         </div>
 
-        <!-- Main Content -->
-        <div class="flex-1 p-8">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h1 class="text-3xl font-bold text-gradient">Advisor Management</h1>
-                    <p class="text-slate-600">Onboard and manage KYC for advisors only</p>
-                </div>
-                <button onclick="openCreateModal()" class="btn-primary px-6 py-3 rounded-lg">
-                    <i class="fas fa-plus mr-2"></i>Onboard New User
-                </button>
-            </div>
+        <?php if ($success): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($success) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php endif; ?>
 
-            <!-- KYC Statistics -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="nextcloud-card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600">Pending KYC</p>
-                            <p class="text-2xl font-bold text-gradient"><?php echo $pending_kyc; ?></p>
-                        </div>
-                        <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-clock text-yellow-600"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="nextcloud-card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600">Active Users</p>
-                            <p class="text-2xl font-bold text-gradient"><?php echo $active_users; ?></p>
-                        </div>
-                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-check-circle text-green-600"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="nextcloud-card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600">KYC Approved</p>
-                            <p class="text-2xl font-bold text-gradient"><?php echo $kyc_approved; ?></p>
-                        </div>
-                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-user-check text-blue-600"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="nextcloud-card p-6">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-slate-600">Total Advisors</p>
-                            <p class="text-2xl font-bold text-gradient"><?php echo $total_advisors; ?></p>
-                        </div>
-                        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-user-tie text-purple-600"></i>
+        <?php if ($error): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?= htmlspecialchars($error) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <?php endif; ?>
+
+        <!-- Statistics Cards -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Total Advisors</p>
+                                <h3 class="mb-0 fw-bold"><?= number_format($stats['total_advisors']) ?></h3>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 rounded p-3">
+                                <i class="fas fa-user-tie text-primary fs-4"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Users Table -->
-            <div class="nextcloud-card overflow-hidden">
-                <div class="p-6 border-b">
-                    <h2 class="text-xl font-bold">All Advisors</h2>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Active</p>
+                                <h3 class="mb-0 fw-bold text-success"><?= number_format($stats['active']) ?></h3>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded p-3">
+                                <i class="fas fa-check-circle text-success fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-slate-50">
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Pending KYC</p>
+                                <h3 class="mb-0 fw-bold text-warning"><?= number_format($stats['pending']) ?></h3>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded p-3">
+                                <i class="fas fa-clock text-warning fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 small">Executive Rank</p>
+                                <h3 class="mb-0 fw-bold text-info"><?= number_format($stats['executive']) ?></h3>
+                            </div>
+                            <div class="bg-info bg-opacity-10 rounded p-3">
+                                <i class="fas fa-crown text-info fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advisors Table -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0">All Advisors</h5>
+            </div>
+            <div class="card-body p-0">
+                <?php if (empty($advisors)): ?>
+                <div class="text-center py-5">
+                    <i class="fas fa-user-tie text-muted mb-3" style="font-size: 3rem;"></i>
+                    <p class="text-muted">No advisors found</p>
+                </div>
+                <?php else: ?>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
                             <tr>
-                                <th class="text-left p-4">User Details</th>
-                                <th class="text-left p-4">Role</th>
-                                <th class="text-left p-4">Contact</th>
-                                <th class="text-left p-4">KYC Status</th>
-                                <th class="text-left p-4">Joined</th>
-                                <th class="text-left p-4">Actions</th>
+                                <th>Advisor</th>
+                                <th>Contact</th>
+                                <th>Rank</th>
+                                <th>Team</th>
+                                <th>Sales</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($users as $user): ?>
-                            <tr class="border-b">
-                                <td class="p-4">
-                                    <div>
-                                        <p class="font-semibold"><?php echo htmlspecialchars($user['full_name']); ?></p>
-                                        <p class="text-sm text-slate-600">@<?php echo htmlspecialchars($user['username']); ?></p>
+                            <?php foreach ($advisors as $advisor): ?>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-warning bg-opacity-25 rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                            <span class="fw-bold text-warning"><?= strtoupper(substr($advisor['first_name'] ?: 'A', 0, 1)) ?></span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold"><?= htmlspecialchars(trim($advisor['first_name'] . ' ' . $advisor['last_name']) ?: 'N/A') ?></div>
+                                            <small class="text-muted"><?= htmlspecialchars($advisor['email']) ?></small>
+                                        </div>
                                     </div>
                                 </td>
-                                <td class="p-4">
-                                    <span class="px-2 py-1 rounded text-xs font-medium <?php echo $user['role'] == 'mca' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'; ?>">
-                                        <?php echo strtoupper($user['role']); ?>
+                                <td>
+                                    <div><?= htmlspecialchars($advisor['phone'] ?: 'N/A') ?></div>
+                                    <small class="text-muted"><?= htmlspecialchars($advisor['country'] ?: 'N/A') ?></small>
+                                </td>
+                                <td>
+                                    <?php
+                                    $rank_colors = [
+                                        'certified' => 'primary',
+                                        'senior' => 'info',
+                                        'executive' => 'success'
+                                    ];
+                                    $rank = $advisor['advisor_rank'] ?: 'certified';
+                                    $color = $rank_colors[$rank] ?? 'secondary';
+                                    ?>
+                                    <span class="badge bg-<?= $color ?>"><?= ucfirst($rank) ?></span>
+                                </td>
+                                <td><?= $advisor['team_count'] ?> members</td>
+                                <td>
+                                    <div class="fw-semibold">$<?= number_format($advisor['total_sales'], 2) ?></div>
+                                    <small class="text-muted"><?= $advisor['total_bookings'] ?> bookings</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-<?= $advisor['status'] == 'active' ? 'success' : ($advisor['status'] == 'inactive' ? 'warning' : 'danger') ?>">
+                                        <?= ucfirst($advisor['status']) ?>
                                     </span>
                                 </td>
-                                <td class="p-4">
-                                    <div>
-                                        <p class="text-sm"><?php echo htmlspecialchars($user['email']); ?></p>
-                                        <p class="text-sm text-slate-600"><?php echo htmlspecialchars($user['phone'] ?: 'No phone'); ?></p>
-                                    </div>
-                                </td>
-                                <td class="p-4">
-                                    <span class="px-2 py-1 rounded text-xs font-medium <?php 
-                                        echo match($user['status']) {
-                                            'active' => 'bg-green-100 text-green-800',
-                                            'inactive' => 'bg-yellow-100 text-yellow-800',
-                                            'suspended' => 'bg-red-100 text-red-800',
-                                            default => 'bg-gray-100 text-gray-800'
-                                        };
-                                    ?>">
-                                        <?php echo ucfirst($user['status']); ?>
-                                    </span>
-                                </td>
-                                <td class="p-4"><?php echo date('M j, Y', strtotime($user['created_at'])); ?></td>
-                                <td class="p-4">
-                                    <div class="flex gap-2">
-                                        <?php if ($user['status'] == 'inactive'): ?>
-                                        <button onclick="approveKYC(<?php echo $user['id']; ?>)" class="btn-primary px-3 py-1 rounded text-sm">
-                                            <i class="fas fa-check mr-1"></i>Approve
+                                <td><?= date('M j, Y', strtotime($advisor['created_at'])) ?></td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <?php if ($advisor['status'] == 'inactive'): ?>
+                                        <button onclick="approveKYC(<?= $advisor['id'] ?>)" class="btn btn-success btn-sm" title="Approve">
+                                            <i class="fas fa-check"></i>
                                         </button>
-                                        <button onclick="rejectKYC(<?php echo $user['id']; ?>)" class="btn-secondary px-3 py-1 rounded text-sm">
-                                            <i class="fas fa-times mr-1"></i>Reject
+                                        <button onclick="rejectKYC(<?= $advisor['id'] ?>)" class="btn btn-danger btn-sm" title="Reject">
+                                            <i class="fas fa-times"></i>
                                         </button>
                                         <?php else: ?>
-                                        <button onclick="viewUser(<?php echo $user['id']; ?>)" class="btn-secondary px-3 py-1 rounded text-sm">
+                                        <a href="advisor-dashboard.php?id=<?= $advisor['id'] ?>" class="btn btn-info btn-sm" title="View Dashboard">
                                             <i class="fas fa-eye"></i>
+                                        </a>
+                                        <button onclick="toggleStatus(<?= $advisor['id'] ?>, '<?= $advisor['status'] == 'active' ? 'inactive' : 'active' ?>')" class="btn btn-outline-secondary btn-sm" title="Toggle Status">
+                                            <i class="fas fa-power-off"></i>
+                                        </button>
+                                        <button onclick="changeRank(<?= $advisor['id'] ?>, '<?= $advisor['advisor_rank'] ?>')" class="btn btn-outline-primary btn-sm" title="Change Rank">
+                                            <i class="fas fa-medal"></i>
                                         </button>
                                         <?php endif; ?>
                                     </div>
@@ -221,93 +250,90 @@ $kyc_approved = count(array_filter($users, function($u) { return $u['kyc_status'
                         </tbody>
                     </table>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
+    </div>
+</main>
 
-    <!-- Create User Modal -->
-    <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full">
-            <div class="p-6 border-b">
-                <h3 class="text-xl font-bold text-gradient">Onboard New User</h3>
+<!-- Change Rank Modal -->
+<div class="modal fade" id="rankModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Advisor Rank</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form method="POST" class="p-6">
-                <input type="hidden" name="action" value="create_user">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
-                        <input type="text" name="full_name" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Username</label>
-                        <input type="text" name="username" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Email</label>
-                        <input type="email" name="email" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Phone</label>
-                        <input type="tel" name="phone" class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Role</label>
-                        <select name="role" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                            <option value="">Select Role</option>
-                            <option value="advisor">Advisor</option>
+            <form method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="update_rank">
+                    <input type="hidden" name="user_id" id="rank_user_id">
+                    <div class="mb-3">
+                        <label class="form-label">Select Rank</label>
+                        <select name="rank" id="rank_select" class="form-select" required>
+                            <option value="certified">Certified (30% commission)</option>
+                            <option value="senior">Senior (35% commission)</option>
+                            <option value="executive">Executive (40% commission)</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Temporary Password</label>
-                        <input type="password" name="password" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                    </div>
                 </div>
-                <div class="flex justify-end space-x-4 mt-6">
-                    <button type="button" onclick="closeCreateModal()" class="btn-secondary px-6 py-2 rounded-lg">Cancel</button>
-                    <button type="submit" class="btn-primary px-6 py-2 rounded-lg">Create User</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Rank</button>
                 </div>
             </form>
         </div>
     </div>
+</div>
 
-    <script>
-        function openCreateModal() {
-            document.getElementById('createModal').classList.remove('hidden');
-        }
-        
-        function closeCreateModal() {
-            document.getElementById('createModal').classList.add('hidden');
-        }
-        
-        function approveKYC(userId) {
-            if (confirm('Approve KYC for this user?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.innerHTML = `
-                    <input type="hidden" name="action" value="approve_kyc">
-                    <input type="hidden" name="user_id" value="${userId}">
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-        
-        function rejectKYC(userId) {
-            if (confirm('Reject KYC for this user?')) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.innerHTML = `
-                    <input type="hidden" name="action" value="reject_kyc">
-                    <input type="hidden" name="user_id" value="${userId}">
-                `;
-                document.body.appendChild(form);
-                form.submit();
-            }
-        }
-        
-        function viewUser(userId) {
-            window.location.href = 'user-details.php?id=' + userId;
-        }
-    </script>
-</body>
-</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function approveKYC(userId) {
+    if (confirm('Approve this advisor?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.innerHTML = `
+            <input type="hidden" name="action" value="approve_kyc">
+            <input type="hidden" name="user_id" value="${userId}">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function rejectKYC(userId) {
+    if (confirm('Reject this advisor? They will be suspended.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.innerHTML = `
+            <input type="hidden" name="action" value="reject_kyc">
+            <input type="hidden" name="user_id" value="${userId}">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function toggleStatus(userId, newStatus) {
+    if (confirm('Change advisor status to ' + newStatus + '?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.innerHTML = `
+            <input type="hidden" name="action" value="toggle_status">
+            <input type="hidden" name="user_id" value="${userId}">
+            <input type="hidden" name="status" value="${newStatus}">
+        `;
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function changeRank(userId, currentRank) {
+    document.getElementById('rank_user_id').value = userId;
+    document.getElementById('rank_select').value = currentRank || 'certified';
+    new bootstrap.Modal(document.getElementById('rankModal')).show();
+}
+</script>
+
+<?php require_once 'includes/admin-footer.php'; ?>

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id']) && isset($_SESSION['user_role'])) {
@@ -20,6 +21,7 @@ $error = '';
 $debug = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    requireCsrf();
     $email = trim($_POST['email']);
     $password = $_POST['password'];
     
@@ -123,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <!-- Login Form -->
                     <div class="nextcloud-card p-8">
                         <form method="POST" class="space-y-6">
+                            <?php echo getCsrfField(); ?>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-900 mb-2">
                                     Email Address

@@ -81,7 +81,7 @@ $email = 'admin@foreveryoungtours.com';
     <div class="bg-white shadow-sm border-b border-slate-200 fixed top-0 left-0 right-0 z-40">
         <div class="flex justify-between items-center px-4 md:px-6 py-4">
             <div class="flex items-center space-x-4">
-                <button onclick="toggleMobileMenu()" class="md:hidden text-slate-600 hover:text-primary-gold">
+                <button onclick="toggleMobileMenu()" id="mobile-menu-toggle" class="md:hidden text-slate-600 hover:text-primary-gold">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 <div>
