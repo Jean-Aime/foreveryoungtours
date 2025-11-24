@@ -1,15 +1,18 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 $current_page = 'tours';
 require_once 'config.php';
-$page_title = "Tours & Packages Management";
-$page_subtitle = "Manage Tour Offerings";
-session_start();
 require_once '../includes/csrf.php';
 require_once '../config/database.php';
 require_once '../auth/check_auth.php';
 checkAuth('super_admin');
 require_once 'upload_handler.php';
+
+$page_title = "Tours & Packages Management";
+$page_subtitle = "Manage Tour Offerings";
 
 $success = '';
 $error = '';
