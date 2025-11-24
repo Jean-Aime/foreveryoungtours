@@ -52,13 +52,13 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
     </div>
     
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="text-5xl md:text-7xl font-bold text-white mb-6">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-1 sm:mb-2">
             <?= htmlspecialchars($country['name']) ?>
         </h1>
-        <p class="text-xl md:text-2xl text-gray-200 mb-4">
+        <p class="text-base sm:text-lg md:text-xl text-gray-200 mb-3 sm:mb-4">
             <?= htmlspecialchars($country['continent_name']) ?>
         </p>
-        <p class="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">
+        <p class="text-sm sm:text-base md:text-lg text-gray-300 mb-6 sm:mb-8 max-w-2xl mx-auto">
             <?= htmlspecialchars($country['tourism_description'] ?: $country['description'] ?: 'Discover the wonders of ' . $country['name']) ?>
         </p>
         <a href="#tours" class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-4 text-lg font-semibold rounded-full hover:shadow-2xl transition-all inline-block">

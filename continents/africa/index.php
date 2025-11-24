@@ -76,13 +76,69 @@ function getTourImage($tour) {
     <title><?php echo $page_title; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Poppins', 'Inter', sans-serif;
+        }
+        body {
+            overflow-x: hidden;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+        }
+        .nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            transition: background 0.3s ease;
+        }
+        .nav-overlay:hover {
+            background: rgba(0, 0, 0, 0.35);
+        }
+        .mobile-menu {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .desktop-menu {
+                display: none !important;
+            }
+            .mobile-menu {
+                display: block !important;
+            }
+            .mobile-nav-links {
+                position: absolute;
+                top: 64px;
+                right: 0;
+                left: 0;
+                background: rgba(0, 0, 0, 0.95);
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+                z-index: 40;
+            }
+            .mobile-nav-links a {
+                color: white;
+                text-decoration: none;
+                font-weight: 600;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .mobile-nav-links a:hover {
+                color: #fcd34d;
+            }
+        }
+    </style>
 <body>
 
-<!-- Navigation -->
-
-
-<!-- Hero Section -->
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
         <img src="<?php echo getImageUrl($continent['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=2072&q=80'); ?>" alt="<?php echo htmlspecialchars($continent['name']); ?>" class="w-full h-full object-cover">
@@ -116,7 +172,7 @@ function getTourImage($tour) {
                     🌍 <?php echo htmlspecialchars($continent['name']); ?>'s Leading Travel Platform
                 </div>
                 
-                <h2 class="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
                     Your gateway to
                     <span class="bg-gradient-to-r from-yellow-500 to-yellow-600 bg-clip-text text-transparent"><?php echo htmlspecialchars($continent['name']); ?> adventures</span>
                 </h2>
@@ -193,10 +249,23 @@ function getTourImage($tour) {
             <?php
             $country_code = strtolower(substr($country['country_code'], 0, 2));
             $country_url = BASE_URL . '/countries/' . $country['slug'];
+            
+            // Map country names to image files in assets/images
+            $country_images = [
+                'Rwanda' => 'Rwanda.jpg',
+                'South Africa' => 'south africa.jpg',
+                'Nigeria' => 'nigeria.jpg',
+                'Senegal' => 'senegal.jpg',
+                'Tunisia' => 'tunisia.jpg',
+            ];
+            
+            $country_image = isset($country_images[$country['name']]) 
+                ? BASE_URL . '/assets/images/' . $country_images[$country['name']]
+                : (getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'));
             ?>
             <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2" onclick="window.location.href='<?php echo $country_url; ?>'">
                 <div class="relative h-72 overflow-hidden">
-                    <img src="<?= getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800') ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <img src="<?= $country_image ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
                     <div class="absolute bottom-0 left-0 right-0 p-6">
                         <h3 class="text-2xl font-bold text-white mb-2"><?php echo htmlspecialchars($country['name']); ?></h3>
