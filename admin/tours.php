@@ -1,5 +1,6 @@
 <?php
 
+$current_page = 'tours';
 require_once 'config.php';
 $page_title = "Tours & Packages Management";
 $page_subtitle = "Manage Tour Offerings";
@@ -390,7 +391,7 @@ require_once 'includes/admin-sidebar.php';
                     <i class="fas fa-plus mr-2"></i><?= isset($_GET['edit']) ? 'Edit Tour' : 'Add New Tour' ?>
                 </button>
             </div>
-            </div>
+        </div>
             
             <?php if (isset($_GET['added'])): ?>
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
