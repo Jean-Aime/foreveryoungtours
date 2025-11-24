@@ -31,19 +31,27 @@ function validateCSRFToken($token) {
 /**
  * Get CSRF token input field
  */
-function csrfField() {
+function getCsrfField() {
     return '<input type="hidden" name="csrf_token" value="' . generateCSRFToken() . '">';
+}
+
+function csrfField() {
+    return getCsrfField();
 }
 
 /**
  * Verify CSRF token from POST request
  */
-function verifyCSRF() {
+function requireCsrf() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!isset($_POST['csrf_token']) || !validateCSRFToken($_POST['csrf_token'])) {
             http_response_code(403);
             die('CSRF token validation failed. Please refresh the page and try again.');
         }
     }
+}
+
+function verifyCSRF() {
+    requireCsrf();
 }
 ?>

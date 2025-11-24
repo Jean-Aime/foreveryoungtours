@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="desktop-sidebar w-64 bg-white shadow-lg border-r border-slate-200 flex flex-col fixed left-0 top-16 bottom-0 z-30 md:translate-x-0 -translate-x-full transition-transform duration-300">
+<aside class="desktop-sidebar w-64 bg-white shadow-lg border-r border-slate-200 flex flex-col fixed left-0 top-16 h-[calc(100vh-4rem)] z-30 md:translate-x-0 -translate-x-full transition-transform duration-300 overflow-hidden">
     <div class="p-6 border-b border-slate-200">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-br from-primary-gold to-yellow-600 rounded-lg flex items-center justify-center">
