@@ -14,36 +14,44 @@ $assigned_countries = $stmt->fetchAll();
 
 // Get statistics for assigned countries
 $country_ids = array_column($assigned_countries, 'id');
-$country_ids_str = implode(',', $country_ids ?: [0]);
+if (empty($country_ids)) {
+    $country_ids = [0];
+}
+$placeholders = str_repeat('?,', count($country_ids) - 1) . '?';
 
 // Tours in assigned countries
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM tours WHERE country_id IN ($country_ids_str) AND status = 'active'");
-$stmt->execute();
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM tours WHERE country_id IN ($placeholders) AND status = 'active'");
+$stmt->execute($country_ids);
 $total_tours = $stmt->fetchColumn();
 
 // Bookings in assigned countries
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE t.country_id IN ($country_ids_str)");
-$stmt->execute();
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE t.country_id IN ($placeholders)");
+$stmt->execute($country_ids);
 $total_bookings = $stmt->fetchColumn();
 
 // Revenue from assigned countries
-$stmt = $pdo->prepare("SELECT SUM(b.total_price) FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE t.country_id IN ($country_ids_str) AND b.status IN ('confirmed', 'completed')");
-$stmt->execute();
+$stmt = $pdo->prepare("SELECT SUM(b.total_price) FROM bookings b JOIN tours t ON b.tour_id = t.id WHERE t.country_id IN ($placeholders) AND b.status IN ('confirmed', 'completed')");
+$stmt->execute($country_ids);
 $total_revenue = $stmt->fetchColumn() ?: 0;
 
 // Advisors under this MCA
-$stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE role = 'advisor' AND sponsor_id = ?");
+$stmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE role = 'advisor' AND mca_id = ?");
 $stmt->execute([$mca_id]);
 $total_advisors = $stmt->fetchColumn();
 
+// MCA Override Commissions
+$stmt = $pdo->prepare("SELECT COALESCE(SUM(commission_amount), 0) FROM commissions WHERE user_id = ? AND commission_type = 'mca_override'");
+$stmt->execute([$mca_id]);
+$mca_override_total = $stmt->fetchColumn();
+
 // Recent bookings
-$stmt = $pdo->prepare("SELECT b.*, t.name as tour_name, c.name as country_name FROM bookings b JOIN tours t ON b.tour_id = t.id JOIN countries c ON t.country_id = c.id WHERE t.country_id IN ($country_ids_str) ORDER BY b.created_at DESC LIMIT 5");
-$stmt->execute();
+$stmt = $pdo->prepare("SELECT b.*, t.name as tour_name, c.name as country_name FROM bookings b JOIN tours t ON b.tour_id = t.id JOIN countries c ON t.country_id = c.id WHERE t.country_id IN ($placeholders) ORDER BY b.created_at DESC LIMIT 5");
+$stmt->execute($country_ids);
 $recent_bookings = $stmt->fetchAll();
 
 // Top performing tours
-$stmt = $pdo->prepare("SELECT t.name, c.name as country_name, COUNT(b.id) as booking_count, SUM(b.total_price) as revenue FROM tours t JOIN countries c ON t.country_id = c.id LEFT JOIN bookings b ON t.id = b.tour_id WHERE t.country_id IN ($country_ids_str) GROUP BY t.id ORDER BY booking_count DESC LIMIT 5");
-$stmt->execute();
+$stmt = $pdo->prepare("SELECT t.name, c.name as country_name, COUNT(b.id) as booking_count, SUM(b.total_price) as revenue FROM tours t JOIN countries c ON t.country_id = c.id LEFT JOIN bookings b ON t.id = b.tour_id WHERE t.country_id IN ($placeholders) GROUP BY t.id ORDER BY booking_count DESC LIMIT 5");
+$stmt->execute($country_ids);
 $top_tours = $stmt->fetchAll();
 ?>
 <!DOCTYPE html>
@@ -103,7 +111,7 @@ $top_tours = $stmt->fetchAll();
             </div>
 
             <!-- Key Metrics -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
                 <div class="nextcloud-card p-6">
                     <div class="flex items-center justify-between">
                         <div>
@@ -148,6 +156,18 @@ $top_tours = $stmt->fetchAll();
                         </div>
                         <div class="w-12 h-12 bg-golden-100 rounded-lg flex items-center justify-center">
                             <i class="fas fa-dollar-sign text-golden-600"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="nextcloud-card p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-slate-600">MCA Override (7.5%)</p>
+                            <p class="text-2xl font-bold text-gradient">$<?php echo number_format($mca_override_total); ?></p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-percentage text-green-600"></i>
                         </div>
                     </div>
                 </div>

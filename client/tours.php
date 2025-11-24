@@ -1,7 +1,9 @@
 <?php
 
 require_once 'config.php';
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once '../config/database.php';
 
 $client_id = $_SESSION['user_id'] ?? 1;

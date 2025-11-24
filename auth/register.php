@@ -1,11 +1,13 @@
 <?php
 session_start();
+require_once '../includes/csrf.php';
 require_once '../config/database.php';
 
 $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    requireCsrf();
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $email = trim($_POST['email']);
@@ -117,6 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <!-- Registration Form -->
                 <div class="nextcloud-card p-8">
                         <form method="POST" id="registrationForm" class="space-y-4">
+                            <?php echo getCsrfField(); ?>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="first_name" class="block text-sm font-semibold text-gray-900 mb-2" style="color: #111827 !important;">

@@ -76,7 +76,8 @@ require_once 'includes/admin-sidebar.php';
 ?>
 
 <!-- Main Content -->
-<main class="flex-1 p-6 md:p-8 overflow-y-auto">
+<main class="flex-1 overflow-auto ml-64 w-[calc(100%-16rem)] min-h-screen bg-cream">
+    <div class="p-6 md:p-8">
     <div class="max-w-7xl mx-auto">
         <!-- Header -->
         <div class="mb-8 flex justify-between items-center">
@@ -169,13 +170,16 @@ require_once 'includes/admin-sidebar.php';
         <div class="mb-8">
             <h2 class="text-2xl font-bold text-slate-900 mb-4"><?= ucwords(str_replace('_', ' ', $role)) ?>s (<?= count($role_users) ?>)</h2>
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200">
                     <thead class="bg-slate-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">User</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
+                            <?php if ($role !== 'client'): ?>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Sponsor</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Team</th>
+                            <?php endif; ?>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Joined</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
@@ -201,12 +205,14 @@ require_once 'includes/admin-sidebar.php';
                                 <div class="text-sm text-slate-900"><?= htmlspecialchars($user['phone'] ?: 'N/A') ?></div>
                                 <div class="text-sm text-slate-500"><?= htmlspecialchars($user['country'] ?: 'N/A') ?></div>
                             </td>
+                            <?php if ($role !== 'client'): ?>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                                 <?= htmlspecialchars($user['sponsor_name'] ?: 'None') ?>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
                                 <?= $user['team_count'] ?> members
                             </td>
+                            <?php endif; ?>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
                                     <?= $user['status'] == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' ?>">
@@ -231,9 +237,11 @@ require_once 'includes/admin-sidebar.php';
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
         <?php endforeach; ?>
+    </div>
     </div>
 </main>
 

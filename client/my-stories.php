@@ -1,11 +1,11 @@
 <?php
-session_start();
-require_once '../config/database.php';
-
-if (!isset($_SESSION['client_logged_in']) || !isset($_SESSION['client_email'])) {
-    header('Location: ../auth/login.php');
-    exit;
+require_once 'config.php';
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
+require_once '../config/database.php';
+require_once '../auth/check_auth.php';
+checkAuth('client');
 
 $client_email = $_SESSION['client_email'] ?? $_SESSION['user_email'] ?? '';
 $client_id = $_SESSION['user_id'] ?? null;

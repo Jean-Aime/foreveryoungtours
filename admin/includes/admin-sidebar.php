@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<aside class="desktop-sidebar w-64 bg-white shadow-lg border-r border-slate-200 flex flex-col fixed left-0 top-16 bottom-0 z-30">
+<aside class="desktop-sidebar w-64 bg-white shadow-lg border-r border-slate-200 flex flex-col fixed left-0 top-16 bottom-0 z-30 md:translate-x-0 -translate-x-full transition-transform duration-300">
     <div class="p-6 border-b border-slate-200">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-gradient-to-br from-primary-gold to-yellow-600 rounded-lg flex items-center justify-center">
@@ -40,6 +40,14 @@
                 <a href="commission-management.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'commission-management' ? 'active' : ''; ?>">
                     <i class="fas fa-percentage w-5 h-5 mr-3 text-center"></i>
                     <span>Commissions</span>
+                </a>
+                <a href="payout-requests.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'payout-requests' ? 'active' : ''; ?>">
+                    <i class="fas fa-money-check-alt w-5 h-5 mr-3 text-center"></i>
+                    <span>Payout Requests</span>
+                </a>
+                <a href="booking-modifications.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'booking-modifications' ? 'active' : ''; ?>">
+                    <i class="fas fa-edit w-5 h-5 mr-3 text-center"></i>
+                    <span>Booking Modifications</span>
                 </a>
                 <a href="booking-engine-management.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'booking-engine-management' ? 'active' : ''; ?>">
                     <i class="fas fa-plane-departure w-5 h-5 mr-3 text-center"></i>
@@ -91,6 +99,21 @@
             </div>
         </div>
         
+        <!-- CLIENT PORTALS -->
+        <div class="px-4 mt-6">
+            <h3 class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Client Portals</h3>
+            <div class="space-y-1">
+                <a href="/foreveryoungtours/admin/company-portals.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'company-portals' ? 'active' : ''; ?>">
+                    <i class="fas fa-building w-5 h-5 mr-3 text-center"></i>
+                    <span>Company Portals</span>
+                </a>
+                <a href="/foreveryoungtours/admin/manage-portals.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'manage-portals' ? 'active' : ''; ?>">
+                    <i class="fas fa-shield-alt w-5 h-5 mr-3 text-center"></i>
+                    <span>Advisor Portals</span>
+                </a>
+            </div>
+        </div>
+        
         <!-- USERS -->
         <div class="px-4 mt-6">
             <h3 class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Users</h3>
@@ -107,6 +130,20 @@
                     <i class="fas fa-user-tie w-5 h-5 mr-3 text-center"></i>
                     <span>Advisors</span>
                 </a>
+                <a href="pending-approvals.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'pending-approvals' ? 'active' : ''; ?>">
+                    <i class="fas fa-user-clock w-5 h-5 mr-3 text-center"></i>
+                    <span>Pending Approvals</span>
+                    <?php
+                    $pending_count = $pdo->query("SELECT COUNT(*) FROM users WHERE status = 'inactive' AND role IN ('advisor','mca')")->fetchColumn();
+                    if ($pending_count > 0):
+                    ?>
+                    <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full"><?php echo $pending_count; ?></span>
+                    <?php endif; ?>
+                </a>
+                <a href="bulk-operations.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'bulk-operations' ? 'active' : ''; ?>">
+                    <i class="fas fa-tasks w-5 h-5 mr-3 text-center"></i>
+                    <span>Bulk Operations</span>
+                </a>
             </div>
         </div>
         
@@ -117,6 +154,10 @@
                 <a href="analytics.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'analytics' ? 'active' : ''; ?>">
                     <i class="fas fa-chart-bar w-5 h-5 mr-3 text-center"></i>
                     <span>Analytics</span>
+                </a>
+                <a href="analytics-advanced.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'analytics-advanced' ? 'active' : ''; ?>">
+                    <i class="fas fa-chart-line w-5 h-5 mr-3 text-center"></i>
+                    <span>Advanced Analytics</span>
                 </a>
                 <a href="reports.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'reports' ? 'active' : ''; ?>">
                     <i class="fas fa-file-chart w-5 h-5 mr-3 text-center"></i>
@@ -145,6 +186,22 @@
                     <i class="fas fa-bell w-5 h-5 mr-3 text-center"></i>
                     <span>Notifications</span>
                 </a>
+                <a href="visa-management.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'visa-management' ? 'active' : ''; ?>">
+                    <i class="fas fa-passport w-5 h-5 mr-3 text-center"></i>
+                    <span>Visa Services</span>
+                </a>
+                <a href="api-integrations.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'api-integrations' ? 'active' : ''; ?>">
+                    <i class="fas fa-plug w-5 h-5 mr-3 text-center"></i>
+                    <span>API Integrations</span>
+                </a>
+                <a href="language-manager.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'language-manager' ? 'active' : ''; ?>">
+                    <i class="fas fa-language w-5 h-5 mr-3 text-center"></i>
+                    <span>Languages</span>
+                </a>
+                <a href="audit-logs.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'audit-logs' ? 'active' : ''; ?>">
+                    <i class="fas fa-history w-5 h-5 mr-3 text-center"></i>
+                    <span>Audit Logs</span>
+                </a>
                 <a href="settings.php" class="nav-item flex items-center px-3 py-2.5 text-sm font-medium rounded-lg <?php echo $current_page === 'settings' ? 'active' : ''; ?>">
                     <i class="fas fa-cog w-5 h-5 mr-3 text-center"></i>
                     <span>Settings</span>
@@ -167,9 +224,43 @@
     </div>
 </aside>
 
+<style>
+@media (max-width: 768px) {
+    .desktop-sidebar.mobile-open {
+        transform: translateX(0) !important;
+    }
+}
+</style>
+
 <script>
 function toggleMobileMenu() {
     const sidebar = document.querySelector('.desktop-sidebar');
+    const icon = document.querySelector('#mobile-menu-toggle i');
     sidebar.classList.toggle('mobile-open');
+    if (icon) {
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+    }
 }
+
+document.addEventListener('click', function(e) {
+    const sidebar = document.querySelector('.desktop-sidebar');
+    const toggle = document.querySelector('#mobile-menu-toggle');
+    if (window.innerWidth < 768 && sidebar && toggle) {
+        if (!sidebar.contains(e.target) && !toggle.contains(e.target) && sidebar.classList.contains('mobile-open')) {
+            toggleMobileMenu();
+        }
+    }
+});
+
+document.querySelectorAll('.desktop-sidebar a').forEach(link => {
+    link.addEventListener('click', function() {
+        if (window.innerWidth < 768) {
+            const sidebar = document.querySelector('.desktop-sidebar');
+            if (sidebar && sidebar.classList.contains('mobile-open')) {
+                setTimeout(() => toggleMobileMenu(), 200);
+            }
+        }
+    });
+});
 </script>

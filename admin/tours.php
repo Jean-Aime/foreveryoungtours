@@ -4,6 +4,7 @@ require_once 'config.php';
 $page_title = "Tours & Packages Management";
 $page_subtitle = "Manage Tour Offerings";
 session_start();
+require_once '../includes/csrf.php';
 require_once '../config/database.php';
 require_once '../auth/check_auth.php';
 checkAuth('super_admin');
@@ -14,6 +15,7 @@ $error = '';
 
 // Handle tour operations
 if ($_POST) {
+    requireCsrf();
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'edit':
@@ -542,6 +544,7 @@ require_once 'includes/admin-sidebar.php';
                                         
                                         <!-- Deactivate Button -->
                                         <form method="POST" class="inline" onsubmit="return confirm('Deactivate tour: <?php echo addslashes($tour['name']); ?>?\n\nThis will set the tour status to inactive but keep all data.')">
+                                            <?php echo getCsrfField(); ?>
                                             <input type="hidden" name="action" value="deactivate">
                                             <input type="hidden" name="tour_id" value="<?php echo $tour['id']; ?>">
                                             <button type="submit" class="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600 text-sm transition-colors duration-200">
@@ -551,6 +554,7 @@ require_once 'includes/admin-sidebar.php';
                                         
                                         <!-- Delete Button -->
                                         <form method="POST" class="inline" onsubmit="return confirm('⚠️ PERMANENTLY DELETE tour: <?php echo addslashes($tour['name']); ?>?\n\n🚨 WARNING: This will completely remove the tour and all related data (bookings, reviews, etc.) from the database.\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?')">
+                                            <?php echo getCsrfField(); ?>
                                             <input type="hidden" name="action" value="delete">
                                             <input type="hidden" name="tour_id" value="<?php echo $tour['id']; ?>">
                                             <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm transition-colors duration-200">
@@ -575,6 +579,7 @@ require_once 'includes/admin-sidebar.php';
                 <h3 class="text-xl font-bold text-gradient"><?php echo $edit_tour ? 'Edit Tour' : 'Add New Tour'; ?></h3>
             </div>
             <form method="POST" enctype="multipart/form-data" class="p-6">
+                <?php echo getCsrfField(); ?>
                 <input type="hidden" name="action" value="<?php echo $edit_tour ? 'edit' : 'add'; ?>">
                 <?php if ($edit_tour): ?>
                 <input type="hidden" name="tour_id" value="<?php echo $edit_tour['id']; ?>">
