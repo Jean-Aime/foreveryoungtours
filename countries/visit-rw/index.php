@@ -17,6 +17,15 @@ $stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'ac
 $stmt->execute([$country['id']]);
 $all_tours = $stmt->fetchAll();
 
+// Get tour dates for calendar highlighting
+$tour_dates = [];
+foreach ($all_tours as $tour) {
+    if (!empty($tour['start_date'])) {
+        $date = new DateTime($tour['start_date']);
+        $tour_dates[$date->format('Y-m-d')] = true;
+    }
+}
+
 $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 ?>
 <!DOCTYPE html>
@@ -40,6 +49,19 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
             font-weight: 800;
+        }
+        .calendar-day-with-tour {
+            background: linear-gradient(135deg, #fbbf24 0%, #f97316 100%);
+            color: white;
+            font-weight: 700;
+            position: relative;
+        }
+        .calendar-day-with-tour::after {
+            content: '●';
+            position: absolute;
+            bottom: 2px;
+            right: 4px;
+            font-size: 12px;
         }
         .nav-overlay {
             position: fixed;
@@ -160,6 +182,63 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
                 <div class="text-4xl sm:text-4xl mb-3 sm:mb-4">🌸</div>
                 <h3 class="text-xl sm:text-xl font-black text-gray-900 mb-2 sm:mb-3">Peace & Safety</h3>
                 <p class="text-sm sm:text-base text-gray-700 leading-relaxed">Rwanda is one of Africa's safest and most stable countries, with excellent infrastructure, friendly locals, and a welcoming atmosphere for travelers.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Calendar Section -->
+<section class="py-16 bg-gray-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Tour Availability Calendar</h2>
+            <p class="text-gray-600">Highlighted dates show when tours are available</p>
+        </div>
+        
+        <div class="bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-2xl mx-auto">
+            <div class="flex items-center justify-between mb-6">
+                <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded-lg transition-all">
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                </button>
+                <div class="text-center flex-1">
+                    <h3 class="text-2xl font-bold text-gray-900" id="monthYear"></h3>
+                </div>
+                <button id="nextMonth" class="p-2 hover:bg-gray-100 rounded-lg transition-all">
+                    <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="mb-4">
+                <!-- Day headers -->
+                <div class="grid grid-cols-7 gap-2 mb-2">
+                    <div class="text-center font-bold text-gray-700 py-2">Sun</div>
+                    <div class="text-center font-bold text-gray-700 py-2">Mon</div>
+                    <div class="text-center font-bold text-gray-700 py-2">Tue</div>
+                    <div class="text-center font-bold text-gray-700 py-2">Wed</div>
+                    <div class="text-center font-bold text-gray-700 py-2">Thu</div>
+                    <div class="text-center font-bold text-gray-700 py-2">Fri</div>
+                    <div class="text-center font-bold text-gray-700 py-2">Sat</div>
+                </div>
+                
+                <!-- Calendar days -->
+                <div id="calendarDays" class="grid grid-cols-7 gap-2"></div>
+            </div>
+
+            <!-- Legend -->
+            <div class="flex items-center justify-center gap-6 pt-4 border-t border-gray-200">
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded"></div>
+                    <span class="text-sm text-gray-700">Tour Available</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-4 h-4 bg-gray-200 rounded"></div>
+                    <span class="text-sm text-gray-700">No Tours</span>
+                </div>
             </div>
         </div>
     </div>
@@ -334,6 +413,58 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Calendar functionality
+const tourDates = <?= json_encode(array_keys($tour_dates)) ?>;
+let currentDate = new Date();
+
+function renderCalendar() {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    // Update month/year display
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    document.getElementById('monthYear').textContent = `${monthNames[month]} ${year}`;
+    
+    // Get first day of month and number of days
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    let html = '';
+    
+    // Empty cells for days before month starts
+    for (let i = 0; i < firstDay; i++) {
+        html += '<div class="p-2 text-center text-gray-400"></div>';
+    }
+    
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const hasTourn = tourDates.includes(dateStr);
+        
+        if (hasTourn) {
+            html += `<div class="p-2 text-center rounded-lg calendar-day-with-tour">${day}</div>`;
+        } else {
+            html += `<div class="p-2 text-center rounded-lg bg-gray-100 text-gray-700 font-semibold">${day}</div>`;
+        }
+    }
+    
+    document.getElementById('calendarDays').innerHTML = html;
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    renderCalendar();
+});
+
+document.getElementById('nextMonth').addEventListener('click', () => {
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    renderCalendar();
+});
+
+// Initial render
+renderCalendar();
 </script>
 
 </body>
