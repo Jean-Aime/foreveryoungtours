@@ -471,8 +471,8 @@ require_once 'includes/admin-sidebar.php';
                     <table class="w-full">
                         <thead class="bg-slate-50">
                             <tr>
-                                <th class="text-left p-4">Tour Details</th>
-                                <th class="text-left p-4">Destination</th>
+                                <th class="text-left p-4 w-1/4">Tour Details</th>
+                                <th class="text-left p-4 w-24">Destination</th>
                                 <th class="text-left p-4">Category</th>
                                 <th class="text-left p-4">Price</th>
                                 <th class="text-left p-4">Duration</th>
@@ -483,7 +483,7 @@ require_once 'includes/admin-sidebar.php';
                         <tbody>
                             <?php foreach ($tours as $tour): ?>
                             <tr class="border-b hover:bg-slate-50">
-                                <td class="p-4">
+                                <td class="p-4 w-1/4">
                                     <div class="flex items-center">
                                         <?php 
                                         $display_image = $tour['image_url'] ?: $tour['cover_image'] ?: '../assets/images/default-tour.jpg';
@@ -493,16 +493,12 @@ require_once 'includes/admin-sidebar.php';
                                         ?>
                                         <img src="<?php echo htmlspecialchars($display_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-16 h-16 object-cover rounded-lg mr-4" onerror="this.src="<?= getImageUrl('assets/images/default-tour.jpg') ?>"; this.onerror=null;">
                                         <div>
-                                            <h4 class="font-bold text-slate-900"><?php echo htmlspecialchars($tour['name']); ?></h4>
+                                            <h4 class="text-sm font-semibold text-slate-900"><?php echo htmlspecialchars($tour['name']); ?></h4>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="p-4">
-                                    <div>
-                                        <p class="font-semibold"><?php echo htmlspecialchars($tour['country_name']); ?></p>
-                                        <p class="text-sm text-slate-600"><?php echo htmlspecialchars($tour['region_name']); ?></p>
-                                        <p class="text-xs text-slate-500"><?php echo htmlspecialchars($tour['destination']); ?></p>
-                                    </div>
+                                <td class="p-4 w-24">
+                                    <p class="text-sm font-semibold"><?php echo htmlspecialchars($tour['country_name']); ?></p>
                                 </td>
                                 <td class="p-4">
                                     <span class="px-2 py-1 rounded text-xs font-medium <?php 
@@ -522,7 +518,7 @@ require_once 'includes/admin-sidebar.php';
                                 </td>
                                 <td class="p-4">
                                     <div>
-                                        <p class="font-bold text-golden-600">$<?php echo number_format($tour['price']); ?></p>
+                                        <p class="font-semibold text-golden-600">$<?php echo number_format($tour['price']); ?></p>
                                         <p class="text-xs text-slate-500">per person</p>
                                     </div>
                                 </td>
@@ -743,15 +739,15 @@ require_once 'includes/admin-sidebar.php';
                 <!-- Tour Details -->
                 <div class="mb-6">
                     <h4 class="text-lg font-semibold mb-4 text-golden-600">Tour Details</h4>
-                    <div class="space-y-4">
+                    <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Detailed Description</label>
-                            <textarea name="detailed_description" rows="4" placeholder="Comprehensive tour description with highlights" class="w-full border border-slate-300 rounded-lg px-4 py-2"><?php echo $edit_tour ? htmlspecialchars($edit_tour['detailed_description']) : ''; ?></textarea>
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Detailed Description</label>
+                            <textarea name="detailed_description" rows="3" placeholder="Comprehensive tour description with highlights" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"><?php echo $edit_tour ? htmlspecialchars($edit_tour['detailed_description']) : ''; ?></textarea>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Difficulty Level</label>
-                                <select name="difficulty_level" class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                                <label class="block text-xs font-medium text-slate-700 mb-1">Difficulty Level</label>
+                                <select name="difficulty_level" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
                                     <option value="easy" <?php echo ($edit_tour && $edit_tour['difficulty_level'] == 'easy') ? 'selected' : ''; ?>>Easy</option>
                                     <option value="moderate" <?php echo ($edit_tour && $edit_tour['difficulty_level'] == 'moderate') ? 'selected' : ''; ?>>Moderate</option>
                                     <option value="challenging" <?php echo ($edit_tour && $edit_tour['difficulty_level'] == 'challenging') ? 'selected' : ''; ?>>Challenging</option>
@@ -759,23 +755,23 @@ require_once 'includes/admin-sidebar.php';
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Best Time to Visit</label>
-                                <input type="text" name="best_time_to_visit" placeholder="e.g., June to October" class="w-full border border-slate-300 rounded-lg px-4 py-2" value="<?php echo $edit_tour ? htmlspecialchars($edit_tour['best_time_to_visit']) : ''; ?>">
+                                <label class="block text-xs font-medium text-slate-700 mb-1">Best Time to Visit</label>
+                                <input type="text" name="best_time_to_visit" placeholder="e.g., June to October" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" value="<?php echo $edit_tour ? htmlspecialchars($edit_tour['best_time_to_visit']) : ''; ?>">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Tour Highlights (one per line)</label>
-                            <textarea name="highlights" rows="4" placeholder="Expert local guides\nSmall group experience\nAuthentic cultural interactions" class="w-full border border-slate-300 rounded-lg px-4 py-2"><?php 
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Tour Highlights (one per line)</label>
+                            <textarea name="highlights" rows="3" placeholder="Expert local guides\nSmall group experience\nAuthentic cultural interactions" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"><?php 
                             if ($edit_tour && $edit_tour['highlights']) {
                                 $highlights = json_decode($edit_tour['highlights'], true);
                                 echo is_array($highlights) ? implode("\n", $highlights) : '';
                             }
                             ?></textarea>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Inclusions (one per line)</label>
-                                <textarea name="inclusions" rows="4" placeholder="Accommodation\nMeals\nTransportation\nGuide" class="w-full border border-slate-300 rounded-lg px-4 py-2"><?php 
+                                <label class="block text-xs font-medium text-slate-700 mb-1">Inclusions (one per line)</label>
+                                <textarea name="inclusions" rows="3" placeholder="Accommodation\nMeals\nTransportation\nGuide" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"><?php 
                                 if ($edit_tour && $edit_tour['inclusions']) {
                                     $inclusions = json_decode($edit_tour['inclusions'], true);
                                     echo is_array($inclusions) ? implode("\n", $inclusions) : '';
@@ -783,8 +779,8 @@ require_once 'includes/admin-sidebar.php';
                                 ?></textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Exclusions (one per line)</label>
-                                <textarea name="exclusions" rows="4" placeholder="International flights\nVisa fees\nPersonal expenses" class="w-full border border-slate-300 rounded-lg px-4 py-2"><?php 
+                                <label class="block text-xs font-medium text-slate-700 mb-1">Exclusions (one per line)</label>
+                                <textarea name="exclusions" rows="3" placeholder="International flights\nVisa fees\nPersonal expenses" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"><?php 
                                 if ($edit_tour && $edit_tour['exclusions']) {
                                     $exclusions = json_decode($edit_tour['exclusions'], true);
                                     echo is_array($exclusions) ? implode("\n", $exclusions) : '';
@@ -799,22 +795,39 @@ require_once 'includes/admin-sidebar.php';
                 <div class="mb-6">
                     <h4 class="text-lg font-semibold mb-4 text-golden-600">Itinerary</h4>
                     <div id="itinerary-container">
+                        <?php 
+                        $itinerary_items = [];
+                        if ($edit_tour && $edit_tour['itinerary']) {
+                            $itinerary_items = json_decode($edit_tour['itinerary'], true);
+                        }
+                        if (empty($itinerary_items)) {
+                            $itinerary_items = [['day' => 1, 'title' => '', 'activities' => '']];
+                        }
+                        foreach ($itinerary_items as $index => $item):
+                        ?>
                         <div class="itinerary-day mb-4 p-4 border border-slate-200 rounded-lg">
+                            <?php if ($index > 0): ?>
+                            <div class="flex justify-between items-start mb-4">
+                                <h5 class="font-medium">Day <?= $item['day'] ?></h5>
+                                <button type="button" onclick="removeItineraryDay(this)" class="text-red-500 hover:text-red-700 text-sm">Remove</button>
+                            </div>
+                            <?php endif; ?>
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-slate-700 mb-2">Day</label>
-                                    <input type="number" name="itinerary_day[]" value="1" min="1" class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                                    <input type="number" name="itinerary_day[]" value="<?= htmlspecialchars($item['day']) ?>" min="1" class="w-full border border-slate-300 rounded-lg px-4 py-2">
                                 </div>
                                 <div class="md:col-span-2">
                                     <label class="block text-sm font-medium text-slate-700 mb-2">Title</label>
-                                    <input type="text" name="itinerary_title[]" placeholder="Day 1: Arrival in Nairobi" class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                                    <input type="text" name="itinerary_title[]" value="<?= htmlspecialchars($item['title']) ?>" placeholder="Day <?= $item['day'] ?>: Activity Title" class="w-full border border-slate-300 rounded-lg px-4 py-2">
                                 </div>
                             </div>
                             <div class="mt-4">
                                 <label class="block text-sm font-medium text-slate-700 mb-2">Activities</label>
-                                <textarea name="itinerary_activities[]" rows="3" placeholder="Describe the day's activities and highlights" class="w-full border border-slate-300 rounded-lg px-4 py-2"></textarea>
+                                <textarea name="itinerary_activities[]" rows="3" placeholder="Describe the day's activities and highlights" class="w-full border border-slate-300 rounded-lg px-4 py-2"><?= htmlspecialchars($item['activities']) ?></textarea>
                             </div>
                         </div>
+                        <?php endforeach; ?>
                     </div>
                     <button type="button" onclick="addItineraryDay()" class="btn-secondary px-4 py-2 rounded-lg text-sm">Add Another Day</button>
                 </div>
@@ -822,14 +835,14 @@ require_once 'includes/admin-sidebar.php';
                 <!-- Requirements -->
                 <div class="mb-6">
                     <h4 class="text-lg font-semibold mb-4 text-golden-600">Requirements & Information</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Requirements</label>
-                            <textarea name="requirements" rows="4" placeholder="Valid passport\nYellow fever certificate\nFitness level required" class="w-full border border-slate-300 rounded-lg px-4 py-2"></textarea>
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Requirements</label>
+                            <textarea name="requirements" rows="3" placeholder="Valid passport\nYellow fever certificate\nFitness level required" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"><?php echo $edit_tour ? htmlspecialchars($edit_tour['requirements']) : ''; ?></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-2">Additional Notes</label>
-                            <textarea name="notes" rows="4" placeholder="Weather information\nPacking suggestions\nCultural tips" class="w-full border border-slate-300 rounded-lg px-4 py-2"></textarea>
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Additional Notes</label>
+                            <textarea name="notes" rows="3" placeholder="Weather information\nPacking suggestions\nCultural tips" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"><?php echo $edit_tour ? htmlspecialchars($edit_tour['notes'] ?? '') : ''; ?></textarea>
                         </div>
                     </div>
                 </div>

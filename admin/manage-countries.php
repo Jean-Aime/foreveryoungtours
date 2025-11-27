@@ -8,6 +8,7 @@ checkAuth('super_admin');
 
 // Include theme generation functions
 require_once '../includes/theme-generator.php';
+require_once '../countries/auto-clone-country.php';
 
 // Handle Add/Edit/Delete with automatic theme generation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -24,7 +25,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Generate folder name from slug
             $folder_name = generateFolderName($_POST['slug']);
 
-            // Automatically generate Rwanda/South Africa theme for new country
+            // Automatically clone Rwanda subdomain structure
+            $clone_result = autoCloneCountrySubdomain($_POST['slug'], $_POST['name'], $_POST['country_code']);
+            
+            if (!$clone_result['success']) {
+                $error = "Country added but subdomain creation failed: " . $clone_result['message'];
+            }
+            
+            // Also generate old theme for backward compatibility
             $theme_result = generateCountryTheme([
                 'id' => $country_id,
                 'name' => $_POST['name'],
@@ -63,6 +71,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Check if theme already exists
                 $theme_dir = __DIR__ . '/../countries/' . $folder_name;
                 if (!file_exists($theme_dir . '/index.php')) {
+                    // Clone Rwanda subdomain structure
+                    $clone_result = autoCloneCountrySubdomain($_POST['slug'], $_POST['name'], $_POST['country_code']);
+                    
+                    if (!$clone_result['success']) {
+                        $error = "Country activated but subdomain creation failed: " . $clone_result['message'];
+                    }
+                    
                     // Generate theme if it doesn't exist
                     $theme_result = generateCountryTheme([
                         'id' => $_POST['id'],
@@ -109,9 +124,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Generate folder name
                 $folder_name = generateFolderName($country['slug']);
 
-                // Check if theme exists
-                $theme_dir = __DIR__ . '/../countries/' . $folder_name;
-                if (!file_exists($theme_dir . '/index.php')) {
+                // Check if subdomain exists
+                $short_code = strtolower(substr($country['country_code'], 0, 2));
+                $subdomain_dir = __DIR__ . '/../countries/visit-' . $short_code;
+                
+                if (!file_exists($subdomain_dir . '/index.php')) {
+                    // Clone Rwanda subdomain structure
+                    $clone_result = autoCloneCountrySubdomain($country['slug'], $country['name'], $country['country_code']);
+                    
+                    if (!$clone_result['success']) {
+                        $error = "Country activated but subdomain creation failed: " . $clone_result['message'];
+                    } else {
+                        $success = "Country activated successfully! Rwanda subdomain automatically cloned to visit-" . $short_code;
+                    }
+                    
                     // Generate Rwanda theme
                     $theme_result = generateCountryTheme([
                         'id' => $country['id'],

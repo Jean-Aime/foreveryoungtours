@@ -338,7 +338,7 @@ include '../includes/continent-header.php';
                                 </div>
                             </div>
                             <div>
-                                <a href="../../../pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-slate-200 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-colors text-center">
+                                <a href="../../../tour/<?php echo $tour['slug']; ?>" class="block w-full bg-slate-200 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-colors text-center">
                                     View Details
                                 </a>
                             </div>

@@ -3,7 +3,7 @@
 require_once 'config.php';
 /**
  * Continent Theme Inheritance - Africa
- * This file provides continent-level theming for South-africa
+ * This file provides continent-level theming for Rwanda
  */
 
 // Africa continent configuration

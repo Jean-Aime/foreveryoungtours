@@ -1,0 +1,32 @@
+# Hostinger .htaccess Configuration
+# Rename this file to .htaccess on your server
+
+RewriteEngine On
+
+# Don't rewrite if file or directory exists
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Force HTTPS
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Remove www (optional)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# Country Subdomains (visit-rw, visit-ke, etc.)
+# These should load index.php with country parameter
+RewriteCond %{HTTP_HOST} ^visit-([a-z]{2})\.iforeveryoungtours\.com$ [NC]
+RewriteRule ^$ index.php?country=%1 [L,QSA]
+
+RewriteCond %{HTTP_HOST} ^visit-([a-z]{2})\.iforeveryoungtours\.com$ [NC]
+RewriteRule ^(.+)$ $1?country=%1 [L,QSA]
+
+# Continent Subdomains (africa, asia, etc.)
+RewriteCond %{HTTP_HOST} ^(africa|asia|europe|caribbean|north-america|south-america)\.iforeveryoungtours\.com$ [NC]
+RewriteRule ^$ index.php?continent=%1 [L,QSA]
+
+RewriteCond %{HTTP_HOST} ^(africa|asia|europe|caribbean|north-america|south-america)\.iforeveryoungtours\.com$ [NC]
+RewriteRule ^(.+)$ $1?continent=%1 [L,QSA]

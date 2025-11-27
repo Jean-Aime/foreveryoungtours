@@ -1,0 +1,5 @@
+                    <?php
+                    $t_img = $tour['cover_image'] ?: $tour['image_url'];
+                    $t_src = $t_img ? 'http://localhost/ForeverYoungTours/' . $t_img : 'http://localhost/ForeverYoungTours/assets/images/default-tour.jpg';
+                    ?>
+                    <img src="<?= $t_src ?>" alt="<?= htmlspecialchars($tour['name']) ?>" class="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='http://localhost/ForeverYoungTours/assets/images/default-tour.jpg';">

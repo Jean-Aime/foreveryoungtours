@@ -46,7 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $_SESSION['user_email'] = $email;
                 $_SESSION['user_role'] = 'client';
                 
-                header('Location: ../client/index.php');
+                // Check for redirect parameter
+                $redirect = $_GET['redirect'] ?? '../client/index.php';
+                header('Location: ' . $redirect);
                 exit();
             } else {
                 $error = "Registration failed. Please try again.";
@@ -217,7 +219,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <div class="mt-6 text-center">
                             <p class="text-slate-600">
                                 Already have an account? 
-                                <a href="login.php" class="text-golden-600 hover:text-golden-700 font-semibold">Sign In</a>
+                                <a href="login.php<?php echo isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="text-golden-600 hover:text-golden-700 font-semibold">Sign In</a>
                             </p>
                         </div>
                     </div>

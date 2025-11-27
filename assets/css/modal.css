@@ -1,0 +1,43 @@
+/* Login Modal Styles */
+#loginModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background-color: rgba(0, 0, 0, 0.7) !important;
+    z-index: 99999 !important;
+    display: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 1rem !important;
+}
+
+#loginModal.show {
+    display: flex !important;
+}
+
+#loginModal > div {
+    background: white !important;
+    border-radius: 1rem !important;
+    max-width: 28rem !important;
+    width: 100% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    position: relative !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+    #loginModal {
+        padding: 0.5rem !important;
+    }
+    
+    #loginModal > div {
+        max-height: 95vh !important;
+        border-radius: 0.75rem !important;
+    }
+}

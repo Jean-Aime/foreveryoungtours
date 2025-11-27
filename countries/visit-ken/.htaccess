@@ -1,0 +1,9 @@
+RewriteEngine On
+
+# Tour slug routing - /tour/slug-name
+RewriteRule ^tour/([a-zA-Z0-9-]+)/?$ pages/tour-detail.php?slug=$1 [L,QSA]
+
+# Remove .php extension
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [L]

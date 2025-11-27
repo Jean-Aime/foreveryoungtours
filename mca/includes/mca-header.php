@@ -19,6 +19,8 @@ $base_path = '/foreveryoungtours/';
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/modern-styles.css" rel="stylesheet">
+    <link href="../assets/css/download-protection.css" rel="stylesheet">
+    <script src="../assets/js/download-protection.js"></script>
     <style>
         .sidebar-link {
             display: flex;

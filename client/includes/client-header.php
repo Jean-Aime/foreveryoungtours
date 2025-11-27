@@ -29,6 +29,8 @@ if ($server_port == 8000) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="../assets/css/modern-styles.css" rel="stylesheet">
     <link href="../assets/css/client-dashboard.css" rel="stylesheet">
+    <link href="../assets/css/download-protection.css" rel="stylesheet">
+    <script src="../assets/js/download-protection.js"></script>
     <style>
         .sidebar-link {
             display: flex;

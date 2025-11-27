@@ -48,7 +48,7 @@ $css_path = '../../../assets/css/modern-styles.css';
     <title><?php echo $page_title; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo $css_path; ?>">
+    <link rel="stylesheet" href="../../../assets/css/modal.css"><link rel="stylesheet" href="<?php echo $css_path; ?>">
     <style>
         body { background-color: #f8fafc; color: #1e293b; }
         .text-golden-600 { color: #d97706; }
@@ -134,8 +134,9 @@ $css_path = '../../../assets/css/modern-styles.css';
                 </p>
                 
                 <div class="flex flex-wrap gap-4">
-                    <button class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                        Book from $<?php echo number_format($tour['price']); ?>
+                    <button onclick="openLoginModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', '<?php echo addslashes($tour['description']); ?>', '<?php echo htmlspecialchars($bg_image); ?>')" 
+                            class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                        Book This Tour
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                         </svg>
@@ -331,11 +332,6 @@ $css_path = '../../../assets/css/modern-styles.css';
             <!-- Booking Sidebar -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-xl p-8 shadow-sm border sticky top-24">
-                    <div class="text-center mb-6">
-                        <div class="text-3xl font-bold text-golden-600 mb-2">$<?php echo number_format($tour['price']); ?></div>
-                        <p class="text-slate-600">per person</p>
-                    </div>
-
                     <div class="space-y-4 mb-6">
                         <div class="flex justify-between">
                             <span class="text-slate-600">Duration:</span>
@@ -351,10 +347,8 @@ $css_path = '../../../assets/css/modern-styles.css';
                         </div>
                     </div>
 
-                    <button onclick="if(typeof openBookingModal === 'function') { openBookingModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', <?php echo $tour['price']; ?>, ''); } else { alert('Booking system loading... Please refresh the page.'); }" 
-                            class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">
-                        Book This Tour
-                    </button>
+                    <button onclick="openLoginModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', '<?php echo addslashes($tour['description']); ?>', '<?php echo htmlspecialchars($bg_image); ?>')" 
+                            class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">Book This Tour</button>
                     
                     <button onclick="openInquiryModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>')" 
                             class="block w-full py-4 rounded-lg font-bold text-lg mb-4 text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
@@ -394,8 +388,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                         <h3 class="font-bold text-sm mb-2"><?php echo htmlspecialchars($related['name']); ?></h3>
                         <p class="text-xs text-slate-600 mb-2"><?php echo htmlspecialchars($related['country_name']); ?></p>
                         <div class="flex justify-between items-center">
-                            <span class="text-golden-600 font-bold text-sm">$<?php echo number_format($related['price']); ?></span>
-                            <a href="tour-detail.php?id=<?php echo $related['id']; ?>" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors">
+                            <a href="../../../tour/<?php echo $related['slug']; ?>" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors">
                                 View Details
                             </a>
                         </div>
@@ -408,7 +401,56 @@ $css_path = '../../../assets/css/modern-styles.css';
     <?php endif; ?>
 </div>
 
-<?php include 'enhanced-booking-modal.php'; ?>
+<!-- Login Modal -->
+<div id="loginModal" class="login-modal">
+    <div class="login-modal-content">
+        <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
+        <div class="login-modal-body">
+            <div class="login-modal-tour-info">
+                <img id="modalTourImage" src="" alt="Tour" class="login-modal-tour-image">
+                <h3 id="modalTourName" class="login-modal-tour-name"></h3>
+                <p id="modalTourDesc" class="login-modal-tour-desc"></p>
+            </div>
+            <div class="login-modal-message">
+                <h2>Login Required</h2>
+                <p>Please login or register to book this tour</p>
+                <div class="login-modal-buttons">
+                    <a href="../../../auth/login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-modal-btn login-modal-btn-primary">Login</a>
+                    <a href="../../../auth/register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-modal-btn login-modal-btn-secondary">Register</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openLoginModal(tourId, tourName, tourDesc, tourImage) {
+    document.getElementById('modalTourImage').src = tourImage;
+    document.getElementById('modalTourName').textContent = tourName;
+    document.getElementById('modalTourDesc').textContent = tourDesc.substring(0, 150) + '...';
+    document.getElementById('loginModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+window.onclick = function(event) {
+    const modal = document.getElementById('loginModal');
+    if (event.target == modal) {
+        closeLoginModal();
+    }
+}
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeLoginModal();
+    }
+});
+</script>
+
 <?php include 'inquiry-modal.php'; ?>
 <?php include '../../../includes/footer.php'; ?>
 

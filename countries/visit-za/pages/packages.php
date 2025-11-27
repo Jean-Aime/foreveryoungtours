@@ -6,28 +6,25 @@ require_once '../../../config/database.php';
 $country_folder = basename(dirname(dirname(__FILE__)));
 // Map folder names to correct slugs
 $slug_map = [
-    'rwanda' => 'visit-rw',
-    'botswana' => 'visit-bw',
-    'kenya' => 'visit-ke',
-    'tanzania' => 'visit-tz',
-    'uganda' => 'visit-ug',
-    'south-africa' => 'visit-za',
-    'namibia' => 'visit-na',
-    'zimbabwe' => 'visit-zw',
-    'egypt' => 'visit-eg',
-    'morocco' => 'visit-ma',
-    'tunisia' => 'visit-tn',
-    'tn' => 'visit-tn',
-    'ethiopia' => 'visit-et',
-    'ghana' => 'visit-gh',
-    'nigeria' => 'visit-ng',
-    'senegal' => 'visit-sn',
-    'cameroon' => 'visit-cm',
-    'cm' => 'visit-cm',
-    'democratic-republic-of-congo' => 'visit-cd',
-    'dr-congo' => 'visit-cd'
+    'visit-rw' => 'visit-rw',
+    'visit-bw' => 'visit-bw',
+    'visit-ke' => 'visit-ke',
+    'visit-tz' => 'visit-tz',
+    'visit-ug' => 'visit-ug',
+    'visit-za' => 'visit-za',
+    'visit-na' => 'visit-na',
+    'visit-zw' => 'visit-zw',
+    'visit-eg' => 'visit-eg',
+    'visit-ma' => 'visit-ma',
+    'visit-tn' => 'visit-tn',
+    'visit-et' => 'visit-et',
+    'visit-gh' => 'visit-gh',
+    'visit-ng' => 'visit-ng',
+    'visit-sn' => 'visit-sn',
+    'visit-cm' => 'visit-cm',
+    'visit-cd' => 'visit-cd'
 ];
-$country_slug = $slug_map[$country_folder] ?? 'visit-' . $country_folder;
+$country_slug = $slug_map[$country_folder] ?? $country_folder;
 $stmt = $pdo->prepare("SELECT c.*, r.name as region_name FROM countries c LEFT JOIN regions r ON c.region_id = r.id WHERE c.slug = ? AND c.status = 'active'");
 $stmt->execute([$country_slug]);
 $country = $stmt->fetch();
@@ -254,9 +251,6 @@ $tours = $stmt->fetchAll();
                             }
                             ?>
                             <img src="<?php echo htmlspecialchars($image_src); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-40 object-cover" onerror="this.src='http://localhost/foreveryoungtours/assets/images/default-tour.jpg'; this.onerror=null;" loading="lazy">
-                            <div class="absolute top-4 right-4 bg-golden-500 text-black px-3 py-1 rounded-full text-sm font-semibold">
-                                From $<?php echo number_format($tour['price']); ?>
-                            </div>
                             <?php if ($tour['featured']): ?>
                             <div class="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
                                 Featured
@@ -284,7 +278,7 @@ $tours = $stmt->fetchAll();
                                 </div>
                             </div>
                             <div>
-                                <a href="tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-slate-200 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-colors text-center">
+                                <a href="../tour/<?php echo $tour['slug']; ?>" class="block w-full bg-slate-200 text-slate-700 py-3 rounded-lg font-semibold hover:bg-slate-300 transition-colors text-center">
                                     View Details
                                 </a>
                             </div>
@@ -425,7 +419,7 @@ $tours = $stmt->fetchAll();
     }
 </script>
 
-<?php include '../../../includes/footer.php'; ?>
+<!-- Footer removed -->
 
 </body>
 </html>

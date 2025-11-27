@@ -210,8 +210,7 @@ function getTourImage($tour) {
                             <p class="text-gray-600"><?= htmlspecialchars($latest_tour['duration'] ?: $latest_tour['duration_days'] . ' days') ?></p>
                         </div>
                         <div class="text-right">
-                            <div class="text-2xl font-bold text-yellow-600">$<?= number_format($latest_tour['price']) ?></div>
-                            <div class="text-sm text-gray-500">per person</div>
+                            <a href="pages/tour-detail.php?id=<?php echo $latest_tour['id']; ?>" class="text-yellow-600 font-semibold hover:text-yellow-700">View Details →</a>
                         </div>
                     </div>
                 </div>
@@ -247,8 +246,8 @@ function getTourImage($tour) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <?php foreach ($countries as $country): ?>
             <?php
-            $country_code = strtolower(substr($country['country_code'], 0, 2));
             $country_url = BASE_URL . '/countries/' . $country['slug'];
+            // Debug: echo "<!-- Country: {$country['name']}, Slug: {$country['slug']}, URL: $country_url -->";
             
             // Map country names to image files in assets/images
             $country_images = [
@@ -263,7 +262,7 @@ function getTourImage($tour) {
                 ? BASE_URL . '/assets/images/' . $country_images[$country['name']]
                 : (getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'));
             ?>
-            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2" onclick="window.location.href='<?php echo $country_url; ?>'">
+            <a href="<?php echo $country_url; ?>" class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 block">
                 <div class="relative h-72 overflow-hidden">
                     <img src="<?= $country_image ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent"></div>
@@ -272,7 +271,7 @@ function getTourImage($tour) {
                         <p class="text-sm text-gray-200 mb-3 line-clamp-2"><?php echo htmlspecialchars(substr($country['description'] ?: 'Discover the beauty and culture', 0, 80)); ?>...</p>
                     </div>
                 </div>
-            </div>
+            </a>
             <?php endforeach; ?>
         </div>
     </div>
@@ -301,10 +300,9 @@ function getTourImage($tour) {
                     <h3 class="text-xl font-bold text-gray-900 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h3>
                     <p class="text-gray-600 mb-4 line-clamp-2"><?php echo htmlspecialchars(substr($tour['description'] ?: 'Discover amazing experiences', 0, 100)) . '...'; ?></p>
                     <div class="flex items-center justify-between mb-4">
-                        <span class="text-2xl font-bold text-yellow-600">$<?php echo number_format($tour['price'], 0); ?></span>
                         <span class="text-gray-500"><?php echo htmlspecialchars($tour['duration']); ?></span>
                     </div>
-                    <a href="<?= BASE_URL ?>/pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:shadow-xl transition-all">
+                    <a href="pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:shadow-xl transition-all">
                         View Details
                     </a>
                 </div>

@@ -54,24 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['first_name'] = $user['first_name'] ?? $user['name'];
                 $_SESSION['last_name'] = $user['last_name'] ?? '';
                 
-                // Role-based redirect
-                switch ($user['role']) {
-                    case 'super_admin':
-                    case 'admin':
-                        header('Location: ../admin/index.php');
-                        break;
-                    case 'mca':
-                        header('Location: ../mca/index.php');
-                        break;
-                    case 'advisor':
-                        header('Location: ../advisor/index.php');
-                        break;
-                    case 'user':
-                    default:
-                        header('Location: ../client/index.php');
-                        break;
+                // Check for redirect parameter
+                $redirect = $_GET['redirect'] ?? null;
+                
+                if ($redirect) {
+                    header('Location: ' . $redirect);
+                } else {
+                    // Role-based redirect
+                    switch ($user['role']) {
+                        case 'super_admin':
+                        case 'admin':
+                            header('Location: ../admin/index.php');
+                            break;
+                        case 'mca':
+                            header('Location: ../mca/index.php');
+                            break;
+                        case 'advisor':
+                            header('Location: ../advisor/index.php');
+                            break;
+                        case 'user':
+                        default:
+                            header('Location: ../client/index.php');
+                            break;
+                    }
                 }
-                    exit();
+                exit();
                 }
             }
         } catch (Exception $e) {
@@ -163,7 +170,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="mt-6 text-center">
                             <p class="text-slate-600">
                                 Don't have an account? 
-                                <a href="register.php" class="text-golden-600 hover:text-golden-700 font-semibold">Create Account</a>
+                                <a href="register.php<?php echo isset($_GET['redirect']) ? '?redirect=' . urlencode($_GET['redirect']) : ''; ?>" class="text-golden-600 hover:text-golden-700 font-semibold">Create Account</a>
                             </p>
                         </div>
                     </div>

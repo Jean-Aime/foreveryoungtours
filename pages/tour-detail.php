@@ -5,18 +5,35 @@ require_once '../config/database.php';
 
 // Note: getImageUrl function is now defined in config.php
 
-$tour_id = $_GET['id'] ?? 0;
+$tour_id = $_GET['id'] ?? null;
+$tour_slug = $_GET['slug'] ?? null;
 
-// Get tour details
-$stmt = $pdo->prepare("
-    SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
-    FROM tours t 
-    LEFT JOIN countries c ON t.country_id = c.id 
-    LEFT JOIN regions r ON c.region_id = r.id 
-    WHERE t.id = ? AND t.status = 'active'
-");
-$stmt->execute([$tour_id]);
+// Get tour details by ID or slug
+if ($tour_slug) {
+    $stmt = $pdo->prepare("
+        SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
+        FROM tours t 
+        LEFT JOIN countries c ON t.country_id = c.id 
+        LEFT JOIN regions r ON c.region_id = r.id 
+        WHERE t.slug = ? AND t.status = 'active'
+    ");
+    $stmt->execute([$tour_slug]);
+} else {
+    $stmt = $pdo->prepare("
+        SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
+        FROM tours t 
+        LEFT JOIN countries c ON t.country_id = c.id 
+        LEFT JOIN regions r ON c.region_id = r.id 
+        WHERE t.id = ? AND t.status = 'active'
+    ");
+    $stmt->execute([$tour_id]);
+}
 $tour = $stmt->fetch();
+
+if (!$tour) {
+    header('Location: packages.php');
+    exit;
+}
 
 // Get related tours (same country or category, excluding current tour)
 $related_stmt = $pdo->prepare("
@@ -28,13 +45,8 @@ $related_stmt = $pdo->prepare("
     ORDER BY t.featured DESC, RAND() 
     LIMIT 3
 ");
-$related_stmt->execute([$tour_id, $tour['country_id'], $tour['category']]);
+$related_stmt->execute([$tour['id'], $tour['country_id'], $tour['category']]);
 $related_tours = $related_stmt->fetchAll();
-
-if (!$tour) {
-    header('Location: packages.php');
-    exit;
-}
 
 $page_title = htmlspecialchars($tour['name']) . " - iForYoungTours";
 $page_description = htmlspecialchars(substr($tour['description'], 0, 160));
@@ -102,9 +114,9 @@ include '../includes/header.php';
                     </p>
                     
                     <div class="flex flex-wrap gap-4">
-                        <button onclick="if(typeof openBookingModal === 'function') { openBookingModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', <?php echo $tour['price']; ?>, ''); } else { alert('Booking system loading... Please refresh the page.'); }" 
+                        <button onclick="<?php echo isset($_SESSION['user_id']) ? 'openInquiryModal(' . $tour['id'] . ', \'' . addslashes($tour['name']) . '\')' : 'openLoginModal()'; ?>" 
                                 class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
-                            Book from $<?php echo number_format($tour['price']); ?>
+                            Book This Tour
                             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                             </svg>
@@ -308,11 +320,6 @@ include '../includes/header.php';
             <!-- Booking Sidebar -->
             <div class="lg:col-span-1">
                 <div class="nextcloud-card p-8 sticky top-24">
-                    <div class="text-center mb-6">
-                        <div class="text-3xl font-bold text-golden-600 mb-2">$<?php echo number_format($tour['price']); ?></div>
-                        <p class="text-slate-600">per person</p>
-                    </div>
-
                     <div class="space-y-4 mb-6">
                         <div class="flex justify-between">
                             <span class="text-slate-600">Duration:</span>
@@ -328,7 +335,7 @@ include '../includes/header.php';
                         </div>
                     </div>
 
-                    <button onclick="if(typeof openBookingModal === 'function') { openBookingModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', <?php echo $tour['price']; ?>, ''); } else { alert('Booking system loading... Please refresh the page.'); }" 
+                    <button onclick="<?php echo isset($_SESSION['user_id']) ? 'openInquiryModal(' . $tour['id'] . ', \'' . addslashes($tour['name']) . '\')' : 'openLoginModal()'; ?>" 
                             class="btn-primary w-full py-4 rounded-lg font-bold text-lg mb-3">
                         Book This Tour
                     </button>
@@ -366,9 +373,8 @@ include '../includes/header.php';
                     <div class="p-4">
                         <h3 class="font-bold text-sm mb-2"><?php echo htmlspecialchars($related['name']); ?></h3>
                         <p class="text-xs text-slate-600 mb-2"><?php echo htmlspecialchars($related['country_name']); ?></p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-golden-600 font-bold text-sm">$<?php echo number_format($related['price']); ?></span>
-                            <a href="tour-detail.php?id=<?php echo $related['id']; ?>" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors">
+                        <div class="flex justify-end items-center">
+                            <a href="../tour/<?php echo $related['slug']; ?>" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition-colors">
                                 View Details
                             </a>
                         </div>
@@ -402,57 +408,51 @@ include '../includes/header.php';
     </div>
 </div>
 
+<script src="../assets/js/tour-detail.js"></script>
 <script>
-let galleryImages = <?php echo json_encode($gallery_images ?? []); ?>;
-let currentImageIndex = 0;
-
-function openImageModal(index) {
-    currentImageIndex = index;
-    document.getElementById('imageModal').classList.remove('hidden');
-    updateModalImage();
-}
-
-function closeImageModal() {
-    document.getElementById('imageModal').classList.add('hidden');
-}
-
-function nextImage() {
-    currentImageIndex = (currentImageIndex + 1) % galleryImages.length;
-    updateModalImage();
-}
-
-function prevImage() {
-    currentImageIndex = (currentImageIndex - 1 + galleryImages.length) % galleryImages.length;
-    updateModalImage();
-}
-
-function updateModalImage() {
-    let imageSrc = galleryImages[currentImageIndex];
-    // Fix image path based on context
-    if (imageSrc.startsWith('uploads/')) {
-        if (window.location.host.indexOf('foreveryoungtours.local') !== -1) {
-            imageSrc = imageSrc; // Keep as-is for subdomain
-        } else {
-            imageSrc = '../' + imageSrc; // Add ../ for normal context
-        }
-    } else if (imageSrc.startsWith('../assets/')) {
-        if (window.location.host.indexOf('foreveryoungtours.local') !== -1) {
-            imageSrc = imageSrc.replace('../', ''); // Remove ../ for subdomain
-        }
-    }
-    document.getElementById('modalImage').src = imageSrc;
-    document.getElementById('imageCounter').textContent = `${currentImageIndex + 1} / ${galleryImages.length}`;
-}
-
-// Keyboard navigation
-document.addEventListener('keydown', function(e) {
-    if (document.getElementById('imageModal').classList.contains('hidden')) return;
-    
-    if (e.key === 'Escape') closeImageModal();
-    if (e.key === 'ArrowLeft') prevImage();
-    if (e.key === 'ArrowRight') nextImage();
-});
+initGallery(<?php echo json_encode($gallery_images ?? []); ?>);
 </script>
 
 <?php include 'inquiry-modal.php'; ?>
+
+<!-- Login Modal -->
+<div id="loginModal" class="hidden">
+    <div>
+        <div class="p-4 sm:p-6 border-b sticky top-0 bg-white z-10">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl sm:text-2xl font-bold text-slate-900">Login Required</h3>
+                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 p-2">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="p-4 sm:p-6">
+            <!-- Tour Info -->
+            <div class="bg-slate-50 rounded-lg overflow-hidden mb-4 sm:mb-6">
+                <?php 
+                $modal_image = $tour['cover_image'] ?: $tour['image_url'] ?: '../assets/images/default-tour.jpg';
+                $modal_image = getImageUrl($modal_image);
+                ?>
+                <img src="<?php echo htmlspecialchars($modal_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-32 sm:h-40 object-cover">
+                <div class="p-3 sm:p-4">
+                    <h4 class="font-bold text-slate-900 mb-2 text-sm sm:text-base"><?php echo htmlspecialchars($tour['name']); ?></h4>
+                    <p class="text-xs sm:text-sm text-slate-600"><?php echo htmlspecialchars(substr($tour['description'], 0, 100)) . '...'; ?></p>
+                </div>
+            </div>
+            
+            <p class="text-slate-600 mb-4 sm:mb-6 text-sm sm:text-base">Please login or create an account to book this tour.</p>
+            <div class="space-y-3">
+                <a href="../auth/login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="block w-full bg-golden-500 hover:bg-golden-600 text-black py-3 rounded-lg font-semibold text-center transition-colors text-sm sm:text-base">
+                    Login
+                </a>
+                <a href="../auth/register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="block w-full border-2 border-golden-500 text-golden-600 hover:bg-golden-50 py-3 rounded-lg font-semibold text-center transition-colors text-sm sm:text-base">
+                    Create Account
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php include '../includes/footer.php'; ?>

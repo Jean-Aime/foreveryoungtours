@@ -22,6 +22,7 @@ if (!isset($base_path)) {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
     <!-- SEO Meta Tags -->
+    <link rel="icon" type="image/png" href="<?php echo $base_path; ?>assets/images/logo.png">
     <title><?php echo isset($page_title) ? $page_title : 'ForeverYoung Tours - Discover Africa\'s Wonders'; ?></title>
     <meta name="description" content="<?php echo isset($page_description) ? $page_description : 'Explore Africa\'s most breathtaking destinations with expert guidance. From safaris to cultural experiences, book your dream African adventure with confidence.'; ?>">
     
@@ -80,9 +81,12 @@ if (!isset($base_path)) {
     <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/browser-compatibility.css">
     <link rel="stylesheet" href="<?php echo isset($css_path) ? $css_path : 'assets/css/modern-styles.css'; ?>">
     <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/client-dashboard.css">
+    <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/download-protection.css">
     
     <!-- Browser Compatibility JavaScript -->
     <script src="<?php echo $base_path; ?>assets/js/browser-compatibility.js"></script>
+    <script src="<?php echo $base_path; ?>assets/js/download-protection.js"></script>
+    <link rel="stylesheet" href="<?php echo $base_path; ?>assets/css/modal.css">
 </head>
 <body>
     <!-- Nextcloud-Style Navigation -->

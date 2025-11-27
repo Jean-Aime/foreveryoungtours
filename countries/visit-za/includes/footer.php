@@ -29,23 +29,23 @@
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-4">Tour Categories</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="../../pages/packages.php?category=adventure" class="text-gray-600 hover:text-yellow-600 transition-colors">Adventure Tours</a></li>
-                            <li><a href="../../pages/packages.php?category=luxury" class="text-gray-600 hover:text-yellow-600 transition-colors">Luxury Travel</a></li>
-                            <li><a href="../../pages/packages.php?category=cultural" class="text-gray-600 hover:text-yellow-600 transition-colors">Cultural Tours</a></li>
-                            <li><a href="../../pages/packages.php?category=wildlife" class="text-gray-600 hover:text-yellow-600 transition-colors">Wildlife Safari</a></li>
-                            <li><a href="../../pages/packages.php?category=agro" class="text-gray-600 hover:text-yellow-600 transition-colors">Agro-Tourism</a></li>
-                            <li><a href="../../pages/store.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Store</a></li>
+                            <li><a href="pages/packages.php?category=adventure" class="text-gray-600 hover:text-yellow-600 transition-colors">Adventure Tours</a></li>
+                            <li><a href="pages/packages.php?category=luxury" class="text-gray-600 hover:text-yellow-600 transition-colors">Luxury Travel</a></li>
+                            <li><a href="pages/packages.php?category=cultural" class="text-gray-600 hover:text-yellow-600 transition-colors">Cultural Tours</a></li>
+                            <li><a href="pages/packages.php?category=wildlife" class="text-gray-600 hover:text-yellow-600 transition-colors">Wildlife Safari</a></li>
+                            <li><a href="pages/packages.php?category=agro" class="text-gray-600 hover:text-yellow-600 transition-colors">Agro-Tourism</a></li>
+                            <li><a href="pages/store.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Store</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold text-gray-900 mb-4">Resources</h4>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="../../pages/resources.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Resources</a></li>
-                            <li><a href="../../pages/resources.php#visa" class="text-gray-600 hover:text-yellow-600 transition-colors">VISA Information</a></li>
-                            <li><a href="../../pages/resources.php#safety" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Safety</a></li>
-                            <li><a href="../../pages/faq.php" class="text-gray-600 hover:text-yellow-600 transition-colors">FAQ</a></li>
-                            <li><a href="../../pages/terms.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Terms & Conditions</a></li>
-                            <li><a href="../../pages/privacy.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Privacy Policy</a></li>
+                            <li><a href="pages/resources.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Resources</a></li>
+                            <li><a href="pages/resources.php#visa" class="text-gray-600 hover:text-yellow-600 transition-colors">VISA Information</a></li>
+                            <li><a href="pages/resources.php#safety" class="text-gray-600 hover:text-yellow-600 transition-colors">Travel Safety</a></li>
+                            <li><a href="pages/faq.php" class="text-gray-600 hover:text-yellow-600 transition-colors">FAQ</a></li>
+                            <li><a href="pages/terms.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Terms & Conditions</a></li>
+                            <li><a href="pages/privacy.php" class="text-gray-600 hover:text-yellow-600 transition-colors">Privacy Policy</a></li>
                         </ul>
                     </div>
                 </div>
@@ -100,6 +100,6 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="<?php echo isset($js_path) ? $js_path : 'assets/js/main.js'; ?>"></script>
+    <script src="<?php echo asset('js/main.js'); ?>"></script>
 </body>
 </html>

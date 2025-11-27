@@ -23,6 +23,8 @@ $email = 'admin@foreveryoungtours.com';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../assets/css/modern-styles.css" rel="stylesheet">
     <link href="../assets/css/admin-styles.css" rel="stylesheet">
+    <link href="../assets/css/download-protection.css" rel="stylesheet">
+    <script src="../assets/js/download-protection.js"></script>
     <script>
         tailwind.config = {
             theme: {

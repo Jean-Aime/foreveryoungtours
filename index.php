@@ -11,18 +11,53 @@ $js_path = "assets/js/main.js";
 require_once 'config/database.php';
 require_once 'config/environment.php';
 
-// Check if on country subdomain
-$country_filter = isset($_SESSION['subdomain_country_id']) ? $_SESSION['subdomain_country_id'] : null;
+// Handle subdomain routing
+$country_filter = null;
+$continent_filter = null;
 
-if ($country_filter) {
+// Check for country parameter from .htaccess
+if (isset($_GET['country'])) {
+    $country_code = strtoupper($_GET['country']);
+    $stmt = $pdo->prepare("SELECT id, name FROM countries WHERE country_code = ? AND status = 'active'");
+    $stmt->execute([$country_code]);
+    $country = $stmt->fetch();
+    
+    if ($country) {
+        $_SESSION['subdomain_country_id'] = $country['id'];
+        $_SESSION['subdomain_country_name'] = $country['name'];
+        $country_filter = $country['id'];
+        $page_title = "Visit " . $country['name'] . " - iForYoungTours";
+        $page_description = "Explore " . $country['name'] . "'s best tours and destinations with iForYoungTours.";
+    }
+}
+// Check for continent parameter from .htaccess
+elseif (isset($_GET['continent'])) {
+    $continent_slug = $_GET['continent'];
+    $stmt = $pdo->prepare("SELECT id, name FROM regions WHERE LOWER(REPLACE(name, ' ', '-')) = ? AND status = 'active'");
+    $stmt->execute([$continent_slug]);
+    $continent = $stmt->fetch();
+    
+    if ($continent) {
+        $_SESSION['continent_filter'] = $continent['name'];
+        $continent_filter = $continent['id'];
+        $page_title = "Explore " . $continent['name'] . " - iForYoungTours";
+        $page_description = "Discover amazing tours and destinations across " . $continent['name'] . " with iForYoungTours.";
+    }
+}
+// Check session for existing subdomain data
+elseif (isset($_SESSION['subdomain_country_id'])) {
+    $country_filter = $_SESSION['subdomain_country_id'];
     $page_title = "Visit " . $_SESSION['subdomain_country_name'] . " - iForYoungTours";
     $page_description = "Explore " . $_SESSION['subdomain_country_name'] . "'s best tours and destinations with iForYoungTours.";
 }
 
-// Fetch featured tours (filtered by country if on subdomain)
+// Fetch featured tours (filtered by country or continent if on subdomain)
 if ($country_filter) {
     $stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id WHERE t.status = 'active' AND t.country_id = ? ORDER BY t.created_at DESC LIMIT 6");
     $stmt->execute([$country_filter]);
+} elseif ($continent_filter) {
+    $stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id WHERE t.status = 'active' AND c.region_id = ? ORDER BY t.created_at DESC LIMIT 6");
+    $stmt->execute([$continent_filter]);
 } else {
     $stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id WHERE t.status = 'active' AND t.featured = 1 ORDER BY t.created_at DESC LIMIT 6");
     $stmt->execute();
