@@ -19,26 +19,31 @@ function detectBaseUrl() {
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     
-    // Check if we're on a subdomain
+    // Check if we're on a country subdomain (visit-XX)
     if (preg_match('/^visit-([a-z]{2,3})\./', $host)) {
-        // For subdomains, point to the main domain where images are stored
         if (strpos($host, 'localhost') !== false || strpos($host, '.local') !== false) {
-            // Local development
             return 'http://localhost/foreveryoungtours';
         } else {
-            // Live server - extract main domain from subdomain
             $main_domain = preg_replace('/^visit-[a-z]{2,3}\./', '', $host);
             return $protocol . '://' . $main_domain;
         }
-    } else {
-        // Main domain
-        if (strpos($host, 'localhost') !== false || strpos($host, 'xampp') !== false) {
-            // Local development
+    }
+    
+    // Check if we're on a continent subdomain (africa, asia, europe, etc.)
+    if (preg_match('/^(africa|asia|europe|americas|oceania)\./', $host)) {
+        if (strpos($host, 'localhost') !== false || strpos($host, '.local') !== false) {
             return 'http://localhost/foreveryoungtours';
         } else {
-            // Live server
-            return $protocol . '://' . $host;
+            $main_domain = preg_replace('/^[a-z]+\./', '', $host);
+            return $protocol . '://' . $main_domain;
         }
+    }
+    
+    // Main domain
+    if (strpos($host, 'localhost') !== false || strpos($host, 'xampp') !== false) {
+        return 'http://localhost/foreveryoungtours';
+    } else {
+        return $protocol . '://' . $host;
     }
 }
 

@@ -40,33 +40,7 @@ $latest_tour = $stmt->fetch();
 
 $page_title = $continent['name'] . " - Discover Amazing Destinations - iForYoungTours";
 
-// Function to get proper image URL
-function getTourImage($tour) {
-    $base_url = 'http://localhost/foreveryoungtours';
-    $default_image = $base_url . '/assets/images/default-tour.jpg';
-    
-    // Check cover_image first
-    if (!empty($tour['cover_image'])) {
-        $image_path = $tour['cover_image'];
-        if (strpos($image_path, 'http') === 0) {
-            return $image_path; // Full URL already
-        } else {
-            return $base_url . '/' . ltrim($image_path, '/');
-        }
-    }
-    
-    // Fallback to image_url
-    if (!empty($tour['image_url'])) {
-        $image_path = $tour['image_url'];
-        if (strpos($image_path, 'http') === 0) {
-            return $image_path; // Full URL already
-        } else {
-            return $base_url . '/' . ltrim($image_path, '/');
-        }
-    }
-    
-    return $default_image;
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -197,10 +171,7 @@ function getTourImage($tour) {
             <div class="relative">
                 <?php if (!empty($latest_tour)): ?>
                 <div class="bg-white p-8 rounded-3xl shadow-2xl">
-                    <?php
-                    $latest_tour_image = getTourImage($latest_tour);
-                    ?>
-                    <img src="<?php echo htmlspecialchars($latest_tour_image); ?>" 
+                    <img src="<?php echo htmlspecialchars(getImageUrl($latest_tour['cover_image'] ?: $latest_tour['image_url'])); ?>" 
                          alt="<?= htmlspecialchars($latest_tour['name']) ?>" 
                          class="w-full h-80 object-cover rounded-2xl mb-6"
                          onerror="this.src='http://localhost/foreveryoungtours/assets/images/default-tour.jpg'; this.onerror=null;">
@@ -289,10 +260,7 @@ function getTourImage($tour) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <?php foreach ($featured_tours as $tour): ?>
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300">
-                <?php
-                $tour_image = getTourImage($tour);
-                ?>
-                <img src="<?php echo htmlspecialchars($tour_image); ?>" 
+                <img src="<?php echo htmlspecialchars(getImageUrl($tour['cover_image'] ?: $tour['image_url'])); ?>" 
                      alt="<?php echo htmlspecialchars($tour['name']); ?>" 
                      class="w-full h-56 object-cover"
                      onerror="this.src='http://localhost/foreveryoungtours/assets/images/default-tour.jpg'; this.onerror=null;">

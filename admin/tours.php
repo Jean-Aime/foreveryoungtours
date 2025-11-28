@@ -115,7 +115,7 @@ if ($_POST) {
                 
                 $highlights = !empty($_POST['highlights']) ? array_filter(explode("\n", $_POST['highlights'])) : [];
                 
-                $stmt = $pdo->prepare("UPDATE tours SET name = ?, slug = ?, description = ?, detailed_description = ?, destination = ?, destination_country = ?, country_id = ?, category = ?, price = ?, base_price = ?, duration = ?, duration_days = ?, max_participants = ?, min_participants = ?, image_url = ?, cover_image = ?, gallery = ?, images = ?, itinerary = ?, inclusions = ?, exclusions = ?, highlights = ?, requirements = ?, difficulty_level = ?, best_time_to_visit = ?, status = ?, featured = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE tours SET name = ?, slug = ?, description = ?, detailed_description = ?, destination = ?, destination_country = ?, country_id = ?, category_id = ?, price = ?, base_price = ?, duration = ?, duration_days = ?, max_participants = ?, min_participants = ?, image_url = ?, cover_image = ?, gallery = ?, images = ?, itinerary = ?, inclusions = ?, exclusions = ?, highlights = ?, requirements = ?, difficulty_level = ?, best_time_to_visit = ?, status = ?, featured = ? WHERE id = ?");
                 
                 $stmt->execute([
                     $_POST['name'], 
@@ -125,7 +125,7 @@ if ($_POST) {
                     $_POST['destination'], 
                     $country['name'], 
                     $_POST['country_id'], 
-                    $_POST['category'], 
+                    $_POST['category_id'], 
                     $_POST['price'], 
                     $_POST['price'], 
                     $_POST['duration_days'] . ' days', 
@@ -151,79 +151,88 @@ if ($_POST) {
                 exit;
                 break;
             case 'add':
-                $slug = strtolower(str_replace(' ', '-', $_POST['name']));
-                
-                // Check for duplicate slug and make it unique
-                $original_slug = $slug;
-                $counter = 1;
-                $check_stmt = $pdo->prepare("SELECT id FROM tours WHERE slug = ?");
-                $check_stmt->execute([$slug]);
-                while ($check_stmt->fetch()) {
-                    $slug = $original_slug . '-' . $counter;
-                    $counter++;
-                    $check_stmt->execute([$slug]);
-                }
-                // Get country details
-                $country_stmt = $pdo->prepare("SELECT name FROM countries WHERE id = ?");
-                $country_stmt->execute([$_POST['country_id']]);
-                $country = $country_stmt->fetch();
-                
-                // Prepare itinerary JSON
-                $itinerary = [];
-                if (isset($_POST['itinerary_day'])) {
-                    for ($i = 0; $i < count($_POST['itinerary_day']); $i++) {
-                        $itinerary[] = [
-                            'day' => $_POST['itinerary_day'][$i],
-                            'title' => $_POST['itinerary_title'][$i] ?? '',
-                            'activities' => $_POST['itinerary_activities'][$i] ?? ''
-                        ];
-                    }
-                }
-                
-                // Prepare inclusions and exclusions
-                $inclusions = !empty($_POST['inclusions']) ? array_filter(explode("\n", $_POST['inclusions'])) : [];
-                $exclusions = !empty($_POST['exclusions']) ? array_filter(explode("\n", $_POST['exclusions'])) : [];
-                
-                // Prepare gallery JSON
-                $gallery = [];
-                if (!empty($_POST['gallery'])) {
-                    $gallery = array_filter(explode("\n", trim($_POST['gallery'])));
-                }
-                
-                // Insert tour first to get ID
-                $stmt = $pdo->prepare("INSERT INTO tours (name, slug, description, detailed_description, destination, destination_country, country_id, category, price, base_price, duration, duration_days, max_participants, min_participants, requirements, difficulty_level, best_time_to_visit, status, featured, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
-                
-                $stmt->execute([
-                    $_POST['name'], 
-                    $slug, 
-                    $_POST['description'], 
-                    $_POST['detailed_description'] ?? '',
-                    $_POST['destination'], 
-                    $country['name'], 
-                    $_POST['country_id'], 
-                    $_POST['category'], 
-                    $_POST['price'], 
-                    $_POST['price'], 
-                    $_POST['duration_days'] . ' days', 
-                    $_POST['duration_days'], 
-                    $_POST['max_participants'], 
-                    $_POST['min_participants'] ?? 2,
-                    $_POST['requirements'] ?? '',
-                    $_POST['difficulty_level'] ?? 'moderate',
-                    $_POST['best_time_to_visit'] ?? '',
-                    $_POST['status'] ?? 'active',
-                    isset($_POST['featured']) ? 1 : 0
-                ]);
-                
-                $tour_id = $pdo->lastInsertId();
-                
-                // Handle file uploads
-                $image_url = '';
-                $cover_image = '';
-                $gallery = [];
-                $images = [];
-                
                 try {
+                    $slug = strtolower(str_replace(' ', '-', $_POST['name']));
+                    
+                    // Check for duplicate slug and make it unique
+                    $original_slug = $slug;
+                    $counter = 1;
+                    $check_stmt = $pdo->prepare("SELECT id FROM tours WHERE slug = ?");
+                    $check_stmt->execute([$slug]);
+                    while ($check_stmt->fetch()) {
+                        $slug = $original_slug . '-' . $counter;
+                        $counter++;
+                        $check_stmt->execute([$slug]);
+                    }
+                    
+                    // Get country details
+                    $country_stmt = $pdo->prepare("SELECT name FROM countries WHERE id = ?");
+                    $country_stmt->execute([$_POST['country_id']]);
+                    $country = $country_stmt->fetch();
+                    
+                    // Prepare itinerary JSON
+                    $itinerary = [];
+                    if (isset($_POST['itinerary_day'])) {
+                        for ($i = 0; $i < count($_POST['itinerary_day']); $i++) {
+                            $itinerary[] = [
+                                'day' => $_POST['itinerary_day'][$i],
+                                'title' => $_POST['itinerary_title'][$i] ?? '',
+                                'activities' => $_POST['itinerary_activities'][$i] ?? ''
+                            ];
+                        }
+                    }
+                    
+                    // Prepare inclusions and exclusions
+                    $inclusions = !empty($_POST['inclusions']) ? array_filter(explode("\n", $_POST['inclusions'])) : [];
+                    $exclusions = !empty($_POST['exclusions']) ? array_filter(explode("\n", $_POST['exclusions'])) : [];
+                    $highlights = !empty($_POST['highlights']) ? array_filter(explode("\n", $_POST['highlights'])) : [];
+                    
+                    // Insert tour first to get ID
+                    $stmt = $pdo->prepare("INSERT INTO tours (name, slug, description, detailed_description, destination, destination_country, country_id, category_id, price, base_price, duration, duration_days, max_participants, min_participants, requirements, difficulty_level, best_time_to_visit, status, featured, itinerary, inclusions, exclusions, highlights, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+                    
+                    $result = $stmt->execute([
+                        $_POST['name'], 
+                        $slug, 
+                        $_POST['description'], 
+                        $_POST['detailed_description'] ?? '',
+                        $_POST['destination'], 
+                        $country['name'], 
+                        $_POST['country_id'], 
+                        $_POST['category_id'], 
+                        $_POST['price'], 
+                        $_POST['price'], 
+                        $_POST['duration_days'] . ' days', 
+                        $_POST['duration_days'], 
+                        $_POST['max_participants'], 
+                        $_POST['min_participants'] ?? 2,
+                        $_POST['requirements'] ?? '',
+                        $_POST['difficulty_level'] ?? 'moderate',
+                        $_POST['best_time_to_visit'] ?? '',
+                        $_POST['status'] ?? 'active',
+                        isset($_POST['featured']) ? 1 : 0,
+                        json_encode($itinerary),
+                        json_encode($inclusions),
+                        json_encode($exclusions),
+                        json_encode($highlights)
+                    ]);
+                    
+                    if (!$result) {
+                        $errorInfo = $stmt->errorInfo();
+                        throw new Exception('Database error: ' . $errorInfo[2]);
+                    }
+                    
+                    $tour_id = $pdo->lastInsertId();
+                    
+                    if (!$tour_id || $tour_id == 0) {
+                        throw new Exception('Failed to get tour ID after insert');
+                    }
+                    
+                    // Handle file uploads AFTER getting tour ID
+                    $image_url = '';
+                    $cover_image = '';
+                    $gallery = [];
+                    $images = [];
+                    
                     if (isset($_FILES['main_image']) && $_FILES['main_image']['error'] === UPLOAD_ERR_OK) {
                         $image_url = uploadTourImage($_FILES['main_image'], $tour_id, 'main');
                         $images[] = $image_url;
@@ -249,28 +258,26 @@ if ($_POST) {
                             }
                         }
                     }
+                    
+                    // Update tour with images
+                    if ($image_url || $cover_image || !empty($gallery)) {
+                        $stmt = $pdo->prepare("UPDATE tours SET image_url = ?, cover_image = ?, gallery = ?, images = ? WHERE id = ?");
+                        $stmt->execute([
+                            $image_url,
+                            $cover_image,
+                            json_encode($gallery),
+                            json_encode($images),
+                            $tour_id
+                        ]);
+                    }
+                    
+                    header('Location: tours.php?added=1');
+                    exit;
                 } catch (Exception $e) {
+                    error_log("Add tour error: " . $e->getMessage());
                     header('Location: tours.php?error=' . urlencode($e->getMessage()));
                     exit;
                 }
-                
-                $highlights = !empty($_POST['highlights']) ? array_filter(explode("\n", $_POST['highlights'])) : [];
-                
-                // Update tour with images and other data
-                $stmt = $pdo->prepare("UPDATE tours SET image_url = ?, cover_image = ?, gallery = ?, images = ?, itinerary = ?, inclusions = ?, exclusions = ?, highlights = ? WHERE id = ?");
-                $stmt->execute([
-                    $image_url,
-                    $cover_image,
-                    json_encode($gallery),
-                    json_encode($images), // New images column
-                    json_encode($itinerary), 
-                    json_encode($inclusions), 
-                    json_encode($exclusions),
-                    json_encode($highlights),
-                    $tour_id
-                ]);
-                header('Location: tours.php?added=1');
-                exit;
                 break;
             case 'deactivate':
                 try {
@@ -291,20 +298,25 @@ if ($_POST) {
                 
             case 'delete':
                 try {
+                    $tour_id = intval($_POST['tour_id']);
+                    if (!$tour_id) {
+                        throw new Exception('Invalid tour ID');
+                    }
+                    
                     // First, delete related records to avoid foreign key constraints
                     $pdo->beginTransaction();
                     
                     // Delete tour bookings (if any)
                     $stmt = $pdo->prepare("DELETE FROM bookings WHERE tour_id = ?");
-                    $stmt->execute([$_POST['tour_id']]);
+                    $stmt->execute([$tour_id]);
                     
                     // Delete tour reviews (if any)
                     $stmt = $pdo->prepare("DELETE FROM reviews WHERE tour_id = ?");
-                    $stmt->execute([$_POST['tour_id']]);
+                    $stmt->execute([$tour_id]);
                     
                     // Delete the tour itself
                     $stmt = $pdo->prepare("DELETE FROM tours WHERE id = ?");
-                    $result = $stmt->execute([$_POST['tour_id']]);
+                    $result = $stmt->execute([$tour_id]);
                     
                     if ($result && $stmt->rowCount() > 0) {
                         $pdo->commit();
@@ -314,7 +326,9 @@ if ($_POST) {
                         header('Location: tours.php?error=delete_failed');
                     }
                 } catch (Exception $e) {
-                    $pdo->rollback();
+                    if ($pdo->inTransaction()) {
+                        $pdo->rollback();
+                    }
                     error_log("Delete tour error: " . $e->getMessage());
                     header('Location: tours.php?error=delete_error');
                 }
@@ -346,8 +360,8 @@ if ($country_filter) {
 
 $where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "WHERE 1=1";
 
-// Get tours with country and region info
-$stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id $where_clause ORDER BY r.name, c.name, t.created_at DESC");
+// Get tours with country, region and category info
+$stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name, cat.name as category_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id LEFT JOIN categories cat ON t.category_id = cat.id $where_clause ORDER BY r.name, c.name, t.created_at DESC");
 $stmt->execute($params);
 $tours = $stmt->fetchAll();
 
@@ -355,6 +369,11 @@ $tours = $stmt->fetchAll();
 $stmt = $pdo->prepare("SELECT c.*, r.name as region_name FROM countries c JOIN regions r ON c.region_id = r.id WHERE c.status = 'active' ORDER BY r.name, c.name");
 $stmt->execute();
 $countries = $stmt->fetchAll();
+
+// Get all categories
+$stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY display_order");
+$stmt->execute();
+$categories = $stmt->fetchAll();
 
 // Get tour for editing if edit parameter is present
 $edit_tour = null;
@@ -501,19 +520,8 @@ require_once 'includes/admin-sidebar.php';
                                     <p class="text-sm font-semibold"><?php echo htmlspecialchars($tour['country_name']); ?></p>
                                 </td>
                                 <td class="p-4">
-                                    <span class="px-2 py-1 rounded text-xs font-medium <?php 
-                                        echo match($tour['category']) {
-                                            'cultural' => 'bg-blue-100 text-blue-800',
-                                            'wildlife' => 'bg-green-100 text-green-800',
-                                            'adventure' => 'bg-red-100 text-red-800',
-                                            'city' => 'bg-purple-100 text-purple-800',
-                                            'sports' => 'bg-orange-100 text-orange-800',
-                                            'agro' => 'bg-yellow-100 text-yellow-800',
-                                            'conference' => 'bg-indigo-100 text-indigo-800',
-                                            default => 'bg-slate-100 text-slate-800'
-                                        };
-                                    ?>">
-                                        <?php echo ucfirst($tour['category']); ?>
+                                    <span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                                        <?php echo htmlspecialchars($tour['category_name'] ?: 'Uncategorized'); ?>
                                     </span>
                                 </td>
                                 <td class="p-4">
@@ -609,14 +617,13 @@ require_once 'includes/admin-sidebar.php';
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Category *</label>
-                            <select name="category" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                                <option value="cultural" <?php echo ($edit_tour && $edit_tour['category'] == 'cultural') ? 'selected' : ''; ?>>Cultural Tours</option>
-                                <option value="wildlife" <?php echo ($edit_tour && $edit_tour['category'] == 'wildlife') ? 'selected' : ''; ?>>Wildlife Safari</option>
-                                <option value="adventure" <?php echo ($edit_tour && $edit_tour['category'] == 'adventure') ? 'selected' : ''; ?>>Adventure</option>
-                                <option value="city" <?php echo ($edit_tour && $edit_tour['category'] == 'city') ? 'selected' : ''; ?>>City Breaks</option>
-                                <option value="sports" <?php echo ($edit_tour && $edit_tour['category'] == 'sports') ? 'selected' : ''; ?>>Sports & Recreation</option>
-                                <option value="agro" <?php echo ($edit_tour && $edit_tour['category'] == 'agro') ? 'selected' : ''; ?>>Agro Tourism</option>
-                                <option value="conference" <?php echo ($edit_tour && $edit_tour['category'] == 'conference') ? 'selected' : ''; ?>>Conference & Expos</option>
+                            <select name="category_id" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                                <option value="">Select Category</option>
+                                <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>" <?php echo ($edit_tour && $edit_tour['category_id'] == $cat['id']) ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat['name']); ?>
+                                </option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>

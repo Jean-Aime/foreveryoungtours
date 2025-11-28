@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 18, 2025 at 08:34 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Host: 127.0.0.1:3306
+-- Generation Time: Nov 28, 2025 at 08:48 AM
+-- Server version: 11.8.3-MariaDB-log
+-- PHP Version: 7.2.34
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,8 +18,93 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `forevveryoungtours`
+-- Database: `u828598480_database_fyt`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `advisor_team`
+--
+
+CREATE TABLE `advisor_team` (
+  `id` int(11) NOT NULL,
+  `advisor_id` int(11) NOT NULL,
+  `team_member_id` int(11) NOT NULL,
+  `level` int(11) NOT NULL COMMENT '1=direct, 2=L2, 3=L3',
+  `joined_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `status` enum('active','inactive') DEFAULT 'active'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `analytics_metrics`
+--
+
+CREATE TABLE `analytics_metrics` (
+  `id` int(11) NOT NULL,
+  `metric_type` varchar(50) NOT NULL,
+  `metric_value` decimal(15,2) NOT NULL,
+  `metric_date` date NOT NULL,
+  `metadata` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`metadata`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_integrations`
+--
+
+CREATE TABLE `api_integrations` (
+  `id` int(11) NOT NULL,
+  `provider` varchar(50) NOT NULL,
+  `api_type` enum('flight','hotel','car_rental','activity') NOT NULL,
+  `api_key` varchar(255) DEFAULT NULL,
+  `api_secret` varchar(255) DEFAULT NULL,
+  `endpoint_url` varchar(255) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `config` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`config`)),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `api_requests`
+--
+
+CREATE TABLE `api_requests` (
+  `id` int(11) NOT NULL,
+  `integration_id` int(11) NOT NULL,
+  `request_type` varchar(50) DEFAULT NULL,
+  `request_data` text DEFAULT NULL,
+  `response_data` text DEFAULT NULL,
+  `status_code` int(11) DEFAULT NULL,
+  `response_time_ms` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `audit_logs`
+--
+
+CREATE TABLE `audit_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `action` varchar(100) NOT NULL,
+  `entity_type` varchar(50) NOT NULL,
+  `entity_id` int(11) DEFAULT NULL,
+  `old_values` text DEFAULT NULL,
+  `new_values` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -206,7 +291,8 @@ CREATE TABLE `bookings` (
   `emergency_contact` varchar(255) DEFAULT NULL,
   `accommodation_type` varchar(50) DEFAULT 'standard',
   `transport_type` varchar(50) DEFAULT 'shared',
-  `special_requests` text DEFAULT NULL
+  `special_requests` text DEFAULT NULL,
+  `payment_intent_id` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -221,6 +307,49 @@ CREATE TRIGGER `calculate_commissions` AFTER UPDATE ON `bookings` FOR EACH ROW B
             VALUES (NEW.id, NEW.advisor_id, 'direct', 10.00, NEW.total_amount * 0.10);
         END IF;
     END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `calculate_mlm_commissions` AFTER UPDATE ON `bookings` FOR EACH ROW BEGIN
+    DECLARE advisor_rank_val VARCHAR(50);
+    DECLARE direct_rate DECIMAL(5,2);
+    DECLARE l2_advisor INT;
+    DECLARE l3_advisor INT;
+    DECLARE mca INT;
+    
+    IF NEW.status = 'confirmed' AND OLD.status != 'confirmed' AND NEW.advisor_id IS NOT NULL THEN
+        
+        -- Get advisor rank and rate
+        SELECT advisor_rank INTO advisor_rank_val FROM users WHERE id = NEW.advisor_id;
+        SELECT direct_rate INTO direct_rate FROM commission_settings WHERE rank = advisor_rank_val;
+        
+        -- Direct commission (L1)
+        INSERT INTO commissions (booking_id, user_id, commission_type, commission_rate, commission_amount)
+        VALUES (NEW.id, NEW.advisor_id, 'direct', direct_rate, NEW.total_amount * (direct_rate / 100));
+        
+        -- L2 commission (upline)
+        SELECT upline_id INTO l2_advisor FROM users WHERE id = NEW.advisor_id;
+        IF l2_advisor IS NOT NULL THEN
+            INSERT INTO commissions (booking_id, user_id, commission_type, commission_rate, commission_amount)
+            VALUES (NEW.id, l2_advisor, 'level2', 10.00, NEW.total_amount * 0.10);
+            
+            -- L3 commission (upline's upline)
+            SELECT upline_id INTO l3_advisor FROM users WHERE id = l2_advisor;
+            IF l3_advisor IS NOT NULL THEN
+                INSERT INTO commissions (booking_id, user_id, commission_type, commission_rate, commission_amount)
+                VALUES (NEW.id, l3_advisor, 'level3', 5.00, NEW.total_amount * 0.05);
+            END IF;
+        END IF;
+        
+        -- MCA override
+        SELECT mca_id INTO mca FROM users WHERE id = NEW.advisor_id;
+        IF mca IS NOT NULL THEN
+            INSERT INTO commissions (booking_id, user_id, commission_type, commission_rate, commission_amount)
+            VALUES (NEW.id, mca, 'mca_override', 7.50, NEW.total_amount * 0.075);
+        END IF;
+        
+    END IF;
+END
 $$
 DELIMITER ;
 DELIMITER $$
@@ -344,29 +473,6 @@ CREATE TABLE `booking_cruises` (
 
 INSERT INTO `booking_cruises` (`id`, `cruise_name`, `cruise_image`, `destination`, `duration_days`, `ports_count`, `cruise_type`, `price_per_person`, `rating`, `reviews_count`, `available_cabins`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'East African Coast Explorer', 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=200', 'East African Coast', 7, 5, 'Luxury Cruise', 1450.00, 4.9, 78, 10, 'active', '2025-10-28 09:39:47', '2025-10-28 09:39:47');
-
--- --------------------------------------------------------
-
---
--- Stand-in structure for view `booking_details_view`
--- (See below for the actual view)
---
-CREATE TABLE `booking_details_view` (
-`id` int(11)
-,`booking_reference` varchar(20)
-,`customer_name` varchar(255)
-,`customer_email` varchar(255)
-,`travel_date` date
-,`participants` int(11)
-,`total_amount` decimal(10,2)
-,`status` enum('pending','confirmed','paid','cancelled','completed')
-,`booking_date` timestamp
-,`tour_name` varchar(255)
-,`destination` varchar(255)
-,`destination_country` varchar(100)
-,`client_name` varchar(201)
-,`advisor_name` varchar(201)
-);
 
 -- --------------------------------------------------------
 
@@ -509,6 +615,49 @@ INSERT INTO `booking_inquiries` (`id`, `tour_id`, `tour_name`, `client_name`, `e
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `booking_modifications`
+--
+
+CREATE TABLE `booking_modifications` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `modification_type` enum('date_change','guest_change','package_change','cancellation') NOT NULL,
+  `old_data` text DEFAULT NULL,
+  `new_data` text DEFAULT NULL,
+  `reason` text DEFAULT NULL,
+  `requested_by` int(11) NOT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending',
+  `processed_by` int(11) DEFAULT NULL,
+  `processed_at` timestamp NULL DEFAULT NULL,
+  `fee_amount` decimal(10,2) DEFAULT 0.00,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `booking_payments`
+--
+
+CREATE TABLE `booking_payments` (
+  `id` int(11) NOT NULL,
+  `booking_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(50) DEFAULT 'stripe',
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `stripe_payment_intent_id` varchar(100) DEFAULT NULL,
+  `stripe_charge_id` varchar(100) DEFAULT NULL,
+  `status` enum('pending','completed','failed','refunded') DEFAULT 'pending',
+  `payment_date` timestamp NULL DEFAULT NULL,
+  `refund_amount` decimal(10,2) DEFAULT 0.00,
+  `refund_date` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `booking_status_history`
 --
 
@@ -525,6 +674,77 @@ CREATE TABLE `booking_status_history` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `categories`
+--
+
+CREATE TABLE `categories` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `icon` varchar(50) DEFAULT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `display_order` int(11) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `categories`
+--
+
+INSERT INTO `categories` (`id`, `name`, `slug`, `icon`, `status`, `display_order`, `created_at`, `updated_at`) VALUES
+(1, 'Motorcoach Tours', 'motorcoach', 'fa-bus', 'active', 1, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(2, 'Rail Tours', 'rail', 'fa-train', 'active', 2, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(3, 'Cruise Tours', 'cruises', 'fa-ship', 'active', 3, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(4, 'City Break Tours', 'city-breaks', 'fa-city', 'active', 4, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(5, 'Agro Tours', 'agro', 'fa-tractor', 'active', 5, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(6, 'Adventure Tours', 'adventure', 'fa-mountain', 'active', 6, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(7, 'Sports Tours', 'sports', 'fa-futbol', 'active', 7, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(8, 'Cultural Tours', 'cultural', 'fa-landmark', 'active', 8, '2025-11-27 18:23:08', '2025-11-27 18:23:08'),
+(9, 'Conference & Expo Tours', 'conference-expos', 'fa-briefcase', 'active', 9, '2025-11-27 18:23:08', '2025-11-27 18:23:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `client_registry`
+--
+
+CREATE TABLE `client_registry` (
+  `id` int(11) NOT NULL,
+  `client_name` varchar(255) NOT NULL,
+  `client_email` varchar(255) NOT NULL,
+  `client_phone` varchar(50) NOT NULL,
+  `client_country` varchar(100) DEFAULT NULL,
+  `client_interest` text DEFAULT NULL,
+  `portal_code` varchar(50) NOT NULL,
+  `portal_url` varchar(500) DEFAULT NULL,
+  `owned_by_user_id` int(11) NOT NULL,
+  `owned_by_name` varchar(255) DEFAULT NULL,
+  `owned_by_role` enum('admin','advisor','mca') NOT NULL,
+  `ownership_status` enum('active','expired','transferred') DEFAULT 'active',
+  `expires_at` timestamp NULL DEFAULT NULL,
+  `source` varchar(50) DEFAULT NULL,
+  `last_activity` timestamp NULL DEFAULT NULL,
+  `portal_views` int(11) DEFAULT 0,
+  `total_bookings` int(11) DEFAULT 0,
+  `total_revenue` decimal(10,2) DEFAULT 0.00,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_by` int(11) DEFAULT NULL,
+  `transferred_to` int(11) DEFAULT NULL,
+  `transfer_reason` text DEFAULT NULL,
+  `transfer_date` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `client_registry`
+--
+
+INSERT INTO `client_registry` (`id`, `client_name`, `client_email`, `client_phone`, `client_country`, `client_interest`, `portal_code`, `portal_url`, `owned_by_user_id`, `owned_by_name`, `owned_by_role`, `ownership_status`, `expires_at`, `source`, `last_activity`, `portal_views`, `total_bookings`, `total_revenue`, `created_at`, `created_by`, `transferred_to`, `transfer_reason`, `transfer_date`) VALUES
+(2, 'Jean Aime', 'baraime450@gmail.com', '+0788712679', 'Rwanda', '5 days Gorilla Trekking', 'JA-2025-033', 'https://localhost/portal.php?code=JA-2025-033', 21, 'Advisor User', 'advisor', 'active', '2025-12-23 22:49:41', 'instagram', '2025-11-25 09:59:47', 5, 0, 0.00, '2025-11-23 23:49:41', 21, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `commissions`
 --
 
@@ -532,7 +752,7 @@ CREATE TABLE `commissions` (
   `id` int(11) NOT NULL,
   `booking_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `commission_type` enum('direct','level1','level2','level3','override') NOT NULL,
+  `commission_type` enum('direct','level2','level3','mca_override','performance_bonus') NOT NULL,
   `commission_rate` decimal(5,2) NOT NULL,
   `commission_amount` decimal(10,2) NOT NULL,
   `status` enum('pending','approved','paid') DEFAULT 'pending',
@@ -543,18 +763,43 @@ CREATE TABLE `commissions` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `commission_summary_view`
--- (See below for the actual view)
+-- Table structure for table `commission_settings`
 --
+
+CREATE TABLE `commission_settings` (
+  `id` int(11) NOT NULL,
+  `rank` varchar(50) NOT NULL,
+  `direct_rate` decimal(5,2) NOT NULL,
+  `level2_rate` decimal(5,2) DEFAULT 10.00,
+  `level3_rate` decimal(5,2) DEFAULT 5.00,
+  `mca_override_rate` decimal(5,2) DEFAULT 7.50,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `commission_settings`
+--
+
+INSERT INTO `commission_settings` (`id`, `rank`, `direct_rate`, `level2_rate`, `level3_rate`, `mca_override_rate`, `updated_at`) VALUES
+(1, 'certified', 30.00, 10.00, 5.00, 7.50, '2025-11-23 18:06:52'),
+(2, 'senior', 35.00, 10.00, 5.00, 7.50, '2025-11-23 18:06:52'),
+(3, 'executive', 40.00, 10.00, 5.00, 7.50, '2025-11-23 18:06:52');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `commission_summary_view`
+--
+
 CREATE TABLE `commission_summary_view` (
-`user_id` int(11)
-,`user_name` varchar(201)
-,`role` enum('super_admin','mca','advisor','client')
-,`total_commissions` bigint(21)
-,`total_earned` decimal(32,2)
-,`total_paid` decimal(32,2)
-,`total_pending` decimal(32,2)
-);
+  `user_id` int(11) DEFAULT NULL,
+  `user_name` varchar(201) DEFAULT NULL,
+  `role` enum('super_admin','mca','advisor','client') DEFAULT NULL,
+  `total_commissions` bigint(21) DEFAULT NULL,
+  `total_earned` decimal(32,2) DEFAULT NULL,
+  `total_paid` decimal(32,2) DEFAULT NULL,
+  `total_pending` decimal(32,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -612,22 +857,22 @@ CREATE TABLE `countries` (
 INSERT INTO `countries` (`id`, `region_id`, `name`, `slug`, `country_code`, `description`, `hero_image`, `about_text`, `tourism_highlights`, `popular_destinations`, `tourism_description`, `image_url`, `cover_image`, `gallery`, `highlights`, `best_time_to_visit`, `currency`, `languages_spoken`, `capital`, `population`, `area`, `timezone`, `calling_code`, `meta_title`, `meta_description`, `language`, `featured`, `status`, `created_at`, `updated_at`, `visa_requirements`, `climate_info`, `safety_info`, `health_requirements`, `transportation_info`, `cuisine_info`, `cultural_info`, `attractions`, `activities`, `accommodation_info`) VALUES
 (1, 6, 'Egypt', 'visit-eg', 'EGY', 'Land of the Pharaohs with ancient pyramids and the Nile River.', NULL, NULL, NULL, NULL, 'Explore ancient wonders including the Pyramids of Giza, Valley of the Kings, and cruise the legendary Nile River.', 'https://images.unsplash.com/photo-1539650116574-75c0c6d73f6e?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'October to April', 'Egyptian Pound (EGP)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Arabic', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Most visitors require visa. Visa on arrival available for some nationalities.', 'Desert climate with hot, dry summers and mild winters. Best visited October-April.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Traditional Egyptian cuisine featuring ful medames, koshari, molokhia, and fresh seafood.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Pyramids of Giza, Valley of the Kings, Karnak Temple, Abu Simbel, Nile River cruises.', 'Nile cruises, pyramid tours, desert safaris, Red Sea diving, cultural site visits.', 'Various accommodation options from budget to luxury available.'),
 (2, 6, 'Morocco', 'visit-ma', 'MAR', 'Imperial cities, Sahara Desert, and Atlas Mountains.', NULL, NULL, NULL, NULL, 'Discover the magic of Morocco with its bustling souks, stunning architecture, and diverse landscapes.', 'https://images.unsplash.com/photo-1489749798305-4fea3ae436d3?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'March to May, September to November', 'Moroccan Dirham (MAD)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Arabic, French', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa required for most visitors. Available on arrival or online for many countries.', 'Mediterranean coast, Atlas Mountains, and Sahara Desert create diverse climates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Moroccan tagines, couscous, pastilla, mint tea, and diverse Berber and Arab dishes.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Marrakech medina, Fez old city, Sahara Desert, Atlas Mountains, Casablanca.', 'Desert camping, Atlas trekking, medina tours, cooking classes, hammam experiences.', 'Various accommodation options from budget to luxury available.'),
-(3, 6, 'Tunisia', 'visit-tn', 'TUN', 'Mediterranean beaches and ancient Carthage ruins.', NULL, NULL, NULL, NULL, 'Experience Tunisia\'s rich history from ancient Carthage to Islamic architecture.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'March to May, September to November', 'Tunisian Dinar (TND)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Arabic, French', 0, 'active', '2025-10-22 18:58:55', '2025-11-17 07:46:18', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(4, 6, 'Nigeria', 'visit-ng', 'NGA', 'Most populous African country with vibrant culture.', NULL, NULL, NULL, NULL, 'Experience Nigeria\'s diverse cultures, from Nollywood entertainment to traditional festivals.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to March', 'Nigerian Naira (NGN)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'active', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(3, 6, 'Tunisia', 'visit-tu', 'TUN', 'Mediterranean beaches and ancient Carthage ruins.', NULL, NULL, NULL, NULL, 'Experience Tunisia\'s rich history from ancient Carthage to Islamic architecture.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'March to May, September to November', 'Tunisian Dinar (TND)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Arabic, French', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-27 13:57:47', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(4, 6, 'Nigeria', 'visit-ng', 'NGA', 'Most populous African country with vibrant culture.', NULL, NULL, NULL, NULL, 'Experience Nigeria\'s diverse cultures, from Nollywood entertainment to traditional festivals.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to March', 'Nigerian Naira (NGN)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-27 13:44:06', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
 (5, 6, 'Ghana', 'visit-gh', 'GHA', 'Gateway to West Africa with rich history.', NULL, NULL, NULL, NULL, 'Discover Ghana\'s role in African history, from ancient kingdoms to colonial forts.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to March', 'Ghanaian Cedi (GHS)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(6, 6, 'Senegal', 'visit-sn', 'SEN', 'French colonial heritage and vibrant music scene.', NULL, NULL, NULL, NULL, 'Experience Senegal\'s rich musical heritage and colonial architecture in Dakar.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to May', 'West African CFA Franc (XOF)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'French', 0, 'active', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(7, 6, 'Kenya', 'visit-ke', 'KEN', 'Home to the Great Migration and Maasai culture.', NULL, NULL, NULL, NULL, 'Witness the spectacular Great Migration in Maasai Mara and experience rich Maasai culture.', 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'July to October, December to March', 'Kenyan Shilling (KES)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Swahili', 1, 'active', '2025-10-22 18:58:55', '2025-11-17 07:44:21', 'Visa required for most visitors. Available on arrival for some nationalities.', 'Tropical climate with dry and wet seasons. Best visited June-October and December-March.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Nyama choma, ugali, sukuma wiki, pilau rice, and fresh tropical fruits.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Maasai Mara, Amboseli, Tsavo, Mount Kenya, Lamu Island, Great Rift Valley.', 'Safari game drives, mountain climbing, beach relaxation, cultural village visits.', 'Various accommodation options from budget to luxury available.'),
-(8, 6, 'Tanzania', 'visit-tz', 'TZA', 'Serengeti, Kilimanjaro, and Zanzibar.', NULL, NULL, NULL, NULL, 'Experience the Serengeti\'s wildlife, climb Mount Kilimanjaro, and relax on Zanzibar beaches.', 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'June to October, December to March', 'Tanzanian Shilling (TZS)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Swahili', 1, 'active', '2025-10-22 18:58:55', '2025-11-17 07:45:46', 'Visa required. Available on arrival or online for most nationalities.', 'Tropical climate with dry and wet seasons. Best visited June-October and December-March.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Ugali, nyama choma, pilau, fresh seafood, tropical fruits, and Zanzibari spices.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Serengeti, Ngorongoro Crater, Mount Kilimanjaro, Zanzibar, Tarangire, Lake Manyara.', 'Safari tours, Kilimanjaro climbing, Zanzibar beaches, cultural tours, spice tours.', 'Various accommodation options from budget to luxury available.'),
-(9, 6, 'Uganda', 'visit-ug', 'UGA', 'Pearl of Africa with mountain gorillas.', NULL, NULL, NULL, NULL, 'Track mountain gorillas in Bwindi Forest and explore the source of the Nile.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'June to August, December to February', 'Ugandan Shilling (UGX)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'active', '2025-10-22 18:58:55', '2025-11-17 07:57:38', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(10, 6, 'Rwanda', 'visit-rw', 'RWA', 'Land of a thousand hills and gorillas.', 'https://images.unsplash.com/photo-1609198092357-8e51c4b1d9f9?auto=format&fit=crop&w=2000&q=80', 'Rwanda, the \"Land of a Thousand Hills,\" is a remarkable East African nation known for its stunning scenery, rare mountain gorillas, and inspiring recovery story. This small but vibrant country offers world-class wildlife experiences, rich cultural heritage, and warm hospitality.', '[\"Mountain Gorilla Trekking\", \"Volcanoes National Park\", \"Nyungwe Forest\", \"Lake Kivu\", \"Kigali Genocide Memorial\", \"Akagera National Park\", \"Cultural Villages\", \"Coffee Plantations\"]', '[\"Volcanoes National Park\", \"Kigali City\", \"Lake Kivu\", \"Nyungwe National Park\", \"Akagera National Park\"]', 'Experience Rwanda\'s remarkable recovery and track mountain gorillas.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'June to September (Dry Season)', 'Rwandan Franc (RWF)', '[\"Kinyarwanda\", \"English\", \"French\", \"Swahili\"]', 'Kigali', '13 million', '26,338 km²', 'CAT (UTC+2)', '+250', 'Visit Rwanda - Gorilla Trekking & Luxury Tours', 'Experience the beauty of Rwanda with Forever Young Tours. Trek with mountain gorillas, explore pristine national parks, and discover the warmth of Rwandan hospitality.', 'English, French, Kinyarwanda', 1, 'active', '2025-10-22 18:58:55', '2025-11-07 17:03:07', 'Visa on arrival or e-visa available for most nationalities', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(11, 6, 'Ethiopia', 'visit-et', 'ETH', 'Cradle of humanity with ancient history.', NULL, NULL, NULL, NULL, 'Discover the birthplace of coffee and ancient rock churches of Lalibela.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'October to March', 'Ethiopian Birr (ETB)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Amharic', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(12, 6, 'Democratic Republic of Congo', 'visit-cd', 'COD', 'Heart of Africa with vast rainforests.', NULL, NULL, NULL, NULL, 'Explore the Congo Basin rainforest and encounter unique wildlife including bonobos.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'May to September', 'Congolese Franc (CDF)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'French', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(13, 6, 'Cameroon', 'visit-cm', 'CMR', 'Africa in miniature with diverse landscapes.', NULL, NULL, NULL, NULL, 'Experience Africa in miniature with diverse landscapes from rainforests to savannas.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to February', 'Central African CFA Franc (XAF)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'French, English', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:20', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(14, 6, 'South Africa', 'visit-za', 'ZAF', 'Rainbow nation with diverse attractions.', NULL, NULL, NULL, NULL, 'Experience Cape Town\'s beauty, Kruger\'s wildlife, and wine regions.', 'https://images.unsplash.com/photo-1484318571209-661cf29a69ea?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'April to May, September to November', 'South African Rand (ZAR)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Afrikaans, Zulu', 1, 'active', '2025-10-22 18:58:55', '2025-11-17 07:48:24', 'No visa required for stays up to 90 days for most countries.', 'Mediterranean climate with mild, wet winters and warm, dry summers.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Braai (BBQ), bobotie, biltong, boerewors, Cape Malay curry, and world-class wines.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Table Mountain, Cape Winelands, Kruger National Park, Garden Route, Robben Island.', 'Wine tours, safari drives, shark cage diving, township tours, mountain hiking.', 'Various accommodation options from budget to luxury available.'),
+(6, 6, 'Senegal', 'visit-se', 'SEN', 'French colonial heritage and vibrant music scene.', NULL, NULL, NULL, NULL, 'Experience Senegal\'s rich musical heritage and colonial architecture in Dakar.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to May', 'West African CFA Franc (XOF)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'French', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-27 13:57:48', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(7, 6, 'Kenya', 'visit-ke', 'KEN', 'Home to the Great Migration and Maasai culture.', NULL, NULL, NULL, NULL, 'Witness the spectacular Great Migration in Maasai Mara and experience rich Maasai culture.', 'https://images.unsplash.com/photo-1489392191049-fc10c97e64b6?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'July to October, December to March', 'Kenyan Shilling (KES)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Swahili', 1, 'active', '2025-10-22 18:58:55', '2025-11-27 13:46:54', 'Visa required for most visitors. Available on arrival for some nationalities.', 'Tropical climate with dry and wet seasons. Best visited June-October and December-March.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Nyama choma, ugali, sukuma wiki, pilau rice, and fresh tropical fruits.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Maasai Mara, Amboseli, Tsavo, Mount Kenya, Lamu Island, Great Rift Valley.', 'Safari game drives, mountain climbing, beach relaxation, cultural village visits.', 'Various accommodation options from budget to luxury available.'),
+(8, 6, 'Tanzania', 'visit-tz', 'TZA', 'Serengeti, Kilimanjaro, and Zanzibar.', NULL, NULL, NULL, NULL, 'Experience the Serengeti\'s wildlife, climb Mount Kilimanjaro, and relax on Zanzibar beaches.', 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'June to October, December to March', 'Tanzanian Shilling (TZS)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Swahili', 1, 'active', '2025-10-22 18:58:55', '2025-11-27 14:07:01', 'Visa required. Available on arrival or online for most nationalities.', 'Tropical climate with dry and wet seasons. Best visited June-October and December-March.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Ugali, nyama choma, pilau, fresh seafood, tropical fruits, and Zanzibari spices.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Serengeti, Ngorongoro Crater, Mount Kilimanjaro, Zanzibar, Tarangire, Lake Manyara.', 'Safari tours, Kilimanjaro climbing, Zanzibar beaches, cultural tours, spice tours.', 'Various accommodation options from budget to luxury available.'),
+(9, 6, 'Uganda', 'visit-ug', 'UGA', 'Pearl of Africa with mountain gorillas.', NULL, NULL, NULL, NULL, 'Track mountain gorillas in Bwindi Forest and explore the source of the Nile.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'June to August, December to February', 'Ugandan Shilling (UGX)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-27 13:43:50', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(10, 6, 'Rwanda', 'visit-rw', 'RWA', 'Land of a thousand hills and gorillas.', 'https://images.unsplash.com/photo-1609198092357-8e51c4b1d9f9?auto=format&fit=crop&w=2000&q=80', 'Rwanda, the \"Land of a Thousand Hills,\" is a remarkable East African nation known for its stunning scenery, rare mountain gorillas, and inspiring recovery story. This small but vibrant country offers world-class wildlife experiences, rich cultural heritage, and warm hospitality.', '[\"Mountain Gorilla Trekking\", \"Volcanoes National Park\", \"Nyungwe Forest\", \"Lake Kivu\", \"Kigali Genocide Memorial\", \"Akagera National Park\", \"Cultural Villages\", \"Coffee Plantations\"]', '[\"Volcanoes National Park\", \"Kigali City\", \"Lake Kivu\", \"Nyungwe National Park\", \"Akagera National Park\"]', 'Experience Rwanda\'s remarkable recovery and track mountain gorillas.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'June to September (Dry Season)', 'Rwandan Franc (RWF)', '[\"Kinyarwanda\", \"English\", \"French\", \"Swahili\"]', 'Kigali', '13 million', '26,338 km²', 'CAT (UTC+2)', '+250', 'Visit Rwanda - Gorilla Trekking & Luxury Tours', 'Experience the beauty of Rwanda with Forever Young Tours. Trek with mountain gorillas, explore pristine national parks, and discover the warmth of Rwandan hospitality.', 'English, French, Kinyarwanda', 1, 'active', '2025-10-22 18:58:55', '2025-11-27 13:42:52', 'Visa on arrival or e-visa available for most nationalities', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(11, 6, 'Ethiopia', 'visit-et', 'ETH', 'Cradle of humanity with ancient history.', NULL, NULL, NULL, NULL, 'Discover the birthplace of coffee and ancient rock churches of Lalibela.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'October to March', 'Ethiopian Birr (ETB)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Amharic', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-27 14:04:13', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(12, 6, 'Democratic Republic of Congo', 'visit-co', 'COD', 'Heart of Africa with vast rainforests.', NULL, NULL, NULL, NULL, 'Explore the Congo Basin rainforest and encounter unique wildlife including bonobos.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'May to September', 'Congolese Franc (CDF)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'French', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-27 13:57:48', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(13, 6, 'Cameroon', 'visit-cm', 'CMR', 'Africa in miniature with diverse landscapes.', NULL, NULL, NULL, NULL, 'Experience Africa in miniature with diverse landscapes from rainforests to savannas.', 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'November to February', 'Central African CFA Franc (XAF)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'French, English', 0, 'inactive', '2025-10-22 18:58:55', '2025-11-27 14:05:32', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(14, 6, 'South Africa', 'visit-za', 'ZAF', 'Rainbow nation with diverse attractions.', NULL, NULL, NULL, NULL, 'Experience Cape Town\'s beauty, Kruger\'s wildlife, and wine regions.', 'https://images.unsplash.com/photo-1484318571209-661cf29a69ea?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'April to May, September to November', 'South African Rand (ZAR)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Afrikaans, Zulu', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-27 14:06:55', 'No visa required for stays up to 90 days for most countries.', 'Mediterranean climate with mild, wet winters and warm, dry summers.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Braai (BBQ), bobotie, biltong, boerewors, Cape Malay curry, and world-class wines.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Table Mountain, Cape Winelands, Kruger National Park, Garden Route, Robben Island.', 'Wine tours, safari drives, shark cage diving, township tours, mountain hiking.', 'Various accommodation options from budget to luxury available.'),
 (15, 6, 'Zimbabwe', 'visit-zw', 'ZWE', 'Victoria Falls and ancient ruins.', NULL, NULL, NULL, NULL, 'Marvel at Victoria Falls and explore Great Zimbabwe ruins.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'April to October', 'US Dollar (USD)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:22', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(16, 6, 'Botswana', 'visit-bw', 'BWA', 'Okavango Delta and pristine wilderness.', NULL, NULL, NULL, NULL, 'Discover the Okavango Delta\'s unique ecosystem and excellent wildlife viewing.', 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'May to September', 'Botswana Pula (BWP)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Setswana', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:19', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
+(16, 6, 'Botswana', 'visit-bw', 'BWA', 'Okavango Delta and pristine wilderness.', NULL, NULL, NULL, NULL, 'Discover the Okavango Delta\'s unique ecosystem and excellent wildlife viewing.', 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'May to September', 'Botswana Pula (BWP)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English, Setswana', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-27 14:05:29', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
 (17, 6, 'Namibia', 'visit-na', 'NAM', 'Sossusvlei dunes and Skeleton Coast.', NULL, NULL, NULL, NULL, 'Discover the world\'s highest sand dunes and unique desert-adapted wildlife.', 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?auto=format&fit=crop&w=800&q=80', NULL, NULL, NULL, 'May to October', 'Namibian Dollar (NAD)', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'English', 1, 'inactive', '2025-10-22 18:58:55', '2025-11-15 10:13:21', 'Visa requirements vary by nationality. Check with embassy or consulate.', 'Diverse climate with seasonal variations. Check weather patterns for your travel dates.', 'Generally safe for tourists. Follow standard travel precautions and local guidelines.', 'Standard vaccinations recommended. Consult travel health clinic before departure.', 'Well-developed transport network including airports, roads, and public transport.', 'Rich culinary traditions featuring local ingredients and traditional cooking methods.', 'Diverse cultural heritage with warm, welcoming people and unique traditions.', 'Numerous natural and cultural attractions suitable for all types of travelers.', 'Wide range of activities from adventure sports to cultural experiences.', 'Various accommodation options from budget to luxury available.'),
-(18, 6, 'Malawi', 'visit-ml', 'Ml', 'winner-rwanda-na-vision-fc-bongereye-amasezerano-y-ubufatanye-nk-umuterankunga-mukuru-amafoto-1', NULL, NULL, NULL, NULL, NULL, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAI0AjQMBEQACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAADBQIEBgEHAAj/xAA7EAACAQMDAQYEBQIFAwUAAAABAgMABBEFEiExBhMiQVFxMmGBkRQjobHBQtEkM1Lh8CXC8RdDYoKS/8QAGwEAAgMBAQEAAAAAAAAAAAAAAQIAAwQFBgf/xAAzEQACAQIEAggGAgIDAAAAAAAAAQIDEQQSITEFQRMiMlFhcdHwI4GRobHBFOFC8RWC4v/aAAwDAQACEQMRA', NULL, NULL, NULL, 'November to February', 'Ml', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'zuru', 0, 'active', '2025-11-16 11:05:16', '2025-11-16 22:35:40', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(18, 6, 'Malawi', 'visit-ml', 'Ml', 'winner-rwanda-na-vision-fc-bongereye-amasezerano-y-ubufatanye-nk-umuterankunga-mukuru-amafoto-1', NULL, NULL, NULL, NULL, NULL, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAI0AjQMBEQACEQEDEQH/xAAcAAACAwEBAQEAAAAAAAAAAAADBQIEBgEHAAj/xAA7EAACAQMDAQYEBQIFAwUAAAABAgMABBEFEiExBhMiQVFxMmGBkRQjobHBQtEkM1Lh8CXC8RdDYoKS/8QAGwEAAgMBAQEAAAAAAAAAAAAAAQIAAwQFBgf/xAAzEQACAQIEAggGAgIDAAAAAAAAAQIDEQQSITEFQRMiMlFhcdHwI4GRobHBFOFC8RWC4v/aAAwDAQACEQMRA', NULL, NULL, NULL, 'November to February', 'Ml', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'zuru', 0, 'inactive', '2025-11-16 11:05:16', '2025-11-27 13:40:34', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -750,6 +995,72 @@ CREATE TABLE `kyc_status` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `languages`
+--
+
+CREATE TABLE `languages` (
+  `id` int(11) NOT NULL,
+  `code` varchar(5) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `native_name` varchar(50) DEFAULT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `is_default` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `languages`
+--
+
+INSERT INTO `languages` (`id`, `code`, `name`, `native_name`, `is_active`, `is_default`, `created_at`) VALUES
+(1, 'en', 'English', 'English', 1, 1, '2025-11-23 21:05:48'),
+(2, 'fr', 'French', 'Français', 1, 0, '2025-11-23 21:05:48'),
+(3, 'es', 'Spanish', 'Español', 1, 0, '2025-11-23 21:05:48'),
+(4, 'pt', 'Portuguese', 'Português', 1, 0, '2025-11-23 21:05:48'),
+(5, 'ar', 'Arabic', 'العربية', 1, 0, '2025-11-23 21:05:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `license_fees`
+--
+
+CREATE TABLE `license_fees` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `license_type` enum('advisor','mca') NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_status` enum('pending','paid','failed') DEFAULT 'pending',
+  `payment_method` varchar(50) DEFAULT NULL,
+  `stripe_payment_id` varchar(255) DEFAULT NULL,
+  `paid_date` datetime DEFAULT NULL,
+  `expiry_date` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `license_payments`
+--
+
+CREATE TABLE `license_payments` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `license_type` enum('basic','premium') NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` varchar(50) DEFAULT 'stripe',
+  `transaction_id` varchar(100) DEFAULT NULL,
+  `stripe_payment_intent_id` varchar(100) DEFAULT NULL,
+  `status` enum('pending','completed','failed','refunded') DEFAULT 'pending',
+  `payment_date` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mca_assignments`
 --
 
@@ -770,6 +1081,36 @@ INSERT INTO `mca_assignments` (`id`, `mca_id`, `country_id`, `assigned_at`, `sta
 (2, 11, 2, '2025-10-22 19:43:24', 'active'),
 (3, 12, 6, '2025-10-22 19:43:24', 'active'),
 (4, 12, 7, '2025-10-22 19:43:24', 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `membership_tiers`
+--
+
+CREATE TABLE `membership_tiers` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `slug` varchar(100) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `duration_months` int(11) NOT NULL,
+  `benefits` text DEFAULT NULL,
+  `discount_percentage` decimal(5,2) DEFAULT 0.00,
+  `priority_booking` tinyint(1) DEFAULT 0,
+  `free_cancellations` int(11) DEFAULT 0,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `membership_tiers`
+--
+
+INSERT INTO `membership_tiers` (`id`, `name`, `slug`, `price`, `duration_months`, `benefits`, `discount_percentage`, `priority_booking`, `free_cancellations`, `status`, `created_at`) VALUES
+(1, 'Bronze', 'bronze', 99.00, 12, '[\"5% discount on all tours\", \"Priority customer support\", \"Monthly newsletter\"]', 5.00, 0, 1, 'active', '2025-11-23 14:18:55'),
+(2, 'Silver', 'silver', 199.00, 12, '[\"10% discount on all tours\", \"Priority booking\", \"Free cancellation (2 per year)\", \"Exclusive tour access\"]', 10.00, 1, 2, 'active', '2025-11-23 14:18:55'),
+(3, 'Gold', 'gold', 399.00, 12, '[\"15% discount on all tours\", \"Priority booking\", \"Free cancellation (5 per year)\", \"VIP lounge access\", \"Personal travel advisor\"]', 15.00, 1, 5, 'active', '2025-11-23 14:18:55'),
+(4, 'Platinum', 'platinum', 799.00, 12, '[\"20% discount on all tours\", \"Priority booking\", \"Unlimited free cancellations\", \"VIP lounge access\", \"Dedicated travel concierge\", \"Complimentary upgrades\"]', 20.00, 1, 999, 'active', '2025-11-23 14:18:55');
 
 -- --------------------------------------------------------
 
@@ -879,6 +1220,22 @@ CREATE TABLE `order_items` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `ownership_alerts`
+--
+
+CREATE TABLE `ownership_alerts` (
+  `id` int(11) NOT NULL,
+  `portal_code` varchar(50) NOT NULL,
+  `alert_type` enum('bypass_attempt','portal_viewed','booking_made','message_received') NOT NULL,
+  `advisor_id` int(11) NOT NULL,
+  `alert_message` text DEFAULT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `payments`
 --
 
@@ -893,6 +1250,26 @@ CREATE TABLE `payments` (
   `status` enum('pending','completed','failed','refunded') DEFAULT 'pending',
   `payment_date` timestamp NOT NULL DEFAULT current_timestamp(),
   `notes` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payment_logs`
+--
+
+CREATE TABLE `payment_logs` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `payment_type` enum('license','booking','payout') NOT NULL,
+  `reference_id` int(11) DEFAULT NULL,
+  `amount` decimal(10,2) DEFAULT NULL,
+  `status` varchar(50) DEFAULT NULL,
+  `request_data` text DEFAULT NULL,
+  `response_data` text DEFAULT NULL,
+  `error_message` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -913,6 +1290,93 @@ CREATE TABLE `payment_transactions` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `payout_requests`
+--
+
+CREATE TABLE `payout_requests` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` enum('bank_transfer','paypal','stripe','mobile_money') NOT NULL,
+  `payment_details` text DEFAULT NULL,
+  `status` enum('pending','approved','processing','completed','rejected') DEFAULT 'pending',
+  `requested_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `processed_date` datetime DEFAULT NULL,
+  `processed_by` int(11) DEFAULT NULL,
+  `admin_notes` text DEFAULT NULL,
+  `transaction_reference` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `portal_activity`
+--
+
+CREATE TABLE `portal_activity` (
+  `id` int(11) NOT NULL,
+  `portal_code` varchar(50) NOT NULL,
+  `activity_type` varchar(50) NOT NULL,
+  `activity_data` text DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `user_agent` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `portal_activity`
+--
+
+INSERT INTO `portal_activity` (`id`, `portal_code`, `activity_type`, `activity_data`, `ip_address`, `user_agent`, `created_at`) VALUES
+(1, 'JA-2025-033', 'view', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-23 23:50:42'),
+(2, 'JA-2025-033', 'view', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-24 12:36:57'),
+(3, 'JA-2025-033', 'view', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-24 12:36:59'),
+(4, 'JA-2025-033', 'view', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-25 09:59:46'),
+(5, 'JA-2025-033', 'view', NULL, '::1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36', '2025-11-25 09:59:46');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `portal_messages`
+--
+
+CREATE TABLE `portal_messages` (
+  `id` int(11) NOT NULL,
+  `portal_code` varchar(50) NOT NULL,
+  `sender_type` enum('client','advisor','admin') NOT NULL,
+  `sender_id` int(11) DEFAULT NULL,
+  `sender_name` varchar(255) DEFAULT NULL,
+  `message` text NOT NULL,
+  `is_read` tinyint(1) DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `portal_tours`
+--
+
+CREATE TABLE `portal_tours` (
+  `id` int(11) NOT NULL,
+  `portal_code` varchar(50) NOT NULL,
+  `tour_id` int(11) NOT NULL,
+  `display_order` int(11) DEFAULT 0,
+  `custom_price` decimal(10,2) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `added_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `portal_tours`
+--
+
+INSERT INTO `portal_tours` (`id`, `portal_code`, `tour_id`, `display_order`, `custom_price`, `notes`, `added_at`) VALUES
+(2, 'JA-2025-033', 30, 1, NULL, NULL, '2025-11-23 23:49:41');
 
 -- --------------------------------------------------------
 
@@ -963,21 +1427,21 @@ INSERT INTO `regions` (`id`, `name`, `slug`, `description`, `hero_image`, `about
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `region_country_tours_view`
--- (See below for the actual view)
+-- Table structure for table `region_country_tours_view`
 --
+
 CREATE TABLE `region_country_tours_view` (
-`region_id` int(11)
-,`region_name` varchar(100)
-,`region_slug` varchar(100)
-,`country_id` int(11)
-,`country_name` varchar(100)
-,`country_slug` varchar(100)
-,`country_code` varchar(3)
-,`tour_count` bigint(21)
-,`min_price` decimal(10,2)
-,`max_price` decimal(10,2)
-);
+  `region_id` int(11) DEFAULT NULL,
+  `region_name` varchar(100) DEFAULT NULL,
+  `region_slug` varchar(100) DEFAULT NULL,
+  `country_id` int(11) DEFAULT NULL,
+  `country_name` varchar(100) DEFAULT NULL,
+  `country_slug` varchar(100) DEFAULT NULL,
+  `country_code` varchar(3) DEFAULT NULL,
+  `tour_count` bigint(21) DEFAULT NULL,
+  `min_price` decimal(10,2) DEFAULT NULL,
+  `max_price` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1039,7 +1503,7 @@ CREATE TABLE `shopping_cart` (
 INSERT INTO `shopping_cart` (`id`, `user_id`, `product_id`, `quantity`, `created_at`, `updated_at`) VALUES
 (1, 19, 3, 2, '2025-11-07 16:26:24', '2025-11-07 16:26:28'),
 (2, 19, 2, 1, '2025-11-07 16:26:31', '2025-11-07 16:26:31'),
-(3, 22, 3, 1, '2025-11-07 16:44:14', '2025-11-07 16:44:37'),
+(3, 22, 3, 2, '2025-11-07 16:44:14', '2025-11-25 17:17:52'),
 (4, 22, 1, 1, '2025-11-07 16:44:18', '2025-11-07 16:44:18');
 
 -- --------------------------------------------------------
@@ -1255,19 +1719,19 @@ INSERT INTO `system_settings` (`id`, `setting_key`, `setting_value`, `setting_ty
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `team_hierarchy_view`
--- (See below for the actual view)
+-- Table structure for table `team_hierarchy_view`
 --
+
 CREATE TABLE `team_hierarchy_view` (
-`advisor_id` int(11)
-,`advisor_name` varchar(100)
-,`level` int(11)
-,`upline_id` int(11)
-,`upline_name` varchar(100)
-,`mca_id` int(11)
-,`mca_name` varchar(100)
-,`team_count` bigint(21)
-);
+  `advisor_id` int(11) DEFAULT NULL,
+  `advisor_name` varchar(100) DEFAULT NULL,
+  `level` int(11) DEFAULT NULL,
+  `upline_id` int(11) DEFAULT NULL,
+  `upline_name` varchar(100) DEFAULT NULL,
+  `mca_id` int(11) DEFAULT NULL,
+  `mca_name` varchar(100) DEFAULT NULL,
+  `team_count` bigint(21) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1285,7 +1749,8 @@ CREATE TABLE `tours` (
   `destination_country` varchar(100) NOT NULL,
   `country_id` int(11) DEFAULT NULL,
   `region_id` int(11) DEFAULT NULL,
-  `category` enum('cultural','adventure','wildlife','city','sports','agro','conference') DEFAULT 'cultural',
+  `category` enum('motorcoach tour','rail tour','cruises tour','city-breaks tour','agro tour','adventure tour','sport tour','cultural tour','conference-expos tour') DEFAULT NULL,
+  `category_id` int(11) DEFAULT NULL,
   `price` decimal(10,2) NOT NULL,
   `base_price` decimal(10,2) NOT NULL,
   `duration` varchar(50) NOT NULL,
@@ -1363,9 +1828,10 @@ CREATE TABLE `tours` (
 -- Dumping data for table `tours`
 --
 
-INSERT INTO `tours` (`id`, `name`, `slug`, `description`, `long_description`, `destination`, `destination_country`, `country_id`, `region_id`, `category`, `price`, `base_price`, `duration`, `duration_days`, `max_participants`, `min_age`, `min_participants`, `image_url`, `gallery_images`, `images`, `cover_image`, `gallery`, `itinerary`, `included_services`, `excluded_services`, `meeting_point`, `departure_time`, `return_time`, `inclusions`, `exclusions`, `requirements`, `available_dates`, `status`, `featured`, `created_by`, `created_at`, `updated_at`, `detailed_description`, `highlights`, `difficulty_level`, `best_time_to_visit`, `what_to_bring`, `cancellation_policy`, `tour_type`, `languages`, `age_restriction`, `physical_requirements`, `accommodation_type`, `meal_plan`, `transportation_details`, `booking_deadline`, `refund_policy`, `emergency_contact`, `tour_guide_info`, `special_offers`, `seasonal_pricing`, `group_discounts`, `addon_services`, `safety_measures`, `insurance_info`, `cultural_notes`, `weather_info`, `local_customs`, `photography_policy`, `sustainability_info`, `accessibility_info`, `tour_tags`, `meta_title`, `meta_description`, `share_url`, `advisor_commission_rate`, `mca_commission_rate`, `booking_count`, `average_rating`, `review_count`, `last_booked_date`, `popularity_score`, `video_url`, `virtual_tour_url`, `brochure_url`, `terms_conditions`) VALUES
-(30, 'test', 'test', 'test', NULL, 'Musanze', 'Rwanda', 10, NULL, 'wildlife', 1211.00, 1211.00, '23 days', 23, 20, 0, 2, 'uploads/tours/30_main_1763412074_9913.png', NULL, '[\"uploads\\/tours\\/30_main_1763412074_9913.png\",\"uploads\\/tours\\/30_cover_1763412075_7404.jpeg\",\"uploads\\/tours\\/30_gallery_0_1763412075_8248.png\"]', 'uploads/tours/30_cover_1763412075_7404.jpeg', '[\"uploads\\/tours\\/30_gallery_0_1763412075_8248.png\"]', '[{\"day\":\"1\",\"title\":\"Travellers come from\",\"activities\":\"test tetst\"}]', NULL, NULL, NULL, NULL, NULL, '[\"tets\"]', '[\"tets\"]', 'test', NULL, 'active', 0, 1, '2025-11-17 20:41:14', '2025-11-17 20:41:15', 'tets', '[\"tets\"]', 'easy', 'November to February', NULL, NULL, 'group', NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10.00, 5.00, 0, 0.00, 0, NULL, 0, NULL, NULL, NULL, NULL),
-(31, 'TEST AGAIN', 'test-again', 'TEST AGAIN', NULL, 'Southern of Rwanda', 'South Africa', 14, NULL, 'sports', 2321.00, 2321.00, '32 days', 32, 20, 0, 2, 'uploads/tours/31_main_1763493160_8788.png', NULL, '[\"uploads\\/tours\\/31_main_1763493160_8788.png\",\"uploads\\/tours\\/31_cover_1763493160_8558.jpeg\",\"uploads\\/tours\\/31_gallery_0_1763493160_9345.png\"]', 'uploads/tours/31_cover_1763493160_8558.jpeg', '[\"uploads\\/tours\\/31_gallery_0_1763493160_9345.png\"]', '[{\"day\":\"1\",\"title\":\"Travellers come from\",\"activities\":\"TETSTS TSTS\"}]', NULL, NULL, NULL, NULL, NULL, '[\"TETSTS\"]', '[\"TETEST\"]', 'TETST', NULL, 'active', 0, 1, '2025-11-18 19:12:40', '2025-11-18 19:12:40', 'TEST AGAIN', '[\"TETTS\"]', 'easy', 'November to February', NULL, NULL, 'group', NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10.00, 5.00, 0, 0.00, 0, NULL, 0, NULL, NULL, NULL, NULL);
+INSERT INTO `tours` (`id`, `name`, `slug`, `description`, `long_description`, `destination`, `destination_country`, `country_id`, `region_id`, `category`, `category_id`, `price`, `base_price`, `duration`, `duration_days`, `max_participants`, `min_age`, `min_participants`, `image_url`, `gallery_images`, `images`, `cover_image`, `gallery`, `itinerary`, `included_services`, `excluded_services`, `meeting_point`, `departure_time`, `return_time`, `inclusions`, `exclusions`, `requirements`, `available_dates`, `status`, `featured`, `created_by`, `created_at`, `updated_at`, `detailed_description`, `highlights`, `difficulty_level`, `best_time_to_visit`, `what_to_bring`, `cancellation_policy`, `tour_type`, `languages`, `age_restriction`, `physical_requirements`, `accommodation_type`, `meal_plan`, `transportation_details`, `booking_deadline`, `refund_policy`, `emergency_contact`, `tour_guide_info`, `special_offers`, `seasonal_pricing`, `group_discounts`, `addon_services`, `safety_measures`, `insurance_info`, `cultural_notes`, `weather_info`, `local_customs`, `photography_policy`, `sustainability_info`, `accessibility_info`, `tour_tags`, `meta_title`, `meta_description`, `share_url`, `advisor_commission_rate`, `mca_commission_rate`, `booking_count`, `average_rating`, `review_count`, `last_booked_date`, `popularity_score`, `video_url`, `virtual_tour_url`, `brochure_url`, `terms_conditions`) VALUES
+(0, 'Classic City Tour', 'classic-city-tour', 'A full-day immersion into Rwanda’s powerful history, vibrant culture, and artistic renaissance. This curated experience takes travelers from the Kigali Genocide Memorial to the Kandt House Museum, f...', NULL, 'Kigali City', 'Rwanda', 10, NULL, '', 8, 0.00, 0.00, '1 days', 1, 1, 0, 50, 'uploads/tours/0_main_tour_6929600f637a80.01702171.png', NULL, '[\"uploads\\/tours\\/0_main_tour_6929600f637a80.01702171.png\",\"uploads\\/tours\\/0_cover_tour_6929600f642793.98931314.png\",\"uploads\\/tours\\/0_gallery_0_tour_6929600f64a465.05860645.png\"]', 'uploads/tours/0_cover_tour_6929600f642793.98931314.png', '[\"uploads\\/tours\\/0_gallery_0_1764278673_6708.png\",\"uploads\\/tours\\/0_gallery_0_tour_6929600f64a465.05860645.png\"]', '[{\"day\":\"1\",\"title\":\"Kigali Genocide Memorial Visit & Overview of Rwanda History and Conservation.\",\"activities\":\"Your 4 days journey begins in Kigali, Rwanda\\u2019s vibrant capital. Start by visiting the Kigali Genocide Memorial, where you will gain a powerful and poignant insight into the country past. After this emotional experience, continue your journey to Musanze to explore the Ellen DeGeneres Campus of the Dian Fossey Gorilla Fund. Here, you will learn about the dedicated efforts toward gorilla conservation, setting the stage for your upcoming trekking experiences.\"},{\"day\":\"2\",\"title\":\"Your 1st Gorilla Trekking experience.\",\"activities\":\"You will embark on your highly anticipated gorilla trekking experience. Led by expOn Day 2 You will embark on your highly anticipated gorilla trekking experience. Led by expert guides, you will hike through the beautiful Volcanoes National Park in search of the rare mountain gorillas. This once-in-a-lifetime experience offers you the chance to witness these lively primates in their natural habitat, creating unforgettable memories.ert guides, you will hike through the beautiful Volcanoes National Park in search of the rare mountain gorillas. This once-in-a-lifetime experience offers you the chance to witness these lively primates in their natural habitat, creating unforgettable memories.\"},{\"day\":\"3\",\"title\":\"Your 2nd Gorilla Trekking and Cultural Immersion.\",\"activities\":\"On Day 3 You will start with another gorilla trekking experience, where You will get to visit a different family, offering a unique opportunity to further immerse yourself in Rwanda wilderness and wildlife. In the afternoon, visit Iby\\u2019iwacu culture Village (Gorilla Guardians Village), where you will experience local culture firsthand. Engage with the community, discover traditional Rwandan life and gain a deeper appreciation of the country\\u2019s vibrant heritage.\"},{\"day\":\"4\",\"title\":\"Golden Monkey Trekking Experience and Transfer back to Kigali.\",\"activities\":\"Conclude your tour with Golden Monkey trekking experience. These rare primates, known for their playful behavior, are found in the same park as the gorillas. After this exciting trek, make your way back to Kigali, reflecting on the incredible natural beauty, wildlife and rich cultural experiences you have enjoyed throughout your journey.\"}]', NULL, NULL, NULL, NULL, NULL, '[\"International flights.\\r\",\"Travel insurance.\\r\",\"Meet and greet assistance on arrival.\\r\",\"Gorilla trekking Permit.\\r\",\"Golden monkey trekking permit.\\r\",\"Ground transportation in 4 x 4 SUV \\/ Pop-up Open roof Safari Vehicle.\\r\",\"Audio guide device at the Kigali Genocide Memorial.\\r\",\"Emergency evacuation Insurance.\\r\",\"Accommodation on full board basis.\\r\",\"All taxes included.\"]', '[\"Luxury alcoholic drinks.\\r\",\"Visa fees.\\r\",\"Gifts and souvenirs.\\r\",\"Tips for local guides and staff.\"]', 'Professional FYT Tour Guide (English/French)\r\nAir-conditioned transport for the full day\r\nAll entry fees:\r\nKigali Genocide Memorial\r\nKandt House Museum\r\nInema Arts Center\r\nPremium lunch (main meal + 1 drink)\r\nBottled water (minimum 2 per guest)\r\nVisit to Kimironko Market with assistance\r\nMount Kigali Viewpoint access\r\nSundowner cocktail or mocktail at a rooftop venue\r\nDinner + Cultural Show (3-course meal + live performance)\r\nHotel pick-up and drop-off\r\nPhotography assistance throughout the day\r\nFYT onsite support and tour coordination', NULL, 'active', 0, 1, '2025-11-27 18:50:10', '2025-11-28 08:40:47', 'A full-day immersion into Rwanda’s powerful history, vibrant culture, and artistic renaissance. This curated experience takes travelers from the Kigali Genocide Memorial to the Kandi House Museum, followed by a creative journey through the renowned Inema Arts Center. Guests enjoy a premium lunch, explore the colorful Kimironko Market, and capture panoramic views from Mount Kigali. The day concludes with sunset cocktails on a rooftop overlooking the city and an elegant cultural dinner show featuring traditional Rwandan dance and music. This is Kigali’s most complete heritage experience—refined, meaningful, and unforgettable.', '[\"Visit Kigali Genocide Memorial.\\r\",\"Visit Ellen DeGeneres Campus by Dian Fossey Fund.\\r\",\"Experience Mountain Gorilla trekking Twice by visiting two different families.\\r\",\"Embark on a Golden Monkey trekking experience.\"]', 'easy', 'Summer Time', NULL, NULL, 'group', NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10.00, 5.00, 0, 0.00, 0, NULL, 0, NULL, NULL, NULL, NULL),
+(0, 'Classic City Tour', 'classic-city-tour', 'A full-day immersion into Rwanda’s powerful history, vibrant culture, and artistic renaissance. This curated experience takes travelers from the Kigali Genocide Memorial to the Kandt House Museum, f...', NULL, 'Kigali City', 'Rwanda', 10, NULL, NULL, 8, 0.00, 0.00, '1 days', 1, 1, 0, 50, 'uploads/tours/0_main_tour_6929600f637a80.01702171.png', NULL, '[\"uploads\\/tours\\/0_main_tour_6929600f637a80.01702171.png\",\"uploads\\/tours\\/0_cover_tour_6929600f642793.98931314.png\",\"uploads\\/tours\\/0_gallery_0_tour_6929600f64a465.05860645.png\"]', 'uploads/tours/0_cover_tour_6929600f642793.98931314.png', '[\"uploads\\/tours\\/0_gallery_0_1764278673_6708.png\",\"uploads\\/tours\\/0_gallery_0_tour_6929600f64a465.05860645.png\"]', '[{\"day\":\"1\",\"title\":\"Kigali Genocide Memorial Visit & Overview of Rwanda History and Conservation.\",\"activities\":\"Your 4 days journey begins in Kigali, Rwanda\\u2019s vibrant capital. Start by visiting the Kigali Genocide Memorial, where you will gain a powerful and poignant insight into the country past. After this emotional experience, continue your journey to Musanze to explore the Ellen DeGeneres Campus of the Dian Fossey Gorilla Fund. Here, you will learn about the dedicated efforts toward gorilla conservation, setting the stage for your upcoming trekking experiences.\"},{\"day\":\"2\",\"title\":\"Your 1st Gorilla Trekking experience.\",\"activities\":\"You will embark on your highly anticipated gorilla trekking experience. Led by expOn Day 2 You will embark on your highly anticipated gorilla trekking experience. Led by expert guides, you will hike through the beautiful Volcanoes National Park in search of the rare mountain gorillas. This once-in-a-lifetime experience offers you the chance to witness these lively primates in their natural habitat, creating unforgettable memories.ert guides, you will hike through the beautiful Volcanoes National Park in search of the rare mountain gorillas. This once-in-a-lifetime experience offers you the chance to witness these lively primates in their natural habitat, creating unforgettable memories.\"},{\"day\":\"3\",\"title\":\"Your 2nd Gorilla Trekking and Cultural Immersion.\",\"activities\":\"On Day 3 You will start with another gorilla trekking experience, where You will get to visit a different family, offering a unique opportunity to further immerse yourself in Rwanda wilderness and wildlife. In the afternoon, visit Iby\\u2019iwacu culture Village (Gorilla Guardians Village), where you will experience local culture firsthand. Engage with the community, discover traditional Rwandan life and gain a deeper appreciation of the country\\u2019s vibrant heritage.\"},{\"day\":\"4\",\"title\":\"Golden Monkey Trekking Experience and Transfer back to Kigali.\",\"activities\":\"Conclude your tour with Golden Monkey trekking experience. These rare primates, known for their playful behavior, are found in the same park as the gorillas. After this exciting trek, make your way back to Kigali, reflecting on the incredible natural beauty, wildlife and rich cultural experiences you have enjoyed throughout your journey.\"}]', NULL, NULL, NULL, NULL, NULL, '[\"International flights.\\r\",\"Travel insurance.\\r\",\"Meet and greet assistance on arrival.\\r\",\"Gorilla trekking Permit.\\r\",\"Golden monkey trekking permit.\\r\",\"Ground transportation in 4 x 4 SUV \\/ Pop-up Open roof Safari Vehicle.\\r\",\"Audio guide device at the Kigali Genocide Memorial.\\r\",\"Emergency evacuation Insurance.\\r\",\"Accommodation on full board basis.\\r\",\"All taxes included.\"]', '[\"Luxury alcoholic drinks.\\r\",\"Visa fees.\\r\",\"Gifts and souvenirs.\\r\",\"Tips for local guides and staff.\"]', 'Professional FYT Tour Guide (English/French)\r\nAir-conditioned transport for the full day\r\nAll entry fees:\r\nKigali Genocide Memorial\r\nKandt House Museum\r\nInema Arts Center\r\nPremium lunch (main meal + 1 drink)\r\nBottled water (minimum 2 per guest)\r\nVisit to Kimironko Market with assistance\r\nMount Kigali Viewpoint access\r\nSundowner cocktail or mocktail at a rooftop venue\r\nDinner + Cultural Show (3-course meal + live performance)\r\nHotel pick-up and drop-off\r\nPhotography assistance throughout the day\r\nFYT onsite support and tour coordination', NULL, 'active', 0, 1, '2025-11-27 19:58:27', '2025-11-28 08:40:47', 'A full-day immersion into Rwanda’s powerful history, vibrant culture, and artistic renaissance. This curated experience takes travelers from the Kigali Genocide Memorial to the Kandi House Museum, followed by a creative journey through the renowned Inema Arts Center. Guests enjoy a premium lunch, explore the colorful Kimironko Market, and capture panoramic views from Mount Kigali. The day concludes with sunset cocktails on a rooftop overlooking the city and an elegant cultural dinner show featuring traditional Rwandan dance and music. This is Kigali’s most complete heritage experience—refined, meaningful, and unforgettable.', '[\"Visit Kigali Genocide Memorial.\\r\",\"Visit Ellen DeGeneres Campus by Dian Fossey Fund.\\r\",\"Experience Mountain Gorilla trekking Twice by visiting two different families.\\r\",\"Embark on a Golden Monkey trekking experience.\"]', 'easy', 'Summer Time', NULL, NULL, 'group', NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10.00, 5.00, 0, 0.00, 0, NULL, 0, NULL, NULL, NULL, NULL),
+(0, 'Classic City Tour', 'classic-city-tour', 'A full-day immersion into Rwanda’s powerful history, vibrant culture, and artistic renaissance. This curated experience takes travelers from the Kigali Genocide Memorial to the Kandt House Museum, f...', NULL, 'Kigali City', 'Rwanda', 10, NULL, NULL, 8, 0.00, 0.00, '1 days', 1, 1, 0, 50, 'uploads/tours/0_main_tour_6929600f637a80.01702171.png', NULL, '[\"uploads\\/tours\\/0_main_tour_6929600f637a80.01702171.png\",\"uploads\\/tours\\/0_cover_tour_6929600f642793.98931314.png\",\"uploads\\/tours\\/0_gallery_0_tour_6929600f64a465.05860645.png\"]', 'uploads/tours/0_cover_tour_6929600f642793.98931314.png', '[\"uploads\\/tours\\/0_gallery_0_1764278673_6708.png\",\"uploads\\/tours\\/0_gallery_0_tour_6929600f64a465.05860645.png\"]', '[{\"day\":\"1\",\"title\":\"Kigali Genocide Memorial Visit & Overview of Rwanda History and Conservation.\",\"activities\":\"Your 4 days journey begins in Kigali, Rwanda\\u2019s vibrant capital. Start by visiting the Kigali Genocide Memorial, where you will gain a powerful and poignant insight into the country past. After this emotional experience, continue your journey to Musanze to explore the Ellen DeGeneres Campus of the Dian Fossey Gorilla Fund. Here, you will learn about the dedicated efforts toward gorilla conservation, setting the stage for your upcoming trekking experiences.\"},{\"day\":\"2\",\"title\":\"Your 1st Gorilla Trekking experience.\",\"activities\":\"You will embark on your highly anticipated gorilla trekking experience. Led by expOn Day 2 You will embark on your highly anticipated gorilla trekking experience. Led by expert guides, you will hike through the beautiful Volcanoes National Park in search of the rare mountain gorillas. This once-in-a-lifetime experience offers you the chance to witness these lively primates in their natural habitat, creating unforgettable memories.ert guides, you will hike through the beautiful Volcanoes National Park in search of the rare mountain gorillas. This once-in-a-lifetime experience offers you the chance to witness these lively primates in their natural habitat, creating unforgettable memories.\"},{\"day\":\"3\",\"title\":\"Your 2nd Gorilla Trekking and Cultural Immersion.\",\"activities\":\"On Day 3 You will start with another gorilla trekking experience, where You will get to visit a different family, offering a unique opportunity to further immerse yourself in Rwanda wilderness and wildlife. In the afternoon, visit Iby\\u2019iwacu culture Village (Gorilla Guardians Village), where you will experience local culture firsthand. Engage with the community, discover traditional Rwandan life and gain a deeper appreciation of the country\\u2019s vibrant heritage.\"},{\"day\":\"4\",\"title\":\"Golden Monkey Trekking Experience and Transfer back to Kigali.\",\"activities\":\"Conclude your tour with Golden Monkey trekking experience. These rare primates, known for their playful behavior, are found in the same park as the gorillas. After this exciting trek, make your way back to Kigali, reflecting on the incredible natural beauty, wildlife and rich cultural experiences you have enjoyed throughout your journey.\"}]', NULL, NULL, NULL, NULL, NULL, '[\"International flights.\\r\",\"Travel insurance.\\r\",\"Meet and greet assistance on arrival.\\r\",\"Gorilla trekking Permit.\\r\",\"Golden monkey trekking permit.\\r\",\"Ground transportation in 4 x 4 SUV \\/ Pop-up Open roof Safari Vehicle.\\r\",\"Audio guide device at the Kigali Genocide Memorial.\\r\",\"Emergency evacuation Insurance.\\r\",\"Accommodation on full board basis.\\r\",\"All taxes included.\"]', '[\"Luxury alcoholic drinks.\\r\",\"Visa fees.\\r\",\"Gifts and souvenirs.\\r\",\"Tips for local guides and staff.\"]', 'Professional FYT Tour Guide (English/French)\r\nAir-conditioned transport for the full day\r\nAll entry fees:\r\nKigali Genocide Memorial\r\nKandt House Museum\r\nInema Arts Center\r\nPremium lunch (main meal + 1 drink)\r\nBottled water (minimum 2 per guest)\r\nVisit to Kimironko Market with assistance\r\nMount Kigali Viewpoint access\r\nSundowner cocktail or mocktail at a rooftop venue\r\nDinner + Cultural Show (3-course meal + live performance)\r\nHotel pick-up and drop-off\r\nPhotography assistance throughout the day\r\nFYT onsite support and tour coordination', NULL, 'active', 0, 1, '2025-11-27 21:24:33', '2025-11-28 08:40:47', 'A full-day immersion into Rwanda’s powerful history, vibrant culture, and artistic renaissance. This curated experience takes travelers from the Kigali Genocide Memorial to the Kandi House Museum, followed by a creative journey through the renowned Inema Arts Center. Guests enjoy a premium lunch, explore the colorful Kimironko Market, and capture panoramic views from Mount Kigali. The day concludes with sunset cocktails on a rooftop overlooking the city and an elegant cultural dinner show featuring traditional Rwandan dance and music. This is Kigali’s most complete heritage experience—refined, meaningful, and unforgettable.', '[\"Visit Kigali Genocide Memorial.\\r\",\"Visit Ellen DeGeneres Campus by Dian Fossey Fund.\\r\",\"Experience Mountain Gorilla trekking Twice by visiting two different families.\\r\",\"Embark on a Golden Monkey trekking experience.\"]', 'easy', 'Summer Time', NULL, NULL, 'group', NULL, NULL, NULL, NULL, NULL, NULL, 7, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 10.00, 5.00, 0, 0.00, 0, NULL, 0, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1724,6 +2190,32 @@ INSERT INTO `training_quiz_questions` (`id`, `module_id`, `question`, `question_
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `translations`
+--
+
+CREATE TABLE `translations` (
+  `id` int(11) NOT NULL,
+  `language_code` varchar(5) NOT NULL,
+  `translation_key` varchar(255) NOT NULL,
+  `translation_value` text NOT NULL,
+  `category` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `translations`
+--
+
+INSERT INTO `translations` (`id`, `language_code`, `translation_key`, `translation_value`, `category`) VALUES
+(1, 'en', 'welcome', 'Welcome', 'general'),
+(2, 'fr', 'welcome', 'Bienvenue', 'general'),
+(3, 'es', 'welcome', 'Bienvenido', 'general'),
+(4, 'en', 'dashboard', 'Dashboard', 'navigation'),
+(5, 'fr', 'dashboard', 'Tableau de bord', 'navigation'),
+(6, 'es', 'dashboard', 'Panel de control', 'navigation');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -1756,32 +2248,51 @@ CREATE TABLE `users` (
   `training_completion_date` date DEFAULT NULL,
   `kyc_approval_date` date DEFAULT NULL,
   `can_sell` tinyint(1) DEFAULT 0,
-  `training_score` int(11) DEFAULT 0
+  `training_score` int(11) DEFAULT 0,
+  `license_status` enum('none','pending','active','expired') DEFAULT 'none',
+  `license_expiry_date` datetime DEFAULT NULL,
+  `license_paid_amount` decimal(10,2) DEFAULT 0.00,
+  `referral_code` varchar(20) DEFAULT NULL,
+  `referred_by_code` varchar(20) DEFAULT NULL,
+  `advisor_rank` enum('certified','senior','executive') DEFAULT 'certified',
+  `total_sales` decimal(10,2) DEFAULT 0.00,
+  `team_l2_count` int(11) DEFAULT 0,
+  `team_l3_count` int(11) DEFAULT 0,
+  `license_type` enum('none','basic','premium') DEFAULT 'none',
+  `license_paid_date` date DEFAULT NULL,
+  `license_amount` decimal(10,2) DEFAULT 0.00,
+  `bio` text DEFAULT NULL,
+  `state` varchar(100) DEFAULT NULL,
+  `postal_code` varchar(20) DEFAULT NULL,
+  `date_of_birth` date DEFAULT NULL,
+  `emergency_contact_name` varchar(100) DEFAULT NULL,
+  `emergency_contact_phone` varchar(20) DEFAULT NULL,
+  `preferences` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `email`, `password`, `role`, `first_name`, `last_name`, `phone`, `country`, `city`, `address`, `profile_image`, `status`, `email_verified`, `last_login`, `created_at`, `updated_at`, `sponsor_id`, `username`, `full_name`, `level`, `upline_id`, `mca_id`, `team_size`, `kyc_status`, `training_status`, `training_completion_date`, `kyc_approval_date`, `can_sell`, `training_score`) VALUES
-(1, 'admin@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'super_admin', 'Super', 'Admin', '+254700000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 14:29:47', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(2, 'mca.kenya@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', 'John', 'Kamau', '+254701000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 1, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(3, 'mca.tanzania@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', 'Grace', 'Mwangi', '+254702000000', 'Tanzania', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 1, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(4, 'mca.uganda@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', 'Peter', 'Ochieng', '+254703000000', 'Uganda', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 1, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(5, 'advisor1@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'advisor', 'Mary', 'Wanjiku', '+254704000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 2, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(6, 'advisor2@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'advisor', 'James', 'Mutua', '+254705000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 2, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(7, 'advisor3@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'advisor', 'Sarah', 'Njeri', '+254706000000', 'Tanzania', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 2, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(8, 'client1@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client', 'David', 'Kiprotich', '+254707000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 5, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(9, 'client2@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client', 'Lucy', 'Akinyi', '+254708000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 5, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(10, 'client3@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client', 'Michael', 'Otieno', '+254709000000', 'Uganda', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 5, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(11, 'mca.africa@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', '', '', NULL, NULL, NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 19:43:24', '2025-10-22 19:43:24', 1, 'mca_africa', 'John MCA Africa', 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(12, 'mca.east@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', '', '', NULL, NULL, NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 19:43:24', '2025-10-22 19:43:24', 1, 'mca_east', 'Sarah MCA East', 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(19, 'admin@foreveryoung.com', '$2y$10$Mr7/RbpcIkueovurt1HzN.rYsAfsGWmZOqeFLILysNgp245F7jn8m', 'super_admin', 'Super', 'Admin', '+1234567890', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:23', '2025-10-26 18:28:46', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(20, 'mca@foreveryoung.com', '$2y$10$FunnRDzvnojL.qJcYtHhdOWc.MIJoNpaHgg6dfWVAGUHwLb9qZ/Ja', 'mca', 'MCA', 'User', '+1234567891', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:24', '2025-10-26 18:06:16', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(21, 'advisor@foreveryoung.com', '$2y$10$A6sg7U2tGB33ly7lbx9ZW.zpnyJm7Z0r.vG2UzQSdaFZS27jK6/q.', 'advisor', 'Advisor', 'User', '+1234567892', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:24', '2025-10-26 18:06:16', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(22, 'client@foreveryoung.com', '$2y$10$0GLvYk5IIl9codQIW2Byx.1D8luDhTCBTOmRbV5BppQ9dy3Tr5omG', 'client', 'Client', 'User', '+1234567893', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:24', '2025-10-26 18:28:46', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(23, 'testname450@gmail.com', '$2y$10$oN60lriwsPA3JdA6x/1P2.LlEop0mbVocV0D4EKdwauCJV5x6f84W', 'client', 'Test', 'Name', '+250788712679', NULL, NULL, NULL, NULL, 'active', 0, NULL, '2025-10-30 07:15:37', '2025-10-30 07:15:37', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0),
-(25, 'acountexpertbroker@gmail.com', '$2y$10$aaVSKmfNif6BRACxzfLjWeKr5DSl.vrusx7w2nlAkDwJIL9W/LvMe', 'client', 'peter', 'Doe', '+250788712679', 'Rwanda', 'Kigali', NULL, NULL, 'active', 1, NULL, '2025-10-30 12:06:21', '2025-10-30 12:06:21', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0);
+INSERT INTO `users` (`id`, `email`, `password`, `role`, `first_name`, `last_name`, `phone`, `country`, `city`, `address`, `profile_image`, `status`, `email_verified`, `last_login`, `created_at`, `updated_at`, `sponsor_id`, `username`, `full_name`, `level`, `upline_id`, `mca_id`, `team_size`, `kyc_status`, `training_status`, `training_completion_date`, `kyc_approval_date`, `can_sell`, `training_score`, `license_status`, `license_expiry_date`, `license_paid_amount`, `referral_code`, `referred_by_code`, `advisor_rank`, `total_sales`, `team_l2_count`, `team_l3_count`, `license_type`, `license_paid_date`, `license_amount`, `bio`, `state`, `postal_code`, `date_of_birth`, `emergency_contact_name`, `emergency_contact_phone`, `preferences`) VALUES
+(1, 'admin@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'super_admin', 'Super', 'Admin', '+254700000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 14:29:47', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'mca.kenya@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', 'John', 'Kamau', '+254701000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 1, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(3, 'mca.tanzania@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', 'Grace', 'Mwangi', '+254702000000', 'Tanzania', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 1, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(4, 'mca.uganda@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', 'Peter', 'Ochieng', '+254703000000', 'Uganda', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 1, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 'advisor1@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'advisor', 'Mary', 'Wanjiku', '+254704000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-11-23 18:06:52', 2, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, 'ADV000005', NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 'advisor2@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'advisor', 'James', 'Mutua', '+254705000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-11-23 18:06:52', 2, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, 'ADV000006', NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 'advisor3@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'advisor', 'Sarah', 'Njeri', '+254706000000', 'Tanzania', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-11-23 18:06:52', 2, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, 'ADV000007', NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 'client1@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client', 'David', 'Kiprotich', '+254707000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 5, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, 'client2@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client', 'Lucy', 'Akinyi', '+254708000000', 'Kenya', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 5, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(10, 'client3@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'client', 'Michael', 'Otieno', '+254709000000', 'Uganda', NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 14:29:47', '2025-10-22 19:43:24', 5, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(11, 'mca.africa@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', '', '', NULL, NULL, NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 19:43:24', '2025-10-22 19:43:24', 1, 'mca_africa', 'John MCA Africa', 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(12, 'mca.east@foreveryoungtours.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'mca', '', '', NULL, NULL, NULL, NULL, NULL, 'active', 0, NULL, '2025-10-22 19:43:24', '2025-10-22 19:43:24', 1, 'mca_east', 'Sarah MCA East', 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(19, 'admin@foreveryoung.com', '$2y$10$Mr7/RbpcIkueovurt1HzN.rYsAfsGWmZOqeFLILysNgp245F7jn8m', 'super_admin', 'Super', 'Admin', '+1234567890', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:23', '2025-10-26 18:28:46', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(20, 'mca@foreveryoung.com', '$2y$10$FunnRDzvnojL.qJcYtHhdOWc.MIJoNpaHgg6dfWVAGUHwLb9qZ/Ja', 'mca', 'MCA', 'User', '+1234567891', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:24', '2025-10-26 18:06:16', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(21, 'advisor@foreveryoung.com', '$2y$10$A6sg7U2tGB33ly7lbx9ZW.zpnyJm7Z0r.vG2UzQSdaFZS27jK6/q.', 'advisor', 'Advisor', 'User', '+1234567892', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:24', '2025-11-23 18:06:52', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, 'ADV000021', NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(22, 'client@foreveryoung.com', '$2y$10$0GLvYk5IIl9codQIW2Byx.1D8luDhTCBTOmRbV5BppQ9dy3Tr5omG', 'client', 'Client', 'User', '+1234567893', NULL, NULL, NULL, NULL, 'active', 1, NULL, '2025-10-26 18:00:24', '2025-10-26 18:28:46', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(23, 'testname450@gmail.com', '$2y$10$oN60lriwsPA3JdA6x/1P2.LlEop0mbVocV0D4EKdwauCJV5x6f84W', 'client', 'Test', 'Name', '+250788712679', NULL, NULL, NULL, NULL, 'active', 0, NULL, '2025-10-30 07:15:37', '2025-10-30 07:15:37', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(25, 'acountexpertbroker@gmail.com', '$2y$10$aaVSKmfNif6BRACxzfLjWeKr5DSl.vrusx7w2nlAkDwJIL9W/LvMe', 'client', 'peter', 'Doe', '+250788712679', 'Rwanda', 'Kigali', NULL, NULL, 'active', 1, NULL, '2025-10-30 12:06:21', '2025-10-30 12:06:21', NULL, NULL, NULL, 1, NULL, NULL, 0, 'pending', 'not_started', NULL, NULL, 0, 0, 'none', NULL, 0.00, NULL, NULL, 'certified', 0.00, 0, 0, 'none', NULL, 0.00, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1809,21 +2320,81 @@ CREATE TABLE `user_addresses` (
 -- --------------------------------------------------------
 
 --
--- Stand-in structure for view `user_hierarchy_view`
--- (See below for the actual view)
+-- Table structure for table `user_hierarchy_view`
 --
+
 CREATE TABLE `user_hierarchy_view` (
-`id` int(11)
-,`user_id` int(11)
-,`user_name` varchar(201)
-,`user_email` varchar(255)
-,`user_role` enum('super_admin','mca','advisor','client')
-,`parent_id` int(11)
-,`parent_name` varchar(201)
-,`parent_email` varchar(255)
-,`level` int(11)
-,`path` varchar(500)
-);
+  `id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `user_name` varchar(201) DEFAULT NULL,
+  `user_email` varchar(255) DEFAULT NULL,
+  `user_role` enum('super_admin','mca','advisor','client') DEFAULT NULL,
+  `parent_id` int(11) DEFAULT NULL,
+  `parent_name` varchar(201) DEFAULT NULL,
+  `parent_email` varchar(255) DEFAULT NULL,
+  `level` int(11) DEFAULT NULL,
+  `path` varchar(500) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_memberships`
+--
+
+CREATE TABLE `user_memberships` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `tier_id` int(11) NOT NULL,
+  `start_date` datetime NOT NULL,
+  `expiry_date` datetime NOT NULL,
+  `status` enum('active','expired','cancelled') DEFAULT 'active',
+  `payment_amount` decimal(10,2) DEFAULT NULL,
+  `stripe_payment_id` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `vip_services`
+--
+
+CREATE TABLE `vip_services` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `service_type` enum('airport_transfer','concierge','private_tour','meet_greet','lounge_access') NOT NULL,
+  `booking_id` int(11) DEFAULT NULL,
+  `service_date` datetime DEFAULT NULL,
+  `location` varchar(255) DEFAULT NULL,
+  `details` text DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `status` enum('requested','confirmed','completed','cancelled') DEFAULT 'requested',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `visa_services`
+--
+
+CREATE TABLE `visa_services` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `destination_country` varchar(100) NOT NULL,
+  `visa_type` varchar(50) DEFAULT NULL,
+  `application_status` enum('pending','processing','approved','rejected','delivered') DEFAULT 'pending',
+  `passport_number` varchar(50) DEFAULT NULL,
+  `passport_expiry` date DEFAULT NULL,
+  `travel_date` date DEFAULT NULL,
+  `documents` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`documents`)),
+  `fee_amount` decimal(10,2) DEFAULT NULL,
+  `notes` text DEFAULT NULL,
+  `assigned_to` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1837,1266 +2408,6 @@ CREATE TABLE `wishlist` (
   `product_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Structure for view `booking_details_view`
---
-DROP TABLE IF EXISTS `booking_details_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `booking_details_view`  AS SELECT `b`.`id` AS `id`, `b`.`booking_reference` AS `booking_reference`, `b`.`customer_name` AS `customer_name`, `b`.`customer_email` AS `customer_email`, `b`.`travel_date` AS `travel_date`, `b`.`participants` AS `participants`, `b`.`total_amount` AS `total_amount`, `b`.`status` AS `status`, `b`.`booking_date` AS `booking_date`, `t`.`name` AS `tour_name`, `t`.`destination` AS `destination`, `t`.`destination_country` AS `destination_country`, concat(`u`.`first_name`,' ',`u`.`last_name`) AS `client_name`, concat(`a`.`first_name`,' ',`a`.`last_name`) AS `advisor_name` FROM (((`bookings` `b` join `tours` `t` on(`b`.`tour_id` = `t`.`id`)) join `users` `u` on(`b`.`user_id` = `u`.`id`)) join `users` `a` on(`b`.`advisor_id` = `a`.`id`)) ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `commission_summary_view`
---
-DROP TABLE IF EXISTS `commission_summary_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `commission_summary_view`  AS SELECT `c`.`user_id` AS `user_id`, concat(`u`.`first_name`,' ',`u`.`last_name`) AS `user_name`, `u`.`role` AS `role`, count(`c`.`id`) AS `total_commissions`, sum(`c`.`commission_amount`) AS `total_earned`, sum(case when `c`.`status` = 'paid' then `c`.`commission_amount` else 0 end) AS `total_paid`, sum(case when `c`.`status` = 'pending' then `c`.`commission_amount` else 0 end) AS `total_pending` FROM (`commissions` `c` join `users` `u` on(`c`.`user_id` = `u`.`id`)) GROUP BY `c`.`user_id`, `u`.`first_name`, `u`.`last_name`, `u`.`role` ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `region_country_tours_view`
---
-DROP TABLE IF EXISTS `region_country_tours_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `region_country_tours_view`  AS SELECT `r`.`id` AS `region_id`, `r`.`name` AS `region_name`, `r`.`slug` AS `region_slug`, `c`.`id` AS `country_id`, `c`.`name` AS `country_name`, `c`.`slug` AS `country_slug`, `c`.`country_code` AS `country_code`, count(`t`.`id`) AS `tour_count`, min(`t`.`price`) AS `min_price`, max(`t`.`price`) AS `max_price` FROM ((`regions` `r` left join `countries` `c` on(`r`.`id` = `c`.`region_id`)) left join `tours` `t` on(`c`.`id` = `t`.`country_id` and `t`.`status` = 'active')) WHERE `r`.`status` = 'active' AND (`c`.`status` = 'active' OR `c`.`status` is null) GROUP BY `r`.`id`, `r`.`name`, `r`.`slug`, `c`.`id`, `c`.`name`, `c`.`slug`, `c`.`country_code` ORDER BY `r`.`name` ASC, `c`.`name` ASC ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `team_hierarchy_view`
---
-DROP TABLE IF EXISTS `team_hierarchy_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `team_hierarchy_view`  AS SELECT `u1`.`id` AS `advisor_id`, `u1`.`full_name` AS `advisor_name`, `u1`.`level` AS `level`, `u2`.`id` AS `upline_id`, `u2`.`full_name` AS `upline_name`, `u3`.`id` AS `mca_id`, `u3`.`full_name` AS `mca_name`, count(`u4`.`id`) AS `team_count` FROM (((`users` `u1` left join `users` `u2` on(`u1`.`upline_id` = `u2`.`id`)) left join `users` `u3` on(`u1`.`mca_id` = `u3`.`id`)) left join `users` `u4` on(`u4`.`upline_id` = `u1`.`id`)) WHERE `u1`.`role` in ('advisor','client') GROUP BY `u1`.`id` ;
-
--- --------------------------------------------------------
-
---
--- Structure for view `user_hierarchy_view`
---
-DROP TABLE IF EXISTS `user_hierarchy_view`;
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `user_hierarchy_view`  AS SELECT `h`.`id` AS `id`, `h`.`user_id` AS `user_id`, concat(`u`.`first_name`,' ',`u`.`last_name`) AS `user_name`, `u`.`email` AS `user_email`, `u`.`role` AS `user_role`, `h`.`parent_id` AS `parent_id`, concat(`p`.`first_name`,' ',`p`.`last_name`) AS `parent_name`, `p`.`email` AS `parent_email`, `h`.`level` AS `level`, `h`.`path` AS `path` FROM ((`mlm_hierarchy` `h` join `users` `u` on(`h`.`user_id` = `u`.`id`)) left join `users` `p` on(`h`.`parent_id` = `p`.`id`)) ;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `blog_categories`
---
-ALTER TABLE `blog_categories`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`);
-
---
--- Indexes for table `blog_comments`
---
-ALTER TABLE `blog_comments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `parent_id` (`parent_id`),
-  ADD KEY `idx_post` (`post_id`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `blog_likes`
---
-ALTER TABLE `blog_likes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_like` (`post_id`,`user_ip`);
-
---
--- Indexes for table `blog_posts`
---
-ALTER TABLE `blog_posts`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD KEY `tour_id` (`tour_id`),
-  ADD KEY `country_id` (`country_id`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_featured` (`featured`),
-  ADD KEY `idx_published` (`published_at`),
-  ADD KEY `idx_category` (`category_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `blog_post_tags`
---
-ALTER TABLE `blog_post_tags`
-  ADD PRIMARY KEY (`post_id`,`tag_id`),
-  ADD KEY `tag_id` (`tag_id`);
-
---
--- Indexes for table `blog_tags`
---
-ALTER TABLE `blog_tags`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `name` (`name`),
-  ADD UNIQUE KEY `slug` (`slug`);
-
---
--- Indexes for table `bookings`
---
-ALTER TABLE `bookings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `booking_reference` (`booking_reference`),
-  ADD KEY `idx_booking_reference` (`booking_reference`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_tour_id` (`tour_id`),
-  ADD KEY `idx_advisor_id` (`advisor_id`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_travel_date` (`travel_date`),
-  ADD KEY `idx_bookings_date_range` (`travel_date`,`booking_date`);
-
---
--- Indexes for table `booking_activities`
---
-ALTER TABLE `booking_activities`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_cars`
---
-ALTER TABLE `booking_cars`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_cruises`
---
-ALTER TABLE `booking_cruises`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_engine_orders`
---
-ALTER TABLE `booking_engine_orders`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `booking_reference` (`booking_reference`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `booking_type` (`booking_type`),
-  ADD KEY `status` (`status`);
-
---
--- Indexes for table `booking_flights`
---
-ALTER TABLE `booking_flights`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_hotels`
---
-ALTER TABLE `booking_hotels`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_inquiries`
---
-ALTER TABLE `booking_inquiries`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `booking_status_history`
---
-ALTER TABLE `booking_status_history`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_booking` (`booking_id`);
-
---
--- Indexes for table `commissions`
---
-ALTER TABLE `commissions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_booking_id` (`booking_id`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_commissions_user_status` (`user_id`,`status`);
-
---
--- Indexes for table `countries`
---
-ALTER TABLE `countries`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD KEY `idx_region_id` (`region_id`),
-  ADD KEY `idx_slug` (`slug`),
-  ADD KEY `idx_country_code` (`country_code`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_featured` (`featured`),
-  ADD KEY `idx_country_slug` (`slug`);
-
---
--- Indexes for table `coupon_usage`
---
-ALTER TABLE `coupon_usage`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `coupon_id` (`coupon_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `order_id` (`order_id`);
-
---
--- Indexes for table `destinations`
---
-ALTER TABLE `destinations`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_country` (`country`),
-  ADD KEY `idx_featured` (`featured`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `discount_coupons`
---
-ALTER TABLE `discount_coupons`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `code` (`code`),
-  ADD KEY `idx_code` (`code`),
-  ADD KEY `idx_active` (`is_active`);
-
---
--- Indexes for table `kyc_documents`
---
-ALTER TABLE `kyc_documents`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `verified_by` (`verified_by`);
-
---
--- Indexes for table `kyc_status`
---
-ALTER TABLE `kyc_status`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `user_id` (`user_id`),
-  ADD KEY `approved_by` (`approved_by`);
-
---
--- Indexes for table `mca_assignments`
---
-ALTER TABLE `mca_assignments`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_mca_country` (`mca_id`,`country_id`),
-  ADD KEY `country_id` (`country_id`);
-
---
--- Indexes for table `mlm_hierarchy`
---
-ALTER TABLE `mlm_hierarchy`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_parent_id` (`parent_id`),
-  ADD KEY `idx_level` (`level`),
-  ADD KEY `idx_hierarchy_path` (`path`);
-
---
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_is_read` (`is_read`),
-  ADD KEY `idx_type` (`type`);
-
---
--- Indexes for table `orders`
---
-ALTER TABLE `orders`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `order_number` (`order_number`),
-  ADD KEY `idx_order_number` (`order_number`),
-  ADD KEY `idx_user_id` (`user_id`),
-  ADD KEY `idx_order_status` (`order_status`),
-  ADD KEY `idx_payment_status` (`payment_status`);
-
---
--- Indexes for table `order_items`
---
-ALTER TABLE `order_items`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `product_id` (`product_id`);
-
---
--- Indexes for table `payments`
---
-ALTER TABLE `payments`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `payment_reference` (`payment_reference`),
-  ADD KEY `idx_booking_id` (`booking_id`),
-  ADD KEY `idx_payment_reference` (`payment_reference`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `payment_transactions`
---
-ALTER TABLE `payment_transactions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `transaction_id` (`transaction_id`),
-  ADD KEY `order_id` (`order_id`),
-  ADD KEY `idx_transaction_id` (`transaction_id`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `regions`
---
-ALTER TABLE `regions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD KEY `idx_slug` (`slug`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_featured` (`featured`),
-  ADD KEY `idx_region_slug` (`slug`);
-
---
--- Indexes for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `booking_id` (`booking_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `idx_tour_id` (`tour_id`),
-  ADD KEY `idx_rating` (`rating`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `shared_links`
---
-ALTER TABLE `shared_links`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `link_code` (`link_code`),
-  ADD KEY `idx_shared_links_code` (`link_code`),
-  ADD KEY `idx_shared_links_user` (`user_id`),
-  ADD KEY `idx_shared_links_tour` (`tour_id`),
-  ADD KEY `idx_shared_links_active` (`is_active`);
-
---
--- Indexes for table `shopping_cart`
---
-ALTER TABLE `shopping_cart`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_product` (`user_id`,`product_id`),
-  ADD KEY `product_id` (`product_id`);
-
---
--- Indexes for table `store_categories`
---
-ALTER TABLE `store_categories`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD KEY `idx_slug` (`slug`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `store_orders`
---
-ALTER TABLE `store_orders`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `order_number` (`order_number`),
-  ADD KEY `idx_order_number` (`order_number`),
-  ADD KEY `idx_customer_email` (`customer_email`),
-  ADD KEY `idx_order_status` (`order_status`),
-  ADD KEY `idx_payment_status` (`payment_status`);
-
---
--- Indexes for table `store_order_items`
---
-ALTER TABLE `store_order_items`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_order` (`order_id`),
-  ADD KEY `idx_product` (`product_id`);
-
---
--- Indexes for table `store_products`
---
-ALTER TABLE `store_products`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD UNIQUE KEY `sku` (`sku`),
-  ADD KEY `idx_category` (`category_id`),
-  ADD KEY `idx_slug` (`slug`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_featured` (`is_featured`),
-  ADD KEY `idx_sale` (`is_on_sale`);
-
---
--- Indexes for table `store_reviews`
---
-ALTER TABLE `store_reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_product` (`product_id`),
-  ADD KEY `idx_status` (`status`);
-
---
--- Indexes for table `store_settings`
---
-ALTER TABLE `store_settings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `setting_key` (`setting_key`),
-  ADD KEY `idx_key` (`setting_key`);
-
---
--- Indexes for table `store_wishlist`
---
-ALTER TABLE `store_wishlist`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_customer` (`customer_email`),
-  ADD KEY `idx_product` (`product_id`);
-
---
--- Indexes for table `system_settings`
---
-ALTER TABLE `system_settings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `setting_key` (`setting_key`),
-  ADD KEY `idx_setting_key` (`setting_key`);
-
---
--- Indexes for table `tours`
---
-ALTER TABLE `tours`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `slug` (`slug`),
-  ADD KEY `created_by` (`created_by`),
-  ADD KEY `idx_destination_country` (`destination_country`),
-  ADD KEY `idx_category` (`category`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `idx_featured` (`featured`),
-  ADD KEY `idx_tours_country_category` (`destination_country`,`category`),
-  ADD KEY `idx_country_id` (`country_id`),
-  ADD KEY `idx_tours_difficulty` (`difficulty_level`),
-  ADD KEY `idx_tours_tour_type` (`tour_type`),
-  ADD KEY `idx_tours_popularity` (`popularity_score`),
-  ADD KEY `idx_tours_rating` (`average_rating`),
-  ADD KEY `idx_tours_booking_count` (`booking_count`),
-  ADD KEY `idx_tour_slug` (`slug`),
-  ADD KEY `region_id` (`region_id`);
-
---
--- Indexes for table `tour_availability`
---
-ALTER TABLE `tour_availability`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_tour_date` (`tour_id`,`available_date`),
-  ADD KEY `idx_tour_availability_date` (`available_date`),
-  ADD KEY `idx_tour_availability_status` (`status`);
-
---
--- Indexes for table `tour_bookings`
---
-ALTER TABLE `tour_bookings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `booking_number` (`booking_number`),
-  ADD KEY `idx_booking_number` (`booking_number`),
-  ADD KEY `idx_tour` (`tour_id`),
-  ADD KEY `idx_user` (`user_id`),
-  ADD KEY `idx_status` (`booking_status`),
-  ADD KEY `idx_payment_status` (`payment_status`),
-  ADD KEY `idx_tour_date` (`tour_date`),
-  ADD KEY `idx_booking_date` (`tour_date`),
-  ADD KEY `idx_booking_status` (`booking_status`);
-
---
--- Indexes for table `tour_faqs`
---
-ALTER TABLE `tour_faqs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_tour_faqs_tour_id` (`tour_id`),
-  ADD KEY `idx_tour_faqs_active` (`is_active`);
-
---
--- Indexes for table `tour_images`
---
-ALTER TABLE `tour_images`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `idx_tour_images_tour_id` (`tour_id`),
-  ADD KEY `idx_tour_images_type` (`image_type`),
-  ADD KEY `idx_tour_images_featured` (`is_featured`);
-
---
--- Indexes for table `tour_order_details`
---
-ALTER TABLE `tour_order_details`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `order_id` (`order_id`);
-
---
--- Indexes for table `tour_reviews`
---
-ALTER TABLE `tour_reviews`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `booking_id` (`booking_id`),
-  ADD KEY `idx_tour_reviews_tour_id` (`tour_id`),
-  ADD KEY `idx_tour_reviews_rating` (`rating`),
-  ADD KEY `idx_tour_reviews_status` (`status`);
-
---
--- Indexes for table `tour_schedules`
---
-ALTER TABLE `tour_schedules`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `tour_id` (`tour_id`),
-  ADD KEY `scheduled_date` (`scheduled_date`),
-  ADD KEY `status` (`status`);
-
---
--- Indexes for table `tour_schedule_bookings`
---
-ALTER TABLE `tour_schedule_bookings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `booking_reference` (`booking_reference`),
-  ADD KEY `schedule_id` (`schedule_id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `tour_wishlist`
---
-ALTER TABLE `tour_wishlist`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_tour` (`user_id`,`tour_id`),
-  ADD KEY `tour_id` (`tour_id`),
-  ADD KEY `idx_user` (`user_id`);
-
---
--- Indexes for table `training_assignments`
---
-ALTER TABLE `training_assignments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `assigned_by` (`assigned_by`),
-  ADD KEY `assigned_to` (`assigned_to`),
-  ADD KEY `module_id` (`module_id`);
-
---
--- Indexes for table `training_certificates`
---
-ALTER TABLE `training_certificates`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `certificate_number` (`certificate_number`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `module_id` (`module_id`),
-  ADD KEY `issued_by` (`issued_by`);
-
---
--- Indexes for table `training_modules`
---
-ALTER TABLE `training_modules`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `created_by` (`created_by`);
-
---
--- Indexes for table `training_progress`
---
-ALTER TABLE `training_progress`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_module` (`user_id`,`module_id`),
-  ADD KEY `module_id` (`module_id`);
-
---
--- Indexes for table `training_quiz_attempts`
---
-ALTER TABLE `training_quiz_attempts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `module_id` (`module_id`);
-
---
--- Indexes for table `training_quiz_questions`
---
-ALTER TABLE `training_quiz_questions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `module_id` (`module_id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD KEY `idx_email` (`email`),
-  ADD KEY `idx_role` (`role`),
-  ADD KEY `idx_status` (`status`),
-  ADD KEY `sponsor_id` (`sponsor_id`);
-
---
--- Indexes for table `user_addresses`
---
-ALTER TABLE `user_addresses`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `wishlist`
---
-ALTER TABLE `wishlist`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_product` (`user_id`,`product_id`),
-  ADD KEY `product_id` (`product_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `blog_categories`
---
-ALTER TABLE `blog_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT for table `blog_comments`
---
-ALTER TABLE `blog_comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `blog_likes`
---
-ALTER TABLE `blog_likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `blog_posts`
---
-ALTER TABLE `blog_posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `blog_tags`
---
-ALTER TABLE `blog_tags`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT for table `bookings`
---
-ALTER TABLE `bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
-
---
--- AUTO_INCREMENT for table `booking_activities`
---
-ALTER TABLE `booking_activities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `booking_cars`
---
-ALTER TABLE `booking_cars`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `booking_cruises`
---
-ALTER TABLE `booking_cruises`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `booking_engine_orders`
---
-ALTER TABLE `booking_engine_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `booking_flights`
---
-ALTER TABLE `booking_flights`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `booking_hotels`
---
-ALTER TABLE `booking_hotels`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `booking_inquiries`
---
-ALTER TABLE `booking_inquiries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `booking_status_history`
---
-ALTER TABLE `booking_status_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `commissions`
---
-ALTER TABLE `commissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `countries`
---
-ALTER TABLE `countries`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
-
---
--- AUTO_INCREMENT for table `coupon_usage`
---
-ALTER TABLE `coupon_usage`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `destinations`
---
-ALTER TABLE `destinations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT for table `discount_coupons`
---
-ALTER TABLE `discount_coupons`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `kyc_documents`
---
-ALTER TABLE `kyc_documents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `kyc_status`
---
-ALTER TABLE `kyc_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `mca_assignments`
---
-ALTER TABLE `mca_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `mlm_hierarchy`
---
-ALTER TABLE `mlm_hierarchy`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT for table `notifications`
---
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `orders`
---
-ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `order_items`
---
-ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `payments`
---
-ALTER TABLE `payments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `payment_transactions`
---
-ALTER TABLE `payment_transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `regions`
---
-ALTER TABLE `regions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
-
---
--- AUTO_INCREMENT for table `reviews`
---
-ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `shared_links`
---
-ALTER TABLE `shared_links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `shopping_cart`
---
-ALTER TABLE `shopping_cart`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `store_categories`
---
-ALTER TABLE `store_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `store_orders`
---
-ALTER TABLE `store_orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `store_order_items`
---
-ALTER TABLE `store_order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `store_products`
---
-ALTER TABLE `store_products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT for table `store_reviews`
---
-ALTER TABLE `store_reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `store_settings`
---
-ALTER TABLE `store_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `store_wishlist`
---
-ALTER TABLE `store_wishlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `system_settings`
---
-ALTER TABLE `system_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `tours`
---
-ALTER TABLE `tours`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
-
---
--- AUTO_INCREMENT for table `tour_availability`
---
-ALTER TABLE `tour_availability`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `tour_bookings`
---
-ALTER TABLE `tour_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `tour_faqs`
---
-ALTER TABLE `tour_faqs`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
-
---
--- AUTO_INCREMENT for table `tour_images`
---
-ALTER TABLE `tour_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
-
---
--- AUTO_INCREMENT for table `tour_order_details`
---
-ALTER TABLE `tour_order_details`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `tour_reviews`
---
-ALTER TABLE `tour_reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `tour_schedules`
---
-ALTER TABLE `tour_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `tour_schedule_bookings`
---
-ALTER TABLE `tour_schedule_bookings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `tour_wishlist`
---
-ALTER TABLE `tour_wishlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `training_assignments`
---
-ALTER TABLE `training_assignments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `training_certificates`
---
-ALTER TABLE `training_certificates`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `training_modules`
---
-ALTER TABLE `training_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `training_progress`
---
-ALTER TABLE `training_progress`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `training_quiz_attempts`
---
-ALTER TABLE `training_quiz_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `training_quiz_questions`
---
-ALTER TABLE `training_quiz_questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
-
---
--- AUTO_INCREMENT for table `user_addresses`
---
-ALTER TABLE `user_addresses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `wishlist`
---
-ALTER TABLE `wishlist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `blog_comments`
---
-ALTER TABLE `blog_comments`
-  ADD CONSTRAINT `blog_comments_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `blog_posts` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `blog_comments_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `blog_comments` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `blog_likes`
---
-ALTER TABLE `blog_likes`
-  ADD CONSTRAINT `blog_likes_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `blog_posts` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `blog_posts`
---
-ALTER TABLE `blog_posts`
-  ADD CONSTRAINT `blog_posts_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `blog_categories` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `blog_posts_ibfk_2` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `blog_posts_ibfk_3` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `blog_posts_ibfk_4` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `blog_post_tags`
---
-ALTER TABLE `blog_post_tags`
-  ADD CONSTRAINT `blog_post_tags_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `blog_posts` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `blog_post_tags_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `blog_tags` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `bookings`
---
-ALTER TABLE `bookings`
-  ADD CONSTRAINT `bookings_ibfk_2` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`);
-
---
--- Constraints for table `booking_engine_orders`
---
-ALTER TABLE `booking_engine_orders`
-  ADD CONSTRAINT `fk_booking_engine_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `booking_status_history`
---
-ALTER TABLE `booking_status_history`
-  ADD CONSTRAINT `booking_status_history_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `tour_bookings` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `commissions`
---
-ALTER TABLE `commissions`
-  ADD CONSTRAINT `commissions_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `commissions_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `countries`
---
-ALTER TABLE `countries`
-  ADD CONSTRAINT `countries_ibfk_1` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `coupon_usage`
---
-ALTER TABLE `coupon_usage`
-  ADD CONSTRAINT `coupon_usage_ibfk_1` FOREIGN KEY (`coupon_id`) REFERENCES `discount_coupons` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `coupon_usage_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `coupon_usage_ibfk_3` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `kyc_documents`
---
-ALTER TABLE `kyc_documents`
-  ADD CONSTRAINT `kyc_documents_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `kyc_documents_ibfk_2` FOREIGN KEY (`verified_by`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `kyc_status`
---
-ALTER TABLE `kyc_status`
-  ADD CONSTRAINT `kyc_status_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `kyc_status_ibfk_2` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `mca_assignments`
---
-ALTER TABLE `mca_assignments`
-  ADD CONSTRAINT `mca_assignments_ibfk_1` FOREIGN KEY (`mca_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `mca_assignments_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`);
-
---
--- Constraints for table `mlm_hierarchy`
---
-ALTER TABLE `mlm_hierarchy`
-  ADD CONSTRAINT `mlm_hierarchy_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `mlm_hierarchy_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `orders`
---
-ALTER TABLE `orders`
-  ADD CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `order_items`
---
-ALTER TABLE `order_items`
-  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `store_products` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `payments`
---
-ALTER TABLE `payments`
-  ADD CONSTRAINT `payments_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `payment_transactions`
---
-ALTER TABLE `payment_transactions`
-  ADD CONSTRAINT `payment_transactions_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `reviews`
---
-ALTER TABLE `reviews`
-  ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `shared_links`
---
-ALTER TABLE `shared_links`
-  ADD CONSTRAINT `shared_links_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `shared_links_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `shopping_cart`
---
-ALTER TABLE `shopping_cart`
-  ADD CONSTRAINT `shopping_cart_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `shopping_cart_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `store_products` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `store_order_items`
---
-ALTER TABLE `store_order_items`
-  ADD CONSTRAINT `store_order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `store_orders` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `store_order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `store_products` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `store_products`
---
-ALTER TABLE `store_products`
-  ADD CONSTRAINT `store_products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `store_categories` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `store_reviews`
---
-ALTER TABLE `store_reviews`
-  ADD CONSTRAINT `store_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `store_products` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `store_wishlist`
---
-ALTER TABLE `store_wishlist`
-  ADD CONSTRAINT `store_wishlist_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `store_products` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tours`
---
-ALTER TABLE `tours`
-  ADD CONSTRAINT `tours_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `tours_ibfk_2` FOREIGN KEY (`country_id`) REFERENCES `countries` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `tours_ibfk_3` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `tours_ibfk_4` FOREIGN KEY (`region_id`) REFERENCES `regions` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `tour_availability`
---
-ALTER TABLE `tour_availability`
-  ADD CONSTRAINT `tour_availability_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tour_bookings`
---
-ALTER TABLE `tour_bookings`
-  ADD CONSTRAINT `tour_bookings_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `tour_bookings_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `tour_faqs`
---
-ALTER TABLE `tour_faqs`
-  ADD CONSTRAINT `tour_faqs_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tour_images`
---
-ALTER TABLE `tour_images`
-  ADD CONSTRAINT `tour_images_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tour_order_details`
---
-ALTER TABLE `tour_order_details`
-  ADD CONSTRAINT `tour_order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tour_reviews`
---
-ALTER TABLE `tour_reviews`
-  ADD CONSTRAINT `tour_reviews_ibfk_1` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `tour_reviews_ibfk_2` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `tour_schedules`
---
-ALTER TABLE `tour_schedules`
-  ADD CONSTRAINT `fk_schedule_tour` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tour_schedule_bookings`
---
-ALTER TABLE `tour_schedule_bookings`
-  ADD CONSTRAINT `fk_schedule_booking` FOREIGN KEY (`schedule_id`) REFERENCES `tour_schedules` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_schedule_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `tour_wishlist`
---
-ALTER TABLE `tour_wishlist`
-  ADD CONSTRAINT `tour_wishlist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `tour_wishlist_ibfk_2` FOREIGN KEY (`tour_id`) REFERENCES `tours` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `training_assignments`
---
-ALTER TABLE `training_assignments`
-  ADD CONSTRAINT `training_assignments_ibfk_1` FOREIGN KEY (`assigned_by`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `training_assignments_ibfk_2` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `training_assignments_ibfk_3` FOREIGN KEY (`module_id`) REFERENCES `training_modules` (`id`);
-
---
--- Constraints for table `training_certificates`
---
-ALTER TABLE `training_certificates`
-  ADD CONSTRAINT `training_certificates_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `training_certificates_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `training_modules` (`id`),
-  ADD CONSTRAINT `training_certificates_ibfk_3` FOREIGN KEY (`issued_by`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `training_modules`
---
-ALTER TABLE `training_modules`
-  ADD CONSTRAINT `training_modules_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `training_progress`
---
-ALTER TABLE `training_progress`
-  ADD CONSTRAINT `training_progress_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `training_progress_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `training_modules` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `training_quiz_attempts`
---
-ALTER TABLE `training_quiz_attempts`
-  ADD CONSTRAINT `training_quiz_attempts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `training_quiz_attempts_ibfk_2` FOREIGN KEY (`module_id`) REFERENCES `training_modules` (`id`);
-
---
--- Constraints for table `training_quiz_questions`
---
-ALTER TABLE `training_quiz_questions`
-  ADD CONSTRAINT `training_quiz_questions_ibfk_1` FOREIGN KEY (`module_id`) REFERENCES `training_modules` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`sponsor_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `user_addresses`
---
-ALTER TABLE `user_addresses`
-  ADD CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `wishlist`
---
-ALTER TABLE `wishlist`
-  ADD CONSTRAINT `wishlist_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `wishlist_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `store_products` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

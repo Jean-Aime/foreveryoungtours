@@ -11,19 +11,21 @@ $tour_slug = $_GET['slug'] ?? null;
 // Get tour details by ID or slug
 if ($tour_slug) {
     $stmt = $pdo->prepare("
-        SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
+        SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name, cat.name as category_name 
         FROM tours t 
         LEFT JOIN countries c ON t.country_id = c.id 
         LEFT JOIN regions r ON c.region_id = r.id 
+        LEFT JOIN categories cat ON t.category_id = cat.id 
         WHERE t.slug = ? AND t.status = 'active'
     ");
     $stmt->execute([$tour_slug]);
 } else {
     $stmt = $pdo->prepare("
-        SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
+        SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name, cat.name as category_name 
         FROM tours t 
         LEFT JOIN countries c ON t.country_id = c.id 
         LEFT JOIN regions r ON c.region_id = r.id 
+        LEFT JOIN categories cat ON t.category_id = cat.id 
         WHERE t.id = ? AND t.status = 'active'
     ");
     $stmt->execute([$tour_id]);
@@ -41,11 +43,11 @@ $related_stmt = $pdo->prepare("
     FROM tours t 
     LEFT JOIN countries c ON t.country_id = c.id 
     WHERE t.status = 'active' AND t.id != ? 
-    AND (t.country_id = ? OR t.category = ?) 
+    AND (t.country_id = ? OR t.category_id = ?) 
     ORDER BY t.featured DESC, RAND() 
     LIMIT 3
 ");
-$related_stmt->execute([$tour['id'], $tour['country_id'], $tour['category']]);
+$related_stmt->execute([$tour['id'], $tour['country_id'], $tour['category_id']]);
 $related_tours = $related_stmt->fetchAll();
 
 $page_title = htmlspecialchars($tour['name']) . " - iForYoungTours";
@@ -99,7 +101,7 @@ include '../includes/header.php';
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                             </svg>
-                            <?php echo ucfirst($tour['category']); ?>
+                            <?php echo htmlspecialchars($tour['category_name'] ?: 'Uncategorized'); ?>
                         </div>
                         <div class="flex items-center text-yellow-400">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
@@ -205,7 +207,7 @@ include '../includes/header.php';
                             </div>
                             <div class="flex items-center">
                                 <i class="fas fa-tag text-golden-600 mr-3"></i>
-                                <span><strong>Category:</strong> <?php echo ucfirst($tour['category']); ?></span>
+                                <span><strong>Category:</strong> <?php echo htmlspecialchars($tour['category_name'] ?: 'Uncategorized'); ?></span>
                             </div>
                         </div>
                         <div class="space-y-4">
@@ -331,7 +333,7 @@ include '../includes/header.php';
                         </div>
                         <div class="flex justify-between">
                             <span class="text-slate-600">Category:</span>
-                            <span class="font-semibold"><?php echo ucfirst($tour['category']); ?></span>
+                            <span class="font-semibold"><?php echo htmlspecialchars($tour['category_name'] ?: 'Uncategorized'); ?></span>
                         </div>
                     </div>
 

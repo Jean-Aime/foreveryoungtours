@@ -1,31 +1,15 @@
 RewriteEngine On
+RewriteBase /foreveryoungtours/
 
-# Tour slug routing - /tour/slug-name
-RewriteRule ^tour/([a-zA-Z0-9-]+)/?$ pages/tour-detail.php?slug=$1 [L,QSA]
+# Country subdomain routing (visit-XX.domain.com)
+RewriteCond %{HTTP_HOST} ^visit-([a-z]{2,3})\.(.+)$ [NC]
+RewriteRule ^(.*)$ countries/visit-%1/$1 [L,QSA]
 
-# Handle all requests to visit-* subdomains
-RewriteCond %{HTTP_HOST} ^visit-([a-z]{2,3})\. [NC]
-RewriteCond %{REQUEST_URI} !^/subdomain-handler\.php
-RewriteRule ^(.*)$ /subdomain-handler.php [L,QSA]
+# Continent subdomain routing (africa.domain.com, asia.domain.com, etc.)
+RewriteCond %{HTTP_HOST} ^(africa|asia|europe|americas|oceania)\.(.+)$ [NC]
+RewriteRule ^(.*)$ continents/%1/$1 [L,QSA]
 
-# Handle continent subdomains
-RewriteCond %{HTTP_HOST} ^(africa|asia|europe|north-america|south-america|caribbean)\.(localhost|foreveryoungtours\.local)(:[0-9]+)?$ [NC]
-RewriteCond %{REQUEST_URI} !^/continents/
-RewriteRule ^(.*)$ /continents/%1/$1 [L]
-
-# Redirect www to non-www
-RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
-RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
-
-# Remove multiple slashes
-RewriteCond %{THE_REQUEST} //
-RewriteRule ^.*$ $0 [R=301,L,NE]
-
-# Remove .php extension
+# Main domain routing
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME}\.php -f
-RewriteRule ^(.*)$ $1.php [L]
-
-# Custom error pages
-ErrorDocument 404 /404.php
-ErrorDocument 500 /500.php
+RewriteRule ^tour/([a-zA-Z0-9-]+)/?$ pages/tour-detail.php?slug=$1 [L,QSA]
