@@ -1,19 +1,19 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../../config/database.php';
 
-$tour_id = $_GET['id'] ?? 0;
+$tour_slug = $_GET['slug'] ?? '';
 
 // Get tour details with all information
 $stmt = $pdo->prepare("
-    SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
+    SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name, t.category as category_name 
     FROM tours t 
     LEFT JOIN countries c ON t.country_id = c.id 
     LEFT JOIN regions r ON c.region_id = r.id 
-    WHERE t.id = ? AND t.status = 'active'
+    WHERE t.slug = ? AND t.status = 'active'
 ");
-$stmt->execute([$tour_id]);
+$stmt->execute([$tour_slug]);
 $tour = $stmt->fetch();
 
 // Get related tours from same country only
@@ -21,12 +21,12 @@ $related_stmt = $pdo->prepare("
     SELECT t.*, c.name as country_name 
     FROM tours t 
     LEFT JOIN countries c ON t.country_id = c.id 
-    WHERE t.status = 'active' AND t.id != ? 
+    WHERE t.status = 'active' AND t.slug != ? 
     AND t.country_id = ? 
     ORDER BY t.featured DESC, RAND() 
     LIMIT 3
 ");
-$related_stmt->execute([$tour_id, $tour['country_id']]);
+$related_stmt->execute([$tour_slug, $tour['country_id']]);
 $related_tours = $related_stmt->fetchAll();
 
 if (!$tour) {
@@ -37,8 +37,6 @@ if (!$tour) {
 $page_title = htmlspecialchars($tour['name']) . " - iForYoungTours";
 $page_description = htmlspecialchars(substr($tour['description'], 0, 160));
 $css_path = '../../../assets/css/modern-styles.css';
-
-// Header removed for subdomain
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -48,7 +46,25 @@ $css_path = '../../../assets/css/modern-styles.css';
     <title><?php echo $page_title; ?></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../../assets/css/modal.css"><link rel="stylesheet" href="<?php echo $css_path; ?>">
+    <link rel="stylesheet" href="../../../assets/css/modal.css">
+    <link rel="stylesheet" href="<?php echo $css_path; ?>">
+    <style>
+        .login-modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); align-items: center; justify-content: center; }
+        .login-modal-content { background: white; padding: 2rem; border-radius: 1rem; max-width: 500px; width: 90%; position: relative; }
+        .login-modal-close { position: absolute; right: 1rem; top: 1rem; font-size: 2rem; cursor: pointer; color: #666; }
+        .login-modal-close:hover { color: #000; }
+        .login-modal-tour-image { width: 100%; height: 200px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 1rem; }
+        .login-modal-tour-name { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .login-modal-tour-desc { color: #666; margin-bottom: 1.5rem; }
+        .login-modal-message h2 { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .login-modal-message p { color: #666; margin-bottom: 1.5rem; }
+        .login-modal-buttons { display: flex; gap: 1rem; }
+        .login-modal-btn { flex: 1; padding: 0.75rem; border-radius: 0.5rem; text-align: center; font-weight: 600; text-decoration: none; }
+        .login-modal-btn-primary { background: #f59e0b; color: white; }
+        .login-modal-btn-primary:hover { background: #d97706; }
+        .login-modal-btn-secondary { background: #e5e7eb; color: #374151; }
+        .login-modal-btn-secondary:hover { background: #d1d5db; }
+    </style>
     <style>
         body { background-color: #f8fafc; color: #1e293b; }
         .text-golden-600 { color: #d97706; }
@@ -78,21 +94,12 @@ $css_path = '../../../assets/css/modern-styles.css';
         
         <!-- Title and Meta -->
         <?php
-        // Debug: Let's see what we have in the database
-        // echo "<pre>DEBUG: cover_image = " . htmlspecialchars($tour['cover_image']) . "</pre>";
-        // echo "<pre>DEBUG: image_url = " . htmlspecialchars($tour['image_url']) . "</pre>";
-        
-        // Get the appropriate fallback image
-        $fallback_image = getImageUrl('assets/images/default-tour.jpg');
-
-        // Direct image URL construction
         $image_path = $tour['cover_image'] ?: $tour['image_url'];
         if ($image_path && !empty(trim($image_path))) {
             $bg_image = 'http://localhost/foreveryoungtours/' . ltrim($image_path, '/');
         } else {
             $bg_image = 'http://localhost/foreveryoungtours/assets/images/default-tour.jpg';
         }
-        // echo "<pre>DEBUG: Final bg_image = " . htmlspecialchars($bg_image) . "</pre>";
         ?>
         <div class="relative w-full mb-12" style="background-image: url('<?php echo htmlspecialchars($bg_image); ?>'); background-size: cover; background-position: center; min-height: 400px;">
             <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/80"></div>
@@ -134,8 +141,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                 </p>
                 
                 <div class="flex flex-wrap gap-4">
-                    <button onclick="openLoginModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', '<?php echo addslashes($tour['description']); ?>', '<?php echo htmlspecialchars($bg_image); ?>')" 
-                            class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                    <button class="book-tour-btn bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center" data-tour-id="<?php echo $tour['id']; ?>" data-tour-name="<?php echo htmlspecialchars($tour['name']); ?>">
                         Book This Tour
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -180,15 +186,15 @@ $css_path = '../../../assets/css/modern-styles.css';
     <section class="max-w-7xl mx-auto px-4 py-8">
         <div class="bg-white rounded-xl p-6 shadow-sm border">
             <h2 class="text-2xl font-bold mb-6">Tour Gallery</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex flex-wrap gap-4 justify-center">
                 <?php foreach ($gallery_images as $index => $image): ?>
                 <?php 
                 $image_src = 'http://localhost/foreveryoungtours/' . ltrim($image, '/');
                 ?>
-                <div class="relative overflow-hidden rounded-lg cursor-pointer">
+                <div class="relative overflow-hidden rounded-lg cursor-pointer w-64 h-64 shadow-md hover:shadow-lg transition-shadow">
                     <img src="<?php echo htmlspecialchars($image_src); ?>"
                          alt="<?php echo htmlspecialchars($tour['name']); ?> - Image <?php echo $index + 1; ?>"
-                         class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
+                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                          onerror="this.src='http://localhost/foreveryoungtours/assets/images/default-tour.jpg'; this.onerror=null;">
                 </div>
                 <?php endforeach; ?>
@@ -347,10 +353,9 @@ $css_path = '../../../assets/css/modern-styles.css';
                         </div>
                     </div>
 
-                    <button onclick="openLoginModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', '<?php echo addslashes($tour['description']); ?>', '<?php echo htmlspecialchars($bg_image); ?>')" 
-                            class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">Book This Tour</button>
+                    <button class="book-tour-btn w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors" data-tour-id="<?php echo $tour['id']; ?>" data-tour-name="<?php echo htmlspecialchars($tour['name']); ?>">Book This Tour</button>
                     
-                    <button onclick="openInquiryModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>')" 
+                    <button onclick="openInquiryModal('<?php echo $tour['slug']; ?>', '<?php echo addslashes($tour['name']); ?>')" 
                             class="block w-full py-4 rounded-lg font-bold text-lg mb-4 text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
                         Custom Inquiry
                     </button>
@@ -405,35 +410,35 @@ $css_path = '../../../assets/css/modern-styles.css';
 <div id="loginModal" class="login-modal">
     <div class="login-modal-content">
         <span class="login-modal-close" onclick="closeLoginModal()">&times;</span>
-        <div class="login-modal-body">
-            <div class="login-modal-tour-info">
-                <img id="modalTourImage" src="" alt="Tour" class="login-modal-tour-image">
-                <h3 id="modalTourName" class="login-modal-tour-name"></h3>
-                <p id="modalTourDesc" class="login-modal-tour-desc"></p>
+        <div class="bg-slate-50 rounded-lg overflow-hidden mb-6">
+            <img src="<?php echo htmlspecialchars($bg_image); ?>" alt="<?php echo htmlspecialchars($tour['name']); ?>" class="w-full h-40 object-cover">
+            <div class="p-4">
+                <h4 class="font-bold text-slate-900 mb-2"><?php echo htmlspecialchars($tour['name']); ?></h4>
+                <p class="text-sm text-slate-600"><?php echo htmlspecialchars(substr($tour['description'], 0, 100)) . '...'; ?></p>
             </div>
-            <div class="login-modal-message">
-                <h2>Login Required</h2>
-                <p>Please login or register to book this tour</p>
-                <div class="login-modal-buttons">
-                    <a href="../../../auth/login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-modal-btn login-modal-btn-primary">Login</a>
-                    <a href="../../../auth/register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-modal-btn login-modal-btn-secondary">Register</a>
-                </div>
-            </div>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Login Required</h2>
+        <p class="text-slate-600 mb-6">Please login or create an account to book this tour.</p>
+        <div class="space-y-3">
+            <a href="../../../auth/login.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-modal-btn login-modal-btn-primary block text-center">Login</a>
+            <a href="../../../auth/register.php?redirect=<?php echo urlencode($_SERVER['REQUEST_URI']); ?>" class="login-modal-btn login-modal-btn-secondary block text-center">Create Account</a>
         </div>
     </div>
 </div>
 
 <script>
-function openLoginModal(tourId, tourName, tourDesc, tourImage) {
-    document.getElementById('modalTourImage').src = tourImage;
-    document.getElementById('modalTourName').textContent = tourName;
-    document.getElementById('modalTourDesc').textContent = tourDesc.substring(0, 150) + '...';
-    document.getElementById('loginModal').style.display = 'flex';
+function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    if (!modal) {
+        console.error('Modal not found!');
+        return;
+    }
+    modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
 function closeLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('loginModal').classList.remove('show');
     document.body.style.overflow = 'auto';
 }
 
@@ -448,6 +453,20 @@ document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
         closeLoginModal();
     }
+});
+
+document.querySelectorAll('.book-tour-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const tourId = this.getAttribute('data-tour-id');
+        const tourName = this.getAttribute('data-tour-name');
+        const isLoggedIn = <?php echo (isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'client') ? 'true' : 'false'; ?>;
+        
+        if (isLoggedIn) {
+            openBookingModal(tourId, tourName, 0, '');
+        } else {
+            openLoginModal();
+        }
+    });
 });
 </script>
 

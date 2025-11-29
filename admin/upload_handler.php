@@ -27,7 +27,7 @@ function uploadTourImage($file, $tour_id, $type = 'gallery') {
     }
     
     $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+    if (!in_array($extension, ['jpg', 'jpeg', 'jfif', 'png', 'gif', 'webp'])) {
         throw new Exception('Invalid file extension: ' . $extension);
     }
     

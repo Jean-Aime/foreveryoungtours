@@ -1,5 +1,10 @@
+<IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteBase /foreveryoungtours/
+RewriteBase /ForeverYoungTours/
+
+# Prevent rewriting actual files and directories
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 
 # Country subdomain routing (visit-XX.domain.com)
 RewriteCond %{HTTP_HOST} ^visit-([a-z]{2,3})\.(.+)$ [NC]
@@ -9,7 +14,6 @@ RewriteRule ^(.*)$ countries/visit-%1/$1 [L,QSA]
 RewriteCond %{HTTP_HOST} ^(africa|asia|europe|americas|oceania)\.(.+)$ [NC]
 RewriteRule ^(.*)$ continents/%1/$1 [L,QSA]
 
-# Main domain routing
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^tour/([a-zA-Z0-9-]+)/?$ pages/tour-detail.php?slug=$1 [L,QSA]
+# Main domain - tour detail pages (match any slug)
+RewriteRule ^tour/(.+?)/?$ pages/tour-detail.php?slug=$1 [L,QSA]
+</IfModule>

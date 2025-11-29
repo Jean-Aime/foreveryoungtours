@@ -526,12 +526,6 @@ function updateSummary() {
 }
 
 function openBookingModal(tourId, tourName, tourPrice, sharedLink) {
-    // Check if user is logged in
-    <?php if (!isset($_SESSION['user_id'])): ?>
-    showLoginRequiredModal();
-    return;
-    <?php endif; ?>
-    
     console.log('Opening booking modal for tour:', tourId, tourName, tourPrice);
     const modal = document.getElementById('bookingModal');
     if (!modal) {
@@ -541,13 +535,12 @@ function openBookingModal(tourId, tourName, tourPrice, sharedLink) {
     }
     document.getElementById('tourId').value = tourId;
     document.getElementById('tourName').textContent = tourName;
-    document.getElementById('tourPrice').textContent = '$' + new Intl.NumberFormat().format(tourPrice);
-    document.getElementById('tourPriceValue').value = tourPrice;
+    document.getElementById('tourPrice').textContent = tourPrice || '$0';
+    document.getElementById('tourPriceValue').value = tourPrice || 0;
     document.getElementById('sharedLink').value = sharedLink || '';
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
     
-    // Reset to step 1
     currentStep = 1;
     changeStep(0);
 }

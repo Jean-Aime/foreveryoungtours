@@ -241,7 +241,7 @@ function getTourImage($tour) {
                         <span class="text-2xl font-bold text-yellow-600">$<?php echo number_format($tour['price'], 0); ?></span>
                         <span class="text-gray-500"><?php echo htmlspecialchars($tour['duration']); ?></span>
                     </div>
-                    <a href="<?= BASE_URL ?>/pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:shadow-xl transition-all">
+                    <a href="pages/tour-detail.php?slug=<?php echo $tour['slug']; ?>" class="block w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:shadow-xl transition-all">
                         View Details
                     </a>
                 </div>

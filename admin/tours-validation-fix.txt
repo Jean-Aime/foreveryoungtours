@@ -1,0 +1,64 @@
+EXACT CODE CHANGES FOR tours.php
+=================================
+
+CHANGE 1: Add validation to 'edit' case (around line 20)
+---------------------------------------------------------
+
+FIND:
+            case 'edit':
+                $slug = strtolower(str_replace(' ', '-', $_POST['name']));
+
+REPLACE WITH:
+            case 'edit':
+                if (!isset($_POST['tour_id']) || empty($_POST['tour_id'])) {
+                    header('Location: tours.php?error=Tour+ID+required');
+                    exit;
+                }
+                $tour_id = intval($_POST['tour_id']);
+                if ($tour_id <= 0) {
+                    header('Location: tours.php?error=Invalid+tour+ID');
+                    exit;
+                }
+                
+                $slug = strtolower(str_replace(' ', '-', $_POST['name']));
+
+
+CHANGE 2: Add validation to 'add' case (around line 120)
+---------------------------------------------------------
+
+FIND:
+            case 'add':
+                try {
+                    $slug = strtolower(str_replace(' ', '-', $_POST['name']));
+
+REPLACE WITH:
+            case 'add':
+                if (isset($_POST['tour_id']) && !empty($_POST['tour_id'])) {
+                    header('Location: tours.php?error=Invalid+request');
+                    exit;
+                }
+                
+                try {
+                    $slug = strtolower(str_replace(' ', '-', $_POST['name']));
+
+
+CHANGE 3: In the form, ensure tour_id is only set for edits (around line 600)
+---------------------------------------------------------------------------
+
+FIND:
+                <input type="hidden" name="action" value="<?php echo $edit_tour ? 'edit' : 'add'; ?>">
+                <?php if ($edit_tour): ?>
+                <input type="hidden" name="tour_id" value="<?php echo $edit_tour['id']; ?>">
+                <?php endif; ?>
+
+VERIFY THIS IS CORRECT - it should only set tour_id when editing.
+If not, replace with above code.
+
+
+SUMMARY OF CHANGES:
+===================
+1. Edit case: Validate tour_id exists and is valid
+2. Add case: Validate tour_id does NOT exist
+3. Form: Only include tour_id hidden field when editing
+
+This prevents data corruption when adding new tours.

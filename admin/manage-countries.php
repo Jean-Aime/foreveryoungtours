@@ -10,15 +10,55 @@ checkAuth('super_admin');
 require_once '../includes/theme-generator.php';
 require_once '../countries/auto-clone-country.php';
 
+// Handle file uploads
+function handleImageUpload($file_input_name) {
+    if (!isset($_FILES[$file_input_name]) || $_FILES[$file_input_name]['error'] === UPLOAD_ERR_NO_FILE) {
+        return $_POST['image_url'] ?? '';
+    }
+    
+    if ($_FILES[$file_input_name]['error'] !== UPLOAD_ERR_OK) {
+        throw new Exception('File upload error: ' . $_FILES[$file_input_name]['error']);
+    }
+    
+    $upload_dir = __DIR__ . '/../uploads/countries/';
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0755, true);
+    }
+    
+    $file = $_FILES[$file_input_name];
+    $allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    
+    if (!in_array($file['type'], $allowed_types)) {
+        throw new Exception('Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.');
+    }
+    
+    if ($file['size'] > 5 * 1024 * 1024) {
+        throw new Exception('File size exceeds 5MB limit.');
+    }
+    
+    $filename = 'country_' . time() . '_' . basename($file['name']);
+    $filepath = $upload_dir . $filename;
+    
+    if (!move_uploaded_file($file['tmp_name'], $filepath)) {
+        throw new Exception('Failed to move uploaded file.');
+    }
+    
+    return 'uploads/countries/' . $filename;
+}
+
 // Handle Add/Edit/Delete with automatic theme generation
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
+    $success = '';
+    $error = '';
 
     if ($action === 'add') {
         try {
+            $image_url = handleImageUpload('country_image');
+            
             // Insert country into database
             $stmt = $pdo->prepare("INSERT INTO countries (region_id, name, slug, country_code, description, image_url, currency, language, best_time_to_visit, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $_POST['image_url'], $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status']]);
+            $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $image_url, $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status']]);
 
             $country_id = $pdo->lastInsertId();
 
@@ -54,15 +94,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } elseif ($action === 'edit') {
         try {
-            // Get old status before update
-            $stmt = $pdo->prepare("SELECT status FROM countries WHERE id = ?");
+            // Get old status and image before update
+            $stmt = $pdo->prepare("SELECT status, image_url FROM countries WHERE id = ?");
             $stmt->execute([$_POST['id']]);
             $old_country = $stmt->fetch();
             $old_status = $old_country['status'];
+            $image_url = $old_country['image_url'];
+            
+            // Handle new image upload if provided
+            if (isset($_FILES['country_image']) && $_FILES['country_image']['error'] !== UPLOAD_ERR_NO_FILE) {
+                $image_url = handleImageUpload('country_image');
+            }
 
             // Update country
             $stmt = $pdo->prepare("UPDATE countries SET region_id = ?, name = ?, slug = ?, country_code = ?, description = ?, image_url = ?, currency = ?, language = ?, best_time_to_visit = ?, status = ? WHERE id = ?");
-            $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $_POST['image_url'], $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status'], $_POST['id']]);
+            $stmt->execute([$_POST['region_id'], $_POST['name'], $_POST['slug'], $_POST['country_code'], $_POST['description'], $image_url, $_POST['currency'], $_POST['language'], $_POST['best_time_to_visit'], $_POST['status'], $_POST['id']]);
 
             // If country is being activated (inactive -> active), generate theme
             if ($old_status === 'inactive' && $_POST['status'] === 'active') {
@@ -105,62 +151,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif ($action === 'delete') {
-        $stmt = $pdo->prepare("UPDATE countries SET status = 'inactive' WHERE id = ?");
-        $stmt->execute([$_POST['id']]);
-        $success = "Country deactivated successfully!";
+        try {
+            $stmt = $pdo->prepare("UPDATE countries SET status = 'inactive' WHERE id = ?");
+            $result = $stmt->execute([$_POST['id']]);
+            if ($result && $stmt->rowCount() > 0) {
+                $success = "Country deactivated successfully!";
+            } else {
+                $error = "Failed to deactivate country.";
+            }
+        } catch (Exception $e) {
+            $error = "Error deactivating country: " . $e->getMessage();
+        }
 
     } elseif ($action === 'activate') {
         try {
-            // Get country data
-            $stmt = $pdo->prepare("SELECT * FROM countries WHERE id = ?");
-            $stmt->execute([$_POST['id']]);
-            $country = $stmt->fetch();
-
-            if ($country) {
-                // Activate country
-                $stmt = $pdo->prepare("UPDATE countries SET status = 'active' WHERE id = ?");
-                $stmt->execute([$_POST['id']]);
-
-                // Generate folder name
-                $folder_name = generateFolderName($country['slug']);
-
-                // Check if subdomain exists
-                $short_code = strtolower(substr($country['country_code'], 0, 2));
-                $subdomain_dir = __DIR__ . '/../countries/visit-' . $short_code;
-                
-                if (!file_exists($subdomain_dir . '/index.php')) {
-                    // Clone Rwanda subdomain structure
-                    $clone_result = autoCloneCountrySubdomain($country['slug'], $country['name'], $country['country_code']);
-                    
-                    if (!$clone_result['success']) {
-                        $error = "Country activated but subdomain creation failed: " . $clone_result['message'];
-                    } else {
-                        $success = "Country activated successfully! Rwanda subdomain automatically cloned to visit-" . $short_code;
-                    }
-                    
-                    // Generate Rwanda theme
-                    $theme_result = generateCountryTheme([
-                        'id' => $country['id'],
-                        'name' => $country['name'],
-                        'slug' => $country['slug'],
-                        'country_code' => $country['country_code'],
-                        'folder' => $folder_name,
-                        'currency' => $country['currency'],
-                        'description' => $country['description']
-                    ]);
-
-                    // Update subdomain handler
-                    updateSubdomainHandler($country['country_code'], $country['slug'], $folder_name);
-
-                    $success = "Country activated successfully! Rwanda theme automatically cloned.";
-                } else {
-                    $success = "Country activated successfully! (Theme already exists)";
-                }
+            $stmt = $pdo->prepare("UPDATE countries SET status = 'active' WHERE id = ?");
+            $result = $stmt->execute([$_POST['id']]);
+            if ($result && $stmt->rowCount() > 0) {
+                $success = "Country activated successfully!";
+            } else {
+                $error = "Failed to activate country.";
             }
-
         } catch (Exception $e) {
             $error = "Error activating country: " . $e->getMessage();
         }
+    }
+    
+    if ($success || $error) {
+        header('Location: manage-countries.php?msg=' . urlencode($success ?: $error) . '&type=' . ($success ? 'success' : 'error'));
+        exit;
     }
 }
 
@@ -172,6 +191,17 @@ $countries = $stmt->fetchAll();
 $stmt = $pdo->query("SELECT id, name FROM regions WHERE status = 'active' ORDER BY name");
 $continents = $stmt->fetchAll();
 
+// Handle URL messages
+$success = '';
+$error = '';
+if (isset($_GET['msg'])) {
+    if ($_GET['type'] === 'success') {
+        $success = $_GET['msg'];
+    } else {
+        $error = $_GET['msg'];
+    }
+}
+
 require_once 'includes/admin-header.php';
 require_once 'includes/admin-sidebar.php';
 ?>
@@ -181,15 +211,15 @@ require_once 'includes/admin-sidebar.php';
     <div class="max-w-7xl mx-auto">
     <h1 class="text-3xl font-bold text-slate-900 mb-6">Manage Countries</h1>
     
-    <?php if (isset($success)): ?>
+    <?php if (!empty($success)): ?>
     <div class="alert alert-success mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-        <i class="fas fa-check-circle"></i> <?php echo $success; ?>
+        <i class="fas fa-check-circle"></i> <?php echo htmlspecialchars($success); ?>
     </div>
     <?php endif; ?>
 
-    <?php if (isset($error)): ?>
+    <?php if (!empty($error)): ?>
     <div class="alert alert-danger mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-        <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+        <i class="fas fa-exclamation-circle"></i> <?php echo htmlspecialchars($error); ?>
     </div>
     <?php endif; ?>
     
@@ -228,7 +258,7 @@ require_once 'includes/admin-sidebar.php';
                             </span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-warning" onclick='editCountry(<?php echo json_encode($country); ?>)'>
+                            <button class="btn btn-sm btn-warning" onclick="editCountry(<?php echo htmlspecialchars(json_encode($country), ENT_QUOTES, 'UTF-8'); ?>)">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
 
@@ -241,7 +271,7 @@ require_once 'includes/admin-sidebar.php';
                                     </button>
                                 </form>
                             <?php else: ?>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Activate this country? Rwanda theme will be automatically cloned.');">
+                                <form method="POST" style="display:inline;" onsubmit="return confirm('Activate this country?');">
                                     <input type="hidden" name="action" value="activate">
                                     <input type="hidden" name="id" value="<?php echo $country['id']; ?>">
                                     <button type="submit" class="btn btn-sm btn-success">
@@ -262,7 +292,7 @@ require_once 'includes/admin-sidebar.php';
 <div class="modal fade" id="addModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Add Country</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -294,8 +324,9 @@ require_once 'includes/admin-sidebar.php';
                         <textarea name="description" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label>Image URL</label>
-                        <input type="text" name="image_url" class="form-control">
+                        <label>Country Image</label>
+                        <input type="file" name="country_image" class="form-control" accept="image/*">
+                        <small class="text-muted">JPG, PNG, GIF, WebP (Max 5MB)</small>
                     </div>
                     <div class="mb-3">
                         <label>Currency</label>
@@ -330,7 +361,7 @@ require_once 'includes/admin-sidebar.php';
 <div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form method="POST">
+            <form method="POST" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Country</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -363,8 +394,11 @@ require_once 'includes/admin-sidebar.php';
                         <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label>Image URL</label>
-                        <input type="text" name="image_url" id="edit_image_url" class="form-control">
+                        <label>Country Image</label>
+                        <input type="file" name="country_image" class="form-control" accept="image/*">
+                        <small class="text-muted">JPG, PNG, GIF, WebP (Max 5MB)</small>
+                        <div id="current_image_preview" class="mt-2"></div>
+                        <input type="hidden" name="image_url" id="edit_image_url">
                     </div>
                     <div class="mb-3">
                         <label>Currency</label>
@@ -408,6 +442,14 @@ function editCountry(country) {
     document.getElementById('edit_language').value = country.language || '';
     document.getElementById('edit_best_time_to_visit').value = country.best_time_to_visit || '';
     document.getElementById('edit_status').value = country.status;
+    
+    const preview = document.getElementById('current_image_preview');
+    if (country.image_url) {
+        preview.innerHTML = '<p class="text-sm text-slate-600 mb-2">Current image:</p><img src="' + country.image_url + '" alt="Current" class="w-20 h-20 object-cover rounded">';
+    } else {
+        preview.innerHTML = '';
+    }
+    
     new bootstrap.Modal(document.getElementById('editModal')).show();
 }
 </script>

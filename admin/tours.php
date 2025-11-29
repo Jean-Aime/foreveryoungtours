@@ -23,6 +23,10 @@ if ($_POST) {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'edit':
+                if (!isset($_POST['tour_id']) || !is_numeric($_POST['tour_id']) || $_POST['tour_id'] <= 0) {
+                    header('Location: tours.php?error=invalid_tour_id');
+                    exit;
+                }
                 $slug = strtolower(str_replace(' ', '-', $_POST['name']));
                 
                 // Check for duplicate slug and make it unique
@@ -115,7 +119,7 @@ if ($_POST) {
                 
                 $highlights = !empty($_POST['highlights']) ? array_filter(explode("\n", $_POST['highlights'])) : [];
                 
-                $stmt = $pdo->prepare("UPDATE tours SET name = ?, slug = ?, description = ?, detailed_description = ?, destination = ?, destination_country = ?, country_id = ?, category_id = ?, price = ?, base_price = ?, duration = ?, duration_days = ?, max_participants = ?, min_participants = ?, image_url = ?, cover_image = ?, gallery = ?, images = ?, itinerary = ?, inclusions = ?, exclusions = ?, highlights = ?, requirements = ?, difficulty_level = ?, best_time_to_visit = ?, status = ?, featured = ? WHERE id = ?");
+                $stmt = $pdo->prepare("UPDATE tours SET name = ?, slug = ?, description = ?, detailed_description = ?, destination = ?, destination_country = ?, country_id = ?, category = ?, price = ?, base_price = ?, duration = ?, duration_days = ?, max_participants = ?, min_participants = ?, image_url = ?, cover_image = ?, gallery = ?, images = ?, itinerary = ?, inclusions = ?, exclusions = ?, highlights = ?, requirements = ?, difficulty_level = ?, best_time_to_visit = ?, status = ?, featured = ? WHERE id = ?");
                 
                 $stmt->execute([
                     $_POST['name'], 
@@ -125,7 +129,7 @@ if ($_POST) {
                     $_POST['destination'], 
                     $country['name'], 
                     $_POST['country_id'], 
-                    $_POST['category_id'], 
+                    $_POST['category'], 
                     $_POST['price'], 
                     $_POST['price'], 
                     $_POST['duration_days'] . ' days', 
@@ -170,6 +174,10 @@ if ($_POST) {
                     $country_stmt->execute([$_POST['country_id']]);
                     $country = $country_stmt->fetch();
                     
+                    if (!$country) {
+                        throw new Exception('Invalid country selected');
+                    }
+                    
                     // Prepare itinerary JSON
                     $itinerary = [];
                     if (isset($_POST['itinerary_day'])) {
@@ -187,44 +195,43 @@ if ($_POST) {
                     $exclusions = !empty($_POST['exclusions']) ? array_filter(explode("\n", $_POST['exclusions'])) : [];
                     $highlights = !empty($_POST['highlights']) ? array_filter(explode("\n", $_POST['highlights'])) : [];
                     
-                    // Insert tour first to get ID
-                    $stmt = $pdo->prepare("INSERT INTO tours (name, slug, description, detailed_description, destination, destination_country, country_id, category_id, price, base_price, duration, duration_days, max_participants, min_participants, requirements, difficulty_level, best_time_to_visit, status, featured, itinerary, inclusions, exclusions, highlights, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+
+                    // Insert tour with minimal fields
+                    $stmt = $pdo->prepare("INSERT INTO tours (name, slug, description, destination, destination_country, country_id, category, price, base_price, duration, duration_days, max_participants, min_participants, status, featured, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                     
-                    $result = $stmt->execute([
+                    if (!$stmt->execute([
                         $_POST['name'], 
                         $slug, 
-                        $_POST['description'], 
-                        $_POST['detailed_description'] ?? '',
+                        $_POST['description'] ?? 'Tour',
                         $_POST['destination'], 
                         $country['name'], 
                         $_POST['country_id'], 
-                        $_POST['category_id'], 
-                        $_POST['price'], 
-                        $_POST['price'], 
+                        $_POST['category'] ?? 'cultural tours', 
+                        $_POST['price'] ?? 0, 
+                        $_POST['price'] ?? 0, 
                         $_POST['duration_days'] . ' days', 
                         $_POST['duration_days'], 
-                        $_POST['max_participants'], 
+                        $_POST['max_participants'] ?? 20, 
                         $_POST['min_participants'] ?? 2,
-                        $_POST['requirements'] ?? '',
-                        $_POST['difficulty_level'] ?? 'moderate',
-                        $_POST['best_time_to_visit'] ?? '',
                         $_POST['status'] ?? 'active',
                         isset($_POST['featured']) ? 1 : 0,
-                        json_encode($itinerary),
-                        json_encode($inclusions),
-                        json_encode($exclusions),
-                        json_encode($highlights)
-                    ]);
-                    
-                    if (!$result) {
+                        1
+                    ])) {
                         $errorInfo = $stmt->errorInfo();
-                        throw new Exception('Database error: ' . $errorInfo[2]);
+                        throw new Exception('Insert error: ' . $errorInfo[2]);
                     }
                     
                     $tour_id = $pdo->lastInsertId();
                     
-                    if (!$tour_id || $tour_id == 0) {
-                        throw new Exception('Failed to get tour ID after insert');
+                    if (!$tour_id) {
+                        $check = $pdo->prepare("SELECT id FROM tours WHERE name = ? AND country_id = ? LIMIT 1");
+                        $check->execute([$_POST['name'], $_POST['country_id']]);
+                        $row = $check->fetch();
+                        $tour_id = $row['id'] ?? 0;
+                    }
+                    
+                    if (!$tour_id) {
+                        throw new Exception('Failed to create tour. Please try again.');
                     }
                     
                     // Handle file uploads AFTER getting tour ID
@@ -259,17 +266,23 @@ if ($_POST) {
                         }
                     }
                     
-                    // Update tour with images
-                    if ($image_url || $cover_image || !empty($gallery)) {
-                        $stmt = $pdo->prepare("UPDATE tours SET image_url = ?, cover_image = ?, gallery = ?, images = ? WHERE id = ?");
-                        $stmt->execute([
-                            $image_url,
-                            $cover_image,
-                            json_encode($gallery),
-                            json_encode($images),
-                            $tour_id
-                        ]);
-                    }
+                    // Update tour with all details
+                    $update_stmt = $pdo->prepare("UPDATE tours SET image_url = ?, cover_image = ?, gallery = ?, images = ?, itinerary = ?, inclusions = ?, exclusions = ?, highlights = ?, detailed_description = ?, requirements = ?, difficulty_level = ?, best_time_to_visit = ? WHERE id = ?");
+                    $update_stmt->execute([
+                        $image_url,
+                        $cover_image,
+                        json_encode($gallery),
+                        json_encode($images),
+                        json_encode($itinerary),
+                        json_encode($inclusions),
+                        json_encode($exclusions),
+                        json_encode($highlights),
+                        $_POST['detailed_description'] ?? '',
+                        $_POST['requirements'] ?? '',
+                        $_POST['difficulty_level'] ?? 'moderate',
+                        $_POST['best_time_to_visit'] ?? '',
+                        $tour_id
+                    ]);
                     
                     header('Location: tours.php?added=1');
                     exit;
@@ -361,7 +374,7 @@ if ($country_filter) {
 $where_clause = !empty($where_conditions) ? "WHERE " . implode(" AND ", $where_conditions) : "WHERE 1=1";
 
 // Get tours with country, region and category info
-$stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name, cat.name as category_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id LEFT JOIN categories cat ON t.category_id = cat.id $where_clause ORDER BY r.name, c.name, t.created_at DESC");
+$stmt = $pdo->prepare("SELECT t.*, c.name as country_name, r.name as region_name, t.category as category_name FROM tours t LEFT JOIN countries c ON t.country_id = c.id LEFT JOIN regions r ON c.region_id = r.id $where_clause ORDER BY r.name, c.name, t.created_at DESC");
 $stmt->execute($params);
 $tours = $stmt->fetchAll();
 
@@ -370,10 +383,8 @@ $stmt = $pdo->prepare("SELECT c.*, r.name as region_name FROM countries c JOIN r
 $stmt->execute();
 $countries = $stmt->fetchAll();
 
-// Get all categories
-$stmt = $pdo->prepare("SELECT * FROM categories WHERE status = 'active' ORDER BY display_order");
-$stmt->execute();
-$categories = $stmt->fetchAll();
+// Get all categories - not needed since we use enum
+$categories = [];
 
 // Get tour for editing if edit parameter is present
 $edit_tour = null;
@@ -444,6 +455,9 @@ require_once 'includes/admin-sidebar.php';
                 <i class="fas fa-exclamation-triangle mr-2"></i>
                 <?php 
                 switch($_GET['error']) {
+                    case 'invalid_tour_id':
+                        echo 'Invalid tour ID. Please try again.';
+                        break;
                     case 'deactivate_failed':
                         echo 'Failed to deactivate tour. Tour may not exist.';
                         break;
@@ -457,7 +471,7 @@ require_once 'includes/admin-sidebar.php';
                         echo 'An error occurred while deleting the tour. Please try again.';
                         break;
                     default:
-                        echo 'An unexpected error occurred.';
+                        echo htmlspecialchars($_GET['error']);
                 }
                 ?>
             </div>
@@ -550,16 +564,6 @@ require_once 'includes/admin-sidebar.php';
                                             <i class="fas fa-edit mr-1"></i>Edit
                                         </button>
                                         
-                                        <!-- Deactivate Button -->
-                                        <form method="POST" class="inline" onsubmit="return confirm('Deactivate tour: <?php echo addslashes($tour['name']); ?>?\n\nThis will set the tour status to inactive but keep all data.')">
-                                            <?php echo getCsrfField(); ?>
-                                            <input type="hidden" name="action" value="deactivate">
-                                            <input type="hidden" name="tour_id" value="<?php echo $tour['id']; ?>">
-                                            <button type="submit" class="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600 text-sm transition-colors duration-200">
-                                                <i class="fas fa-pause mr-1"></i>Deactivate
-                                            </button>
-                                        </form>
-                                        
                                         <!-- Delete Button -->
                                         <form method="POST" class="inline" onsubmit="return confirm('⚠️ PERMANENTLY DELETE tour: <?php echo addslashes($tour['name']); ?>?\n\n🚨 WARNING: This will completely remove the tour and all related data (bookings, reviews, etc.) from the database.\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?')">
                                             <?php echo getCsrfField(); ?>
@@ -617,13 +621,17 @@ require_once 'includes/admin-sidebar.php';
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Category *</label>
-                            <select name="category_id" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                            <select name="category" required class="w-full border border-slate-300 rounded-lg px-4 py-2">
                                 <option value="">Select Category</option>
-                                <?php foreach ($categories as $cat): ?>
-                                <option value="<?php echo $cat['id']; ?>" <?php echo ($edit_tour && $edit_tour['category_id'] == $cat['id']) ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($cat['name']); ?>
-                                </option>
-                                <?php endforeach; ?>
+                                <option value="motorcoach tours" <?php echo ($edit_tour && $edit_tour['category'] == 'motorcoach tours') ? 'selected' : ''; ?>>Motorcoach Tours</option>
+                                <option value="rail tours" <?php echo ($edit_tour && $edit_tour['category'] == 'rail tours') ? 'selected' : ''; ?>>Rail Tours</option>
+                                <option value="cruises tours" <?php echo ($edit_tour && $edit_tour['category'] == 'cruises tours') ? 'selected' : ''; ?>>Cruises Tours</option>
+                                <option value="city_break tours" <?php echo ($edit_tour && $edit_tour['category'] == 'city_break tours') ? 'selected' : ''; ?>>City Break Tours</option>
+                                <option value="agro tours" <?php echo ($edit_tour && $edit_tour['category'] == 'agro tours') ? 'selected' : ''; ?>>Agro Tours</option>
+                                <option value="adventure tours" <?php echo ($edit_tour && $edit_tour['category'] == 'adventure tours') ? 'selected' : ''; ?>>Adventure Tours</option>
+                                <option value="sports tours" <?php echo ($edit_tour && $edit_tour['category'] == 'sports tours') ? 'selected' : ''; ?>>Sports Tours</option>
+                                <option value="cultural tours" <?php echo ($edit_tour && $edit_tour['category'] == 'cultural tours') ? 'selected' : ''; ?>>Cultural Tours</option>
+                                <option value="conference tours" <?php echo ($edit_tour && $edit_tour['category'] == 'conference tours') ? 'selected' : ''; ?>>Conference Tours</option>
                             </select>
                         </div>
                     </div>
@@ -676,9 +684,16 @@ require_once 'includes/admin-sidebar.php';
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Main Image</label>
-                            <input type="file" name="main_image" accept="image/*" class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                            <div class="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center cursor-pointer hover:border-golden-600 transition-colors" onclick="document.getElementById('main_image_input').click()">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 mb-2"></i>
+                                <p class="text-sm text-slate-600">Click to upload or drag & drop</p>
+                                <p class="text-xs text-slate-500">JPG, PNG, GIF, WebP (Max 5MB)</p>
+                            </div>
+                            <input type="file" id="main_image_input" name="main_image" accept="image/*" class="hidden" onchange="previewImage(this, 'main_preview')">
+                            <div id="main_preview" class="mt-2"></div>
                             <?php if ($edit_tour && $edit_tour['image_url']): ?>
                             <div class="mt-2">
+                                <p class="text-xs text-slate-500 mb-1">Current image:</p>
                                 <img src="<?php echo htmlspecialchars($edit_tour['image_url']); ?>" alt="Current main image" class="w-20 h-20 object-cover rounded">
                                 <input type="hidden" name="current_image_url" value="<?php echo htmlspecialchars($edit_tour['image_url']); ?>">
                             </div>
@@ -686,9 +701,16 @@ require_once 'includes/admin-sidebar.php';
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Cover Image</label>
-                            <input type="file" name="cover_image" accept="image/*" class="w-full border border-slate-300 rounded-lg px-4 py-2">
+                            <div class="border-2 border-dashed border-slate-300 rounded-lg p-4 text-center cursor-pointer hover:border-golden-600 transition-colors" onclick="document.getElementById('cover_image_input').click()">
+                                <i class="fas fa-cloud-upload-alt text-2xl text-slate-400 mb-2"></i>
+                                <p class="text-sm text-slate-600">Click to upload or drag & drop</p>
+                                <p class="text-xs text-slate-500">JPG, PNG, GIF, WebP (Max 5MB)</p>
+                            </div>
+                            <input type="file" id="cover_image_input" name="cover_image" accept="image/*" class="hidden" onchange="previewImage(this, 'cover_preview')">
+                            <div id="cover_preview" class="mt-2"></div>
                             <?php if ($edit_tour && $edit_tour['cover_image']): ?>
                             <div class="mt-2">
+                                <p class="text-xs text-slate-500 mb-1">Current image:</p>
                                 <img src="<?php echo htmlspecialchars($edit_tour['cover_image']); ?>" alt="Current cover image" class="w-20 h-20 object-cover rounded">
                                 <input type="hidden" name="current_cover_image" value="<?php echo htmlspecialchars($edit_tour['cover_image']); ?>">
                             </div>
@@ -697,8 +719,13 @@ require_once 'includes/admin-sidebar.php';
                     </div>
                     <div class="mt-4">
                         <label class="block text-sm font-medium text-slate-700 mb-2">Gallery Images (Multiple files)</label>
-                        <input type="file" name="gallery_images[]" accept="image/*" multiple class="w-full border border-slate-300 rounded-lg px-4 py-2">
-                        <p class="text-xs text-slate-500 mt-1">Hold Ctrl/Cmd to select multiple images</p>
+                        <div class="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center cursor-pointer hover:border-golden-600 transition-colors" onclick="document.getElementById('gallery_images_input').click()">
+                            <i class="fas fa-images text-3xl text-slate-400 mb-2"></i>
+                            <p class="text-sm text-slate-600">Click to upload or drag & drop</p>
+                            <p class="text-xs text-slate-500">Select multiple images (JPG, PNG, GIF, WebP - Max 5MB each)</p>
+                        </div>
+                        <input type="file" id="gallery_images_input" name="gallery_images[]" accept="image/*" multiple class="hidden" onchange="previewGalleryImages(this)">
+                        <div id="gallery_preview" class="mt-4"></div>
                         <?php if ($edit_tour): ?>
                         <div class="mt-4">
                             <p class="text-sm font-medium text-slate-700 mb-2">Current Images:</p>
@@ -912,14 +939,55 @@ require_once 'includes/admin-sidebar.php';
             button.closest('.itinerary-day').remove();
         }
         
-        function removeImage(index) {
-            const currentImagesInput = document.querySelector('input[name="current_images"]');
-            if (currentImagesInput) {
-                let images = JSON.parse(currentImagesInput.value || '[]');
-                images.splice(index, 1);
-                currentImagesInput.value = JSON.stringify(images);
-                // Reload the page to refresh the image display
-                location.reload();
+        function previewImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            preview.innerHTML = '';
+            
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'w-20 h-20 object-cover rounded';
+                    
+                    const container = document.createElement('div');
+                    container.className = 'flex items-center gap-2';
+                    container.innerHTML = '<p class="text-xs text-slate-500">New:</p>';
+                    container.appendChild(img);
+                    
+                    preview.appendChild(container);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function previewGalleryImages(input) {
+            const preview = document.getElementById('gallery_preview');
+            preview.innerHTML = '';
+            
+            if (input.files && input.files.length > 0) {
+                const container = document.createElement('div');
+                container.className = 'grid grid-cols-4 gap-2';
+                
+                Array.from(input.files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'relative';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" class="w-full h-16 object-cover rounded">
+                            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 truncate">
+                                ${file.name}
+                            </div>
+                        `;
+                        container.appendChild(div);
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                preview.appendChild(container);
             }
         }
         

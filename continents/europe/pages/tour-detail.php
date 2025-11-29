@@ -1,19 +1,19 @@
 <?php
-
+session_start();
 require_once __DIR__ . '/../../../config.php';
 require_once __DIR__ . '/../../../config/database.php';
 
-$tour_id = $_GET['id'] ?? 0;
+$tour_slug = $_GET['slug'] ?? '';
 
 // Get tour details with all information
 $stmt = $pdo->prepare("
-    SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name 
+    SELECT t.*, c.name as country_name, c.slug as country_slug, r.name as region_name, t.category as category_name 
     FROM tours t 
     LEFT JOIN countries c ON t.country_id = c.id 
     LEFT JOIN regions r ON c.region_id = r.id 
-    WHERE t.id = ? AND t.status = 'active'
+    WHERE t.slug = ? AND t.status = 'active'
 ");
-$stmt->execute([$tour_id]);
+$stmt->execute([$tour_slug]);
 $tour = $stmt->fetch();
 
 // Get related tours from same country only
@@ -21,12 +21,12 @@ $related_stmt = $pdo->prepare("
     SELECT t.*, c.name as country_name 
     FROM tours t 
     LEFT JOIN countries c ON t.country_id = c.id 
-    WHERE t.status = 'active' AND t.id != ? 
+    WHERE t.status = 'active' AND t.slug != ? 
     AND t.country_id = ? 
     ORDER BY t.featured DESC, RAND() 
     LIMIT 3
 ");
-$related_stmt->execute([$tour_id, $tour['country_id']]);
+$related_stmt->execute([$tour_slug, $tour['country_id']]);
 $related_tours = $related_stmt->fetchAll();
 
 if (!$tour) {
@@ -37,32 +37,11 @@ if (!$tour) {
 $page_title = htmlspecialchars($tour['name']) . " - iForYoungTours";
 $page_description = htmlspecialchars(substr($tour['description'], 0, 160));
 $css_path = '../../../assets/css/modern-styles.css';
-
-// Header removed for subdomain
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $page_title; ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../../../assets/css/modal.css"><link rel="stylesheet" href="<?php echo $css_path; ?>">
-    <style>
-        body { background-color: #f8fafc; color: #1e293b; }
-        .text-golden-600 { color: #d97706; }
-        .bg-golden-500 { background-color: #f59e0b; }
-        .bg-golden-600 { background-color: #d97706; }
-        .border-golden-500 { border-color: #f59e0b; }
-        .text-slate-900 { color: #0f172a !important; }
-        .text-slate-600 { color: #475569 !important; }
-        .text-slate-700 { color: #334155 !important; }
-    </style>
-</head>
-<body>
+<?php include '../../../includes/header.php'; ?>
 
-<div class="min-h-screen bg-white">
+
+<div class="min-h-screen bg-white pt-20">
     <!-- Hero Section -->
     <section class="bg-white pt-8 pb-16">
         <!-- Breadcrumb -->
@@ -345,10 +324,10 @@ $css_path = '../../../assets/css/modern-styles.css';
                         </div>
                     </div>
 
-                    <button onclick="openLoginModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>', '<?php echo addslashes($tour['description']); ?>', '<?php echo htmlspecialchars($bg_image); ?>')" 
+                    <button onclick="openLoginModal('<?php echo $tour['slug']; ?>', '<?php echo addslashes($tour['name']); ?>', '<?php echo addslashes($tour['description']); ?>', '<?php echo htmlspecialchars($bg_image); ?>')" 
                             class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">Book This Tour</button>
                     
-                    <button onclick="openInquiryModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>')" 
+                    <button onclick="openInquiryModal('<?php echo $tour['slug']; ?>', '<?php echo addslashes($tour['name']); ?>')" 
                             class="block w-full py-4 rounded-lg font-bold text-lg mb-4 text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
                         Custom Inquiry
                     </button>
@@ -451,6 +430,3 @@ document.addEventListener('keydown', function(event) {
 </script>
 <?php include 'inquiry-modal.php'; ?>
 <?php include '../../../includes/footer.php'; ?>
-
-</body>
-</html>

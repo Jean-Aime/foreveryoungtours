@@ -181,7 +181,7 @@ $page_title = $continent['name'] . " - Discover Amazing Destinations - iForYoung
                             <p class="text-gray-600"><?= htmlspecialchars($latest_tour['duration'] ?: $latest_tour['duration_days'] . ' days') ?></p>
                         </div>
                         <div class="text-right">
-                            <a href="pages/tour-detail.php?id=<?php echo $latest_tour['id']; ?>" class="text-yellow-600 font-semibold hover:text-yellow-700">View Details →</a>
+                            <a href="pages/tour-detail.php?slug=<?php echo $latest_tour['slug']; ?>" class="text-yellow-600 font-semibold hover:text-yellow-700">View Details →</a>
                         </div>
                     </div>
                 </div>
@@ -218,20 +218,16 @@ $page_title = $continent['name'] . " - Discover Amazing Destinations - iForYoung
             <?php foreach ($countries as $country): ?>
             <?php
             $country_url = BASE_URL . '/countries/' . $country['slug'];
-            // Debug: echo "<!-- Country: {$country['name']}, Slug: {$country['slug']}, URL: $country_url -->";
             
-            // Map country names to image files in assets/images
-            $country_images = [
-                'Rwanda' => 'Rwanda.jpg',
-                'South Africa' => 'south africa.jpg',
-                'Nigeria' => 'nigeria.jpg',
-                'Senegal' => 'senegal.jpg',
-                'Tunisia' => 'tunisia.jpg',
-            ];
-            
-            $country_image = isset($country_images[$country['name']]) 
-                ? BASE_URL . '/assets/images/' . $country_images[$country['name']]
-                : (getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800'));
+            if (!empty($country['image_url'])) {
+                if (strpos($country['image_url'], 'http') === 0) {
+                    $country_image = $country['image_url'];
+                } else {
+                    $country_image = BASE_URL . '/' . $country['image_url'];
+                }
+            } else {
+                $country_image = 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?w=800';
+            }
             ?>
             <a href="<?php echo $country_url; ?>" class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2 block">
                 <div class="relative h-72 overflow-hidden">
@@ -270,7 +266,7 @@ $page_title = $continent['name'] . " - Discover Amazing Destinations - iForYoung
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-gray-500"><?php echo htmlspecialchars($tour['duration']); ?></span>
                     </div>
-                    <a href="pages/tour-detail.php?id=<?php echo $tour['id']; ?>" class="block w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:shadow-xl transition-all">
+                    <a href="pages/tour-detail.php?slug=<?php echo $tour['slug']; ?>" class="block w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-center font-semibold hover:shadow-xl transition-all">
                         View Details
                     </a>
                 </div>

@@ -1,0 +1,39 @@
+PATCH FOR tours.php - Error Display Fix
+========================================
+
+LOCATION: Around line 150 in tours.php
+
+FIND THIS:
+            <?php if (isset($_GET['error'])): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <?php 
+                switch($_GET['error']) {
+                    case 'deactivate_failed':
+                        echo 'Failed to deactivate tour. Tour may not exist.';
+                        break;
+                    case 'deactivate_error':
+                        echo 'An error occurred while deactivating the tour. Please try again.';
+                        break;
+                    case 'delete_failed':
+                        echo 'Failed to delete tour. Tour may not exist.';
+                        break;
+                    case 'delete_error':
+                        echo 'An error occurred while deleting the tour. Please try again.';
+                        break;
+                    default:
+                        echo 'An unexpected error occurred.';
+                }
+                ?>
+            </div>
+            <?php endif; ?>
+
+REPLACE WITH:
+            <?php if (isset($_GET['error'])): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+                <i class="fas fa-exclamation-triangle mr-2"></i>
+                <strong>Error:</strong> <?php echo htmlspecialchars($_GET['error']); ?>
+            </div>
+            <?php endif; ?>
+
+This will display the actual error message instead of generic text.

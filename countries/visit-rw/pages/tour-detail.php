@@ -92,6 +92,9 @@ $css_path = '../../../assets/css/modern-styles.css';
 </head>
 <body>
 
+<?php include 'enhanced-booking-modal.php'; ?>
+<?php include 'inquiry-modal.php'; ?>
+
 <div class="min-h-screen bg-white">
     <!-- Hero Section -->
     <section>
@@ -146,8 +149,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                 </p>
                 
                 <div class="flex flex-wrap gap-4">
-                    <button onclick="<?php echo isset($_SESSION['user_id']) ? 'openInquiryModal(' . $tour['id'] . ', \'' . addslashes($tour['name']) . '\')' : 'openLoginModal()'; ?>" 
-                            class="bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center">
+                    <button class="book-tour-btn bg-golden-500 hover:bg-golden-600 text-black px-8 py-3 rounded-lg font-semibold transition-colors inline-flex items-center" data-tour-id="<?php echo $tour['id']; ?>" data-tour-name="<?php echo htmlspecialchars($tour['name']); ?>">
                         Book This Tour
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -192,13 +194,13 @@ $css_path = '../../../assets/css/modern-styles.css';
     <section class="max-w-7xl mx-auto px-4 py-8">
         <div class="bg-white rounded-xl p-6 shadow-sm border">
             <h2 class="text-2xl font-bold mb-6">Tour Gallery</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex flex-wrap gap-6 justify-center">
                 <?php foreach ($gallery_images as $index => $image): ?>
                 <?php $image_src = getImageUrl($image); ?>
-                <div class="relative overflow-hidden rounded-lg cursor-pointer aspect-square">
+                <div class="relative overflow-hidden rounded-lg cursor-pointer w-64 h-64 shadow-md hover:shadow-lg transition-shadow">
                     <img src="<?php echo htmlspecialchars($image_src); ?>"
                          alt="<?php echo htmlspecialchars($tour['name']); ?> - Image <?php echo $index + 1; ?>"
-                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                         class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                          onerror="this.src='<?= getImageUrl('assets/images/default-tour.jpg') ?>'; this.onerror=null;">
                 </div>
                 <?php endforeach; ?>
@@ -359,8 +361,7 @@ $css_path = '../../../assets/css/modern-styles.css';
                         </div>
                     </div>
 
-                    <button onclick="<?php echo isset($_SESSION['user_id']) ? 'openInquiryModal(' . $tour['id'] . ', \'' . addslashes($tour['name']) . '\')' : 'openLoginModal()'; ?>" 
-                            class="w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors">Book This Tour</button>
+                    <button class="book-tour-btn w-full py-4 bg-yellow-500 text-black rounded-lg font-bold text-lg mb-3 hover:bg-yellow-600 transition-colors" data-tour-id="<?php echo $tour['id']; ?>" data-tour-name="<?php echo htmlspecialchars($tour['name']); ?>" data-tour-slug="<?php echo htmlspecialchars($tour['slug']); ?>">Book This Tour</button>
                     
                     <button onclick="openInquiryModal(<?php echo $tour['id']; ?>, '<?php echo addslashes($tour['name']); ?>')" 
                             class="block w-full py-4 rounded-lg font-bold text-lg mb-3 text-center border-2 border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors">
@@ -443,12 +444,12 @@ function openLoginModal() {
         console.error('Modal not found!');
         return;
     }
-    modal.style.display = 'flex';
+    modal.classList.add('show');
     document.body.style.overflow = 'hidden';
 }
 
 function closeLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('loginModal').classList.remove('show');
     document.body.style.overflow = 'auto';
 }
 
@@ -464,9 +465,22 @@ document.addEventListener('keydown', function(event) {
         closeLoginModal();
     }
 });
+
+document.querySelectorAll('.book-tour-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const tourId = this.getAttribute('data-tour-id');
+        const tourName = this.getAttribute('data-tour-name');
+        const isLoggedIn = <?php echo (isset($_SESSION['user_id']) && $_SESSION['user_role'] === 'client') ? 'true' : 'false'; ?>;
+        
+        if (isLoggedIn) {
+            openBookingModal(tourId, tourName, 0, '');
+        } else {
+            openLoginModal();
+        }
+    });
+});
 </script>
 
-<?php include 'inquiry-modal.php'; ?>
 <?php include '../../../includes/footer.php'; ?>
 
 </body>

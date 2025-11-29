@@ -1,9 +1,8 @@
 <?php
-
+session_start();
 require_once 'config.php';
 $page_title = 'Destination Management';
 $current_page = 'destinations';
-session_start();
 require_once '../config/database.php';
 require_once '../auth/check_auth.php';
 checkAuth('super_admin');
@@ -84,7 +83,7 @@ require_once 'includes/admin-sidebar.php';
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <?php foreach ($region_countries as $country): ?>
                     <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 cursor-pointer hover:shadow-lg transition-all" onclick="window.open('http://visit-<?php echo substr($country['country_code'], 0, 2); ?>.foreveryoungtours.local', '_blank')">
-                        <img src="<?php echo $country['image_url'] ?: '../assets/images/default-country.jpg'; ?>" alt="<?php echo $country['name']; ?>" class="w-full h-24 object-cover rounded-lg mb-3">
+                        <img src="<?php echo $country['image_url'] ? (strpos($country['image_url'], 'http') === 0 ? $country['image_url'] : '../' . $country['image_url']) : '../assets/images/default-country.jpg'; ?>" alt="<?php echo $country['name']; ?>" class="w-full h-24 object-cover rounded-lg mb-3" onerror="this.src='../assets/images/default-country.jpg'; this.onerror=null;">
                         <h4 class="font-bold"><?php echo htmlspecialchars($country['name']); ?></h4>
                         <p class="text-xs text-slate-500 mb-2"><?php echo $country['country_code']; ?></p>
                         <div class="flex justify-between items-center mb-3">

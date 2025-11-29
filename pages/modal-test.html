@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modal Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-8">
+    <button onclick="testLoginModal()" class="bg-blue-500 text-white px-6 py-3 rounded mb-4">
+        Test Login Modal
+    </button>
+    
+    <button onclick="testBookingModal()" class="bg-green-500 text-white px-6 py-3 rounded">
+        Test Booking Modal
+    </button>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8">
+            <h3 class="text-2xl font-bold mb-4">Login Modal Works!</h3>
+            <button onclick="document.getElementById('loginModal').classList.add('hidden')" class="bg-red-500 text-white px-4 py-2 rounded">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-8">
+            <h3 class="text-2xl font-bold mb-4">Booking Modal Works!</h3>
+            <button onclick="document.getElementById('bookingModal').classList.add('hidden')" class="bg-red-500 text-white px-4 py-2 rounded">
+                Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function testLoginModal() {
+            console.log('Testing login modal');
+            document.getElementById('loginModal').classList.remove('hidden');
+        }
+        
+        function testBookingModal() {
+            console.log('Testing booking modal');
+            document.getElementById('bookingModal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
