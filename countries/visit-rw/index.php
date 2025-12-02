@@ -17,6 +17,8 @@ $stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'ac
 $stmt->execute([$country['id']]);
 $all_tours = $stmt->fetchAll();
 
+$latest_tour = !empty($all_tours) ? $all_tours[0] : null;
+
 $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 
 
@@ -94,7 +96,13 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
     <div class="absolute inset-0 z-0">
-        <img src="<?php echo getImageUrl($country['image_url'], 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=2072&q=80'); ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover">
+        <?php 
+        $hero_image = BASE_URL . '/assets/images/default-tour.jpg';
+        if (!empty($country['image_url'])) {
+            $hero_image = BASE_URL . '/' . ltrim($country['image_url'], '/');
+        }
+        ?>
+        <img src="<?php echo $hero_image; ?>" alt="<?php echo htmlspecialchars($country['name']); ?>" class="w-full h-full object-cover" onerror="this.src='<?php echo BASE_URL; ?>/assets/images/default-tour.jpg'; this.onerror=null;">
         <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
     </div>
     
@@ -243,5 +251,4 @@ $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 
 </body>
 </html>
-
 

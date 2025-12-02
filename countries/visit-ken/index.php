@@ -18,6 +18,8 @@ $stmt = $pdo->prepare("SELECT * FROM tours WHERE country_id = ? AND status = 'ac
 $stmt->execute([$country['id']]);
 $all_tours = $stmt->fetchAll();
 
+$latest_tour = !empty($all_tours) ? $all_tours[0] : null;
+
 $page_title = "Discover " . $country['name'] . " | Forever Young Tours";
 
 // Function to get proper image URL
