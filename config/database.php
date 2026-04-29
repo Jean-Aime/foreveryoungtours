@@ -1,7 +1,7 @@
 <?php
 // Database Configuration
 define('DB_HOST', 'localhost');
-define('DB_NAME', 'forevveryoungtours');
+define('DB_NAME', 'u828598480_database_fyt');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 

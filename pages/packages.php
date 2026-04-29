@@ -526,7 +526,7 @@ include '../includes/header.php';
 /* Ensure labels are clickable */
 label {
     cursor: pointer !important;
-    user-select: none !important;
+    /* Copy functionality enabled - user-select restriction removed */
 }
 </style>
 

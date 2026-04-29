@@ -299,12 +299,9 @@ a, button, input, textarea, select {
     -webkit-touch-callout: none;
 }
 
-/* Prevent text selection on buttons */
+/* Text selection enabled on buttons for accessibility */
 button {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    /* user-select restrictions removed to allow copying */
 }
 
 /* Smooth scrolling on touch devices */
